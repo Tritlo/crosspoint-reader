@@ -282,7 +282,7 @@ void XMLCALL ChapterHtmlSlimParser::startElement(void* userData, const XML_Char*
       // Fallback to alt text if image processing fails
       if (!alt.empty()) {
         alt = "[Image: " + alt + "]";
-        self->startNewTextBlock(TextBlock::CENTER_ALIGN);
+        self->startNewTextBlock(centeredBlockStyle);
         self->italicUntilDepth = std::min(self->italicUntilDepth, self->depth);
         self->depth += 1;
         self->characterData(userData, alt.c_str(), alt.length());
