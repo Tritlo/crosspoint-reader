@@ -22,6 +22,7 @@ class ChapterHtmlSlimParser {
   std::shared_ptr<Epub> epub;
   const std::string& filepath;
   GfxRenderer& renderer;
+  std::string htmlDir;
   std::function<void(std::unique_ptr<Page>)> completePageFn;
   std::function<void()> popupFn;  // Popup callback
   int depth = 0;
@@ -63,6 +64,7 @@ class ChapterHtmlSlimParser {
   void startNewTextBlock(const BlockStyle& blockStyle);
   void flushPartWordBuffer();
   void makePages();
+  void addImageToPage(const std::string& resolvedPath, const std::string& ext);
   // XML callbacks
   static void XMLCALL startElement(void* userData, const XML_Char* name, const XML_Char** atts);
   static void XMLCALL characterData(void* userData, const XML_Char* s, int len);
@@ -74,7 +76,9 @@ class ChapterHtmlSlimParser {
                                  const uint8_t paragraphAlignment, const uint16_t viewportWidth,
                                  const uint16_t viewportHeight, const bool hyphenationEnabled,
                                  const std::function<void(std::unique_ptr<Page>)>& completePageFn,
-                                 const std::function<void()>& popupFn = nullptr, const CssParser* cssParser = nullptr)
+                                 const std::function<void()>& popupFn = nullptr,
+                                 const CssParser* cssParser = nullptr,
+                                 const std::string& htmlItemHref = "")
       : epub(epub),
         filepath(filepath),
         renderer(renderer),
@@ -87,7 +91,10 @@ class ChapterHtmlSlimParser {
         hyphenationEnabled(hyphenationEnabled),
         completePageFn(completePageFn),
         popupFn(popupFn),
-        cssParser(cssParser) {}
+        cssParser(cssParser) {
+    const size_t lastSlash = htmlItemHref.find_last_of('/');
+    htmlDir = (lastSlash != std::string::npos) ? htmlItemHref.substr(0, lastSlash + 1) : "";
+  }
 
   ~ChapterHtmlSlimParser() = default;
   bool parseAndBuildPages();
