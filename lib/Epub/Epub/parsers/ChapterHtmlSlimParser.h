@@ -46,6 +46,7 @@ class ChapterHtmlSlimParser {
   bool hyphenationEnabled;
   const CssParser* cssParser;
   int imageCounter = 0;
+  int spineIndex = 0;
 
   // Style tracking (replaces depth-based approach)
   struct StyleStackEntry {
@@ -78,7 +79,8 @@ class ChapterHtmlSlimParser {
                                  const std::function<void(std::unique_ptr<Page>)>& completePageFn,
                                  const std::function<void()>& popupFn = nullptr,
                                  const CssParser* cssParser = nullptr,
-                                 const std::string& htmlItemHref = "")
+                                 const std::string& htmlItemHref = "",
+                                 const int spineIndex = 0)
       : epub(epub),
         filepath(filepath),
         renderer(renderer),
@@ -91,7 +93,8 @@ class ChapterHtmlSlimParser {
         hyphenationEnabled(hyphenationEnabled),
         completePageFn(completePageFn),
         popupFn(popupFn),
-        cssParser(cssParser) {
+        cssParser(cssParser),
+        spineIndex(spineIndex) {
     const size_t lastSlash = htmlItemHref.find_last_of('/');
     htmlDir = (lastSlash != std::string::npos) ? htmlItemHref.substr(0, lastSlash + 1) : "";
   }

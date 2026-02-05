@@ -562,8 +562,9 @@ bool ChapterHtmlSlimParser::addImageToPage(const std::string& resolvedPath, cons
     makePages();
   }
 
+  // Include spineIndex in filename to avoid collisions across chapters
   std::string cachedImagePath =
-      epub->getCachePath() + "/img_" + std::to_string(imageCounter++) + ext;
+      epub->getCachePath() + "/img_" + std::to_string(spineIndex) + "_" + std::to_string(imageCounter++) + ext;
 
   // Extract image to cache file
   FsFile cachedImageFile;
