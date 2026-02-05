@@ -1,5 +1,6 @@
 #include "ChapterHtmlSlimParser.h"
 
+#include <FsHelpers.h>
 #include <GfxRenderer.h>
 #include <HardwareSerial.h>
 #include <SDCardManager.h>
@@ -170,113 +171,17 @@ void XMLCALL ChapterHtmlSlimParser::startElement(void* userData, const XML_Char*
       if (!src.empty()) {
         Serial.printf("[%lu] [EHP] Found image: src=%s\n", millis(), src.c_str());
 
-        // Get the spine item's href to resolve the relative path
-        size_t lastUnderscore = self->filepath.rfind('_');
-        if (lastUnderscore != std::string::npos && lastUnderscore > 0) {
-          std::string indexStr = self->filepath.substr(lastUnderscore + 1);
-          indexStr.resize(indexStr.find('.'));
-          int spineIndex = atoi(indexStr.c_str());
+        const std::string resolvedPath = FsHelpers::normalisePath(self->htmlDir + src);
 
-          const auto& spineItem = self->epub->getSpineItem(spineIndex);
-          std::string htmlHref = spineItem.href;
-          size_t lastSlash = htmlHref.find_last_of('/');
-          std::string htmlDir = (lastSlash != std::string::npos) ? htmlHref.substr(0, lastSlash + 1) : "";
-
-          // Resolve the image path relative to the HTML file
-          std::string imageHref = src;
-          while (imageHref.find("../") == 0) {
-            imageHref = imageHref.substr(3);
-            if (!htmlDir.empty()) {
-              size_t dirSlash = htmlDir.find_last_of('/', htmlDir.length() - 2);
-              htmlDir = (dirSlash != std::string::npos) ? htmlDir.substr(0, dirSlash + 1) : "";
-            }
-          }
-          std::string resolvedPath = htmlDir + imageHref;
-
-          // Create a unique filename for the cached image
-          std::string ext;
-          size_t extPos = resolvedPath.rfind('.');
-          if (extPos != std::string::npos) {
-            ext = resolvedPath.substr(extPos);
-          }
-          std::string cachedImagePath = self->epub->getCachePath() + "/img_" + std::to_string(spineIndex) + "_" +
-                                        std::to_string(self->imageCounter++) + ext;
-
-          // Extract image to cache file
-          FsFile cachedImageFile;
-          bool extractSuccess = false;
-          if (SdMan.openFileForWrite("EHP", cachedImagePath, cachedImageFile)) {
-            extractSuccess = self->epub->readItemContentsToStream(resolvedPath, cachedImageFile, 4096);
-            cachedImageFile.flush();
-            cachedImageFile.close();
-            delay(50);  // Give SD card time to sync
-          }
-
-          if (extractSuccess) {
-            // Get image dimensions
-            ImageDimensions dims = {0, 0};
-            ImageToFramebufferDecoder* decoder = ImageDecoderFactory::getDecoder(cachedImagePath);
-            if (decoder && decoder->getDimensions(cachedImagePath, dims)) {
-              Serial.printf("[%lu] [EHP] Image dimensions: %dx%d\n", millis(), dims.width, dims.height);
-
-              // Scale to fit viewport while maintaining aspect ratio
-              int maxWidth = self->viewportWidth;
-              int maxHeight = self->viewportHeight;
-              float scaleX = (dims.width > maxWidth) ? (float)maxWidth / dims.width : 1.0f;
-              float scaleY = (dims.height > maxHeight) ? (float)maxHeight / dims.height : 1.0f;
-              float scale = (scaleX < scaleY) ? scaleX : scaleY;
-              if (scale > 1.0f) scale = 1.0f;
-
-              int displayWidth = (int)(dims.width * scale);
-              int displayHeight = (int)(dims.height * scale);
-
-              Serial.printf("[%lu] [EHP] Display size: %dx%d (scale %.2f)\n", millis(), displayWidth, displayHeight,
-                            scale);
-
-              // Create page for image - only break if image won't fit remaining space
-              if (self->currentPage && !self->currentPage->elements.empty() &&
-                  (self->currentPageNextY + displayHeight > self->viewportHeight)) {
-                self->completePageFn(std::move(self->currentPage));
-                self->currentPage.reset(new Page());
-                if (!self->currentPage) {
-                  Serial.printf("[%lu] [EHP] Failed to create new page\n", millis());
-                  return;
-                }
-                self->currentPageNextY = 0;
-              } else if (!self->currentPage) {
-                self->currentPage.reset(new Page());
-                if (!self->currentPage) {
-                  Serial.printf("[%lu] [EHP] Failed to create initial page\n", millis());
-                  return;
-                }
-                self->currentPageNextY = 0;
-              }
-
-              // Create ImageBlock and add to page
-              auto imageBlock = std::make_shared<ImageBlock>(cachedImagePath, displayWidth, displayHeight);
-              if (!imageBlock) {
-                Serial.printf("[%lu] [EHP] Failed to create ImageBlock\n", millis());
-                return;
-              }
-              int xPos = (self->viewportWidth - displayWidth) / 2;
-              auto pageImage = std::make_shared<PageImage>(imageBlock, xPos, self->currentPageNextY);
-              if (!pageImage) {
-                Serial.printf("[%lu] [EHP] Failed to create PageImage\n", millis());
-                return;
-              }
-              self->currentPage->elements.push_back(pageImage);
-              self->currentPageNextY += displayHeight;
-
-              self->depth += 1;
-              return;
-            } else {
-              Serial.printf("[%lu] [EHP] Failed to get image dimensions\n", millis());
-              SdMan.remove(cachedImagePath.c_str());
-            }
-          } else {
-            Serial.printf("[%lu] [EHP] Failed to extract image\n", millis());
-          }
+        std::string ext;
+        size_t extPos = resolvedPath.rfind('.');
+        if (extPos != std::string::npos) {
+          ext = resolvedPath.substr(extPos);
         }
+
+        self->addImageToPage(resolvedPath, ext);
+        self->depth += 1;
+        return;
       }
 
       // Fallback to alt text if image processing fails
@@ -641,6 +546,78 @@ void ChapterHtmlSlimParser::addLineToPage(std::shared_ptr<TextBlock> line) {
   const int16_t xOffset = line->getBlockStyle().leftInset();
   currentPage->elements.push_back(std::make_shared<PageLine>(line, xOffset, currentPageNextY));
   currentPageNextY += lineHeight;
+}
+
+void ChapterHtmlSlimParser::addImageToPage(const std::string& resolvedPath, const std::string& ext) {
+  // Flush any partial word buffer before inserting an image
+  if (partWordBufferIndex > 0) {
+    flushPartWordBuffer();
+  }
+
+  // Flush current text block to pages before inserting the image
+  if (currentTextBlock && !currentTextBlock->isEmpty()) {
+    makePages();
+  }
+
+  std::string cachedImagePath =
+      epub->getCachePath() + "/img_" + std::to_string(imageCounter++) + ext;
+
+  // Extract image to cache file
+  FsFile cachedImageFile;
+  bool extractSuccess = false;
+  if (SdMan.openFileForWrite("EHP", cachedImagePath, cachedImageFile)) {
+    extractSuccess = epub->readItemContentsToStream(resolvedPath, cachedImageFile, 4096);
+    cachedImageFile.flush();
+    cachedImageFile.close();
+    delay(50);  // Give SD card time to sync
+  }
+
+  if (!extractSuccess) {
+    Serial.printf("[%lu] [EHP] Failed to extract image\n", millis());
+    return;
+  }
+
+  // Get image dimensions
+  ImageDimensions dims = {0, 0};
+  ImageToFramebufferDecoder* decoder = ImageDecoderFactory::getDecoder(cachedImagePath);
+  if (!decoder || !decoder->getDimensions(cachedImagePath, dims)) {
+    Serial.printf("[%lu] [EHP] Failed to get image dimensions\n", millis());
+    SdMan.remove(cachedImagePath.c_str());
+    return;
+  }
+
+  Serial.printf("[%lu] [EHP] Image dimensions: %dx%d\n", millis(), dims.width, dims.height);
+
+  // Scale to fit viewport while maintaining aspect ratio
+  int maxWidth = viewportWidth;
+  int maxHeight = viewportHeight;
+  float scaleX = (dims.width > maxWidth) ? (float)maxWidth / dims.width : 1.0f;
+  float scaleY = (dims.height > maxHeight) ? (float)maxHeight / dims.height : 1.0f;
+  float scale = (scaleX < scaleY) ? scaleX : scaleY;
+  if (scale > 1.0f) scale = 1.0f;
+
+  int displayWidth = (int)(dims.width * scale);
+  int displayHeight = (int)(dims.height * scale);
+
+  Serial.printf("[%lu] [EHP] Display size: %dx%d (scale %.2f)\n", millis(), displayWidth, displayHeight, scale);
+
+  // Create page for image - only break if image won't fit remaining space
+  if (currentPage && !currentPage->elements.empty() &&
+      (currentPageNextY + displayHeight > viewportHeight)) {
+    completePageFn(std::move(currentPage));
+    currentPage.reset(new Page());
+    currentPageNextY = 0;
+  } else if (!currentPage) {
+    currentPage.reset(new Page());
+    currentPageNextY = 0;
+  }
+
+  // Create ImageBlock and add to page
+  auto imageBlock = std::make_shared<ImageBlock>(cachedImagePath, displayWidth, displayHeight);
+  int xPos = (viewportWidth - displayWidth) / 2;
+  auto pageImage = std::make_shared<PageImage>(imageBlock, xPos, currentPageNextY);
+  currentPage->elements.push_back(pageImage);
+  currentPageNextY += displayHeight;
 }
 
 void ChapterHtmlSlimParser::makePages() {
