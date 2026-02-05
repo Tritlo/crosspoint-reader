@@ -64,7 +64,7 @@ class ChapterHtmlSlimParser {
   void startNewTextBlock(const BlockStyle& blockStyle);
   void flushPartWordBuffer();
   void makePages();
-  void addImageToPage(const std::string& resolvedPath, const std::string& ext);
+  bool addImageToPage(const std::string& resolvedPath, const std::string& ext);
   // XML callbacks
   static void XMLCALL startElement(void* userData, const XML_Char* name, const XML_Char** atts);
   static void XMLCALL characterData(void* userData, const XML_Char* s, int len);

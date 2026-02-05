@@ -179,25 +179,28 @@ void XMLCALL ChapterHtmlSlimParser::startElement(void* userData, const XML_Char*
           ext = resolvedPath.substr(extPos);
         }
 
-        self->addImageToPage(resolvedPath, ext);
-        self->depth += 1;
-        return;
+        if (self->addImageToPage(resolvedPath, ext)) {
+          self->depth += 1;
+          return;
+        }
+        // Image failed (e.g. not enough heap) - fall through to placeholder
       }
 
-      // Fallback to alt text if image processing fails
-      if (!alt.empty()) {
-        alt = "[Image: " + alt + "]";
+      // Show placeholder text for failed or missing images
+      {
+        Serial.printf("[%lu] [EHP] Using placeholder for image: %s\n", millis(), src.c_str());
+        std::string placeholder;
+        if (!alt.empty()) {
+          placeholder = "[Image: " + alt + "]";
+        } else {
+          placeholder = "[Image]";
+        }
         self->startNewTextBlock(centeredBlockStyle);
         self->italicUntilDepth = std::min(self->italicUntilDepth, self->depth);
         self->depth += 1;
-        self->characterData(userData, alt.c_str(), alt.length());
+        self->characterData(userData, placeholder.c_str(), placeholder.length());
         return;
       }
-
-      // No alt text, skip
-      self->skipUntilDepth = self->depth;
-      self->depth += 1;
-      return;
     }
   }
 
@@ -548,7 +551,7 @@ void ChapterHtmlSlimParser::addLineToPage(std::shared_ptr<TextBlock> line) {
   currentPageNextY += lineHeight;
 }
 
-void ChapterHtmlSlimParser::addImageToPage(const std::string& resolvedPath, const std::string& ext) {
+bool ChapterHtmlSlimParser::addImageToPage(const std::string& resolvedPath, const std::string& ext) {
   // Flush any partial word buffer before inserting an image
   if (partWordBufferIndex > 0) {
     flushPartWordBuffer();
@@ -574,16 +577,16 @@ void ChapterHtmlSlimParser::addImageToPage(const std::string& resolvedPath, cons
 
   if (!extractSuccess) {
     Serial.printf("[%lu] [EHP] Failed to extract image\n", millis());
-    return;
+    return false;
   }
 
-  // Get image dimensions
+  // Get image dimensions (may fail if not enough heap for decoder)
   ImageDimensions dims = {0, 0};
   ImageToFramebufferDecoder* decoder = ImageDecoderFactory::getDecoder(cachedImagePath);
   if (!decoder || !decoder->getDimensions(cachedImagePath, dims)) {
     Serial.printf("[%lu] [EHP] Failed to get image dimensions\n", millis());
     SdMan.remove(cachedImagePath.c_str());
-    return;
+    return false;
   }
 
   Serial.printf("[%lu] [EHP] Image dimensions: %dx%d\n", millis(), dims.width, dims.height);
@@ -618,6 +621,7 @@ void ChapterHtmlSlimParser::addImageToPage(const std::string& resolvedPath, cons
   auto pageImage = std::make_shared<PageImage>(imageBlock, xPos, currentPageNextY);
   currentPage->elements.push_back(pageImage);
   currentPageNextY += displayHeight;
+  return true;
 }
 
 void ChapterHtmlSlimParser::makePages() {
