@@ -200,7 +200,7 @@ void XMLCALL ChapterHtmlSlimParser::startElement(void* userData, const XML_Char*
           // Extract image to cache file
           FsFile cachedImageFile;
           bool extractSuccess = false;
-          if (SdMan.openFileForWrite("EHP", cachedImagePath, cachedImageFile)) {
+          if (Storage.openFileForWrite("EHP", cachedImagePath, cachedImageFile)) {
             extractSuccess = self->epub->readItemContentsToStream(resolvedPath, cachedImageFile, 4096);
             cachedImageFile.flush();
             cachedImageFile.close();
@@ -266,7 +266,7 @@ void XMLCALL ChapterHtmlSlimParser::startElement(void* userData, const XML_Char*
               return;
             } else {
               Serial.printf("[%lu] [EHP] Failed to get image dimensions\n", millis());
-              SdMan.remove(cachedImagePath.c_str());
+              Storage.remove(cachedImagePath.c_str());
             }
           } else {
             Serial.printf("[%lu] [EHP] Failed to extract image\n", millis());
