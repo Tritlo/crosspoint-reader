@@ -16,21 +16,12 @@ void appendBigEndian(std::vector<uint8_t>& output, uint32_t value) {
   output.push_back(static_cast<uint8_t>(value));
 }
 
-uint32_t crc32(const uint8_t* bytes, size_t size) {
-  uint32_t crc = 0xFFFFFFFFU;
-  for (size_t index = 0; index < size; ++index) {
-    crc ^= bytes[index];
-    for (int bit = 0; bit < 8; ++bit) crc = (crc >> 1) ^ (0xEDB88320U & (0U - (crc & 1U)));
-  }
-  return ~crc;
-}
-
 void appendChunk(std::vector<uint8_t>& png, const std::array<uint8_t, 4>& type, const std::vector<uint8_t>& data) {
   appendBigEndian(png, static_cast<uint32_t>(data.size()));
   const size_t crcStart = png.size();
   png.insert(png.end(), type.begin(), type.end());
   png.insert(png.end(), data.begin(), data.end());
-  appendBigEndian(png, crc32(png.data() + crcStart, png.size() - crcStart));
+  appendBigEndian(png, static_cast<uint32_t>(::crc32(0, png.data() + crcStart, png.size() - crcStart)));
 }
 
 bool deflateCompressed(const std::vector<uint8_t>& bytes, std::vector<uint8_t>& output) {

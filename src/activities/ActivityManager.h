@@ -66,7 +66,9 @@ class ActivityManager {
   // Whether to trigger a render after the current loop()
   // This variable must only be set by the main loop, to avoid race conditions
   std::atomic<bool> requestedUpdate{false};
+#if CROSSPOINT_EMULATED == 1
   std::atomic<uint64_t> completedRenderGeneration{0};
+#endif
 
   void observeActivityChange() const;
 
@@ -105,7 +107,9 @@ class ActivityManager {
   bool skipLoopDelay() const;
   ScreenshotInfo getScreenshotInfo() const;
   ActivityId getActivityId() const;
+#if CROSSPOINT_EMULATED == 1
   uint64_t getRenderGeneration() const { return completedRenderGeneration.load(); }
+#endif
 
   // If immediate is true, the update will be triggered immediately.
   // Otherwise, it will be deferred until the end of the current loop iteration.

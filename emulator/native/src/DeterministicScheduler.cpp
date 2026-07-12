@@ -97,12 +97,7 @@ struct DeterministicScheduler::Impl {
         continue;
       }
 
-      runningTask = task;
-      task->state = TaskState::Running;
-      condition.notify_all();
-      const bool yielded = condition.wait_for(lock, wallTimeLimit, [this, task] { return runningTask != task; });
-      if (!yielded) watchdog(*task);
-      ++dispatches;
+      dispatch(*task, lock, dispatches);
     }
     return {false, dispatches};
   }
@@ -129,12 +124,7 @@ struct DeterministicScheduler::Impl {
         if (task == nullptr) return {true, dispatches};
       }
 
-      runningTask = task;
-      task->state = TaskState::Running;
-      condition.notify_all();
-      const bool yielded = condition.wait_for(lock, wallTimeLimit, [this, task] { return runningTask != task; });
-      if (!yielded) watchdog(*task);
-      ++dispatches;
+      dispatch(*task, lock, dispatches);
     }
     return {false, dispatches};
   }
@@ -149,6 +139,15 @@ struct DeterministicScheduler::Impl {
       task.notificationTimeout = false;
       task.wakeTimeUs = 0;
     }
+  }
+
+  void dispatch(Task& task, std::unique_lock<std::mutex>& lock, uint64_t& dispatches) {
+    runningTask = &task;
+    task.state = TaskState::Running;
+    condition.notify_all();
+    const bool yielded = condition.wait_for(lock, wallTimeLimit, [this, &task] { return runningTask != &task; });
+    if (!yielded) watchdog(task);
+    ++dispatches;
   }
 
   void makeReady(TaskId id) {

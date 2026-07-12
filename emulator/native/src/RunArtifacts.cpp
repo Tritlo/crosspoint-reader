@@ -5,9 +5,6 @@
 namespace emulator {
 namespace {
 
-constexpr uint32_t TRACE_VERSION = 1;
-constexpr uint32_t PANEL_MODEL_VERSION = 1;
-
 bool writeJsonFile(const std::filesystem::path& path, const JsonDocument& document, std::string& error) {
   std::ofstream output(path, std::ios::binary | std::ios::trunc);
   if (!output) {
@@ -42,7 +39,7 @@ bool RunArtifacts::begin(const StorageMetadata& storage, std::string& error) {
   manifest["panelHeight"] = configuration.profile.panelHeight;
   manifest["controller"] = configuration.profile.controller;
   manifest["reviewRotationDegrees"] = configuration.profile.reviewRotationDegrees;
-  manifest["timingProfile"] = "development-uncalibrated-v0";
+  manifest["timingProfile"] = TIMING_PROFILE;
   manifest["rtcStart"] = configuration.rtcStart;
   manifest["randomSeed"] = configuration.randomSeed;
   manifest["initialPanel"] = configuration.initialPanel;

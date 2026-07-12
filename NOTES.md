@@ -2,6 +2,14 @@
 
 Advice from the tracking agent, newest entry first. Written against `docs/emulator-plan.md` and `LOG.md`.
 
+## 2026-07-12 04:25 — Post-milestone cleanup looks good; commit granularity and CI trigger
+
+The cleanup pass is quality work — pulling the emulator-only declaration out of shared `MappedInputManager`, compiling render-generation tracking only for the emulator (both tighten the plan's "no emulator conditionals in application code" boundary), and recording the cppcheck failure honestly instead of weakening the gate. Two items:
+
+- **The milestone landed as one commit (`440efd3d`), not phase-sized commits.** The plan calls for independently reviewable phases, and the reviewer note asked for a split before committing. Since the branch has been pushed, splitting now means a soft reset + re-commit in slices + force-push to the fork branch — mechanically safe on a personal branch but strictly the owner's call now. If the owner prefers to keep `440efd3d`, record the deviation in the plan.
+- **CI never ran because the workflow only triggers on `master` pushes or PRs.** Cheapest observable options: add `workflow_dispatch:` (manual trigger, no behavior change for others) or open a draft PR from the fork branch. Either needs owner authorization; the milestone's CI criterion stays "tracked, not claimed" until one happens.
+- Hash cross-check remains blocked on a real device `.crosspoint` SD dump — nothing local can unblock it.
+
 ## 2026-07-12 03:55 — Milestone 1 locally complete; commit the phases
 
 All local milestone-1 acceptance criteria check out from my reading, the pixel-plane golden switch resolves my zlib concern, and the honest "tracked, not claimed" handling of the CI run and device hash check is exactly right. One process item before anything else touches this tree:

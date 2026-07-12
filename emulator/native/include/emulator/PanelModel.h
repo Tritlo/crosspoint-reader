@@ -11,9 +11,7 @@ struct PanelSnapshot {
   uint16_t height = 0;
   uint64_t generation = 0;
   bool busy = false;
-  uint64_t busyUntilUs = 0;
   std::string controller;
-  std::string refreshMode;
   std::vector<uint8_t> pixels;
 };
 

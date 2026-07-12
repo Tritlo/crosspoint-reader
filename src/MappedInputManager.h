@@ -48,5 +48,3 @@ class MappedInputManager {
 
   bool mapButton(Button button, bool (HalGPIO::*fn)(uint8_t) const) const;
 };
-
-extern MappedInputManager mappedInputManager;

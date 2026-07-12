@@ -1,3 +1,5 @@
+#include <zlib.h>
+
 #include <cstdarg>
 
 #include "Logging.h"
@@ -82,23 +84,9 @@ const char* resultName(Result result) {
 }  // namespace firmware_flash
 
 extern "C" uint32_t uzlib_adler32(const void* data, unsigned int length, uint32_t previous) {
-  constexpr uint32_t modulus = 65521;
-  const auto* bytes = static_cast<const uint8_t*>(data);
-  uint32_t a = previous & 0xFFFFU;
-  uint32_t b = previous >> 16;
-  for (unsigned int index = 0; index < length; ++index) {
-    a = (a + bytes[index]) % modulus;
-    b = (b + a) % modulus;
-  }
-  return (b << 16) | a;
+  return static_cast<uint32_t>(::adler32(previous, static_cast<const Bytef*>(data), length));
 }
 
 extern "C" uint32_t uzlib_crc32(const void* data, unsigned int length, uint32_t previous) {
-  const auto* bytes = static_cast<const uint8_t*>(data);
-  uint32_t crc = ~previous;
-  for (unsigned int index = 0; index < length; ++index) {
-    crc ^= bytes[index];
-    for (int bit = 0; bit < 8; ++bit) crc = (crc >> 1) ^ (0xEDB88320U & (0U - (crc & 1U)));
-  }
-  return ~crc;
+  return static_cast<uint32_t>(::crc32(previous, static_cast<const Bytef*>(data), length));
 }

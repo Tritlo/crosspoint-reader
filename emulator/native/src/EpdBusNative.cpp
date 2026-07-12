@@ -36,8 +36,6 @@ struct NativePanelState {
   std::string x3Bank = "none";
   uint8_t x4UpdateSequence = 0;
   bool x3WhiteBaseline = false;
-  bool oldWritten = false;
-  bool newWritten = false;
   bool pendingRefresh = false;
   bool partialWindow = false;
   uint16_t windowXStart = 0;
@@ -166,10 +164,8 @@ void consumeData(NativePanelState& state, const uint8_t* bytes, size_t size) {
   if (state.controller == "uc8253") {
     if (state.currentCommand == 0x10) {
       copyPlaneData(state, state.oldPlane, bytes, size);
-      state.oldWritten = true;
     } else if (state.currentCommand == 0x13) {
       copyPlaneData(state, state.newPlane, bytes, size);
-      state.newWritten = true;
     } else if (state.currentCommand == 0x50) {
       state.cdi = bytes[0];
     } else if (state.currentCommand == 0x20 && size >= 5) {
@@ -195,10 +191,8 @@ void consumeData(NativePanelState& state, const uint8_t* bytes, size_t size) {
   } else {
     if (state.currentCommand == 0x24) {
       copyPlaneData(state, state.newPlane, bytes, size);
-      state.newWritten = true;
     } else if (state.currentCommand == 0x26) {
       copyPlaneData(state, state.oldPlane, bytes, size);
-      state.oldWritten = true;
     } else if (state.currentCommand == 0x46) {
       std::fill(state.newPlane.begin(), state.newPlane.end(), 0xFF);
     } else if (state.currentCommand == 0x47) {
@@ -292,8 +286,6 @@ void finishRefresh(NativePanelState& state) {
   state.refreshMode = mode;
   state.pendingRefresh = false;
   state.x3WhiteBaseline = false;
-  state.oldWritten = false;
-  state.newWritten = false;
   ++state.generation;
   state.transitions.push_back({state.busyUntilUs, state.generation, "settled", state.visible});
   emulator::runtimeTracePanel("phase", "settled", state.busyUntilUs);
@@ -334,7 +326,7 @@ void EpdBus::begin(const EpdPins& pins, uint32_t spiHz, BusyPolarity busy, int8_
   _spiHz = spiHz;
   _busy = busy;
   _coCs = coCs;
-  const auto& profile = emulator::runtimeStorage().deviceProfile();
+  const auto& profile = emulator::runtimeStorage().config().profile;
   NativePanelState state;
   state.width = profile.panelWidth;
   state.height = profile.panelHeight;
@@ -350,7 +342,7 @@ void EpdBus::begin(const EpdPins& pins, uint32_t spiHz, BusyPolarity busy, int8_
     state.transitions = previous->second.transitions;
     state.refreshMode = "retained-reset";
   } else {
-    const auto& png = emulator::runtimeStorage().initialPanelPng();
+    const auto& png = emulator::runtimeStorage().config().initialPanelPng;
     if (png) {
       const std::string pngError = readInitialPng(*png, state.width, state.height, state.visible);
       if (!pngError.empty()) {
@@ -358,7 +350,7 @@ void EpdBus::begin(const EpdPins& pins, uint32_t spiHz, BusyPolarity busy, int8_
       }
       state.transitions.push_back({emulator::runtimeMicroseconds(), 0, "initial-png", state.visible});
     } else {
-      const uint8_t initial = emulator::runtimeStorage().initialPanel() == "black" ? 0x00 : 0xFF;
+      const uint8_t initial = emulator::runtimeStorage().config().initialPanel == "black" ? 0x00 : 0xFF;
       state.visible.assign(static_cast<size_t>(state.width) * state.height, initial);
       state.transitions.push_back(
           {emulator::runtimeMicroseconds(), 0, initial == 0 ? "initial-black" : "initial-white", state.visible});
@@ -447,10 +439,8 @@ void EpdBus::sendPlaneFlipped(uint8_t command, const uint8_t* plane, uint16_t he
                                command == 0x10 ? state.oldPlane.size() : state.newPlane.size());
   if (command == 0x10) {
     std::copy_n(plane, size, state.oldPlane.begin());
-    state.oldWritten = true;
   } else if (command == 0x13) {
     std::copy_n(plane, size, state.newPlane.begin());
-    state.newWritten = true;
   }
 }
 
@@ -459,11 +449,9 @@ void EpdBus::fillPlane(uint8_t command, uint8_t fillByte, uint16_t, uint16_t) {
   setCommand(state, command);
   if (command == 0x10) {
     std::fill(state.oldPlane.begin(), state.oldPlane.end(), fillByte);
-    state.oldWritten = true;
     state.x3WhiteBaseline = fillByte == 0xFF;
   } else if (command == 0x13) {
     std::fill(state.newPlane.begin(), state.newPlane.end(), fillByte);
-    state.newWritten = true;
   }
 }
 
@@ -475,8 +463,7 @@ PanelSnapshot panelSnapshot() {
   if (activeBus == nullptr) return {};
   auto& state = stateFor(activeBus);
   if (state.pendingRefresh && runtimeMicroseconds() >= state.busyUntilUs) finishRefresh(state);
-  return {state.width,       state.height,     state.generation,  state.pendingRefresh,
-          state.busyUntilUs, state.controller, state.refreshMode, state.visible};
+  return {state.width, state.height, state.generation, state.pendingRefresh, state.controller, state.visible};
 }
 
 const std::vector<PanelTransition>& panelTransitions() {

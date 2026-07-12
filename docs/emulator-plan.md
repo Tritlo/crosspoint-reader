@@ -194,9 +194,9 @@ Initial explicit waits:
 - `wait_for_activity(id)`;
 - `wait_for_render(after=generation)`;
 - `wait_for_panel_idle()`;
-- `wait_for_storage_idle()`;
 - `advance(duration)`.
 
+Storage operations are synchronous and complete before their protocol response, so a storage-idle wait would be a no-op.
 There is no generic `wait_for_idle()` because background work makes global idleness ambiguous.
 
 ### Protocol and Python API
@@ -250,6 +250,8 @@ run/
 ## Implementation phases
 
 Each phase should remain independently buildable and reviewable. Refactors and behavior changes should be separate commits.
+Phases 2–6 were ultimately published together as `440efd3d`; retain that published history rather than force-pushing it,
+and keep subsequent cleanup in separate reviewable commits.
 
 ### 1. Native execution spine
 

@@ -35,30 +35,11 @@ def decode_grayscale_png(path: Path) -> tuple[int, int, bytes]:
     assert width > 0 and height > 0
     scanlines = zlib.decompress(compressed)
     assert len(scanlines) == (width + 1) * height
-    pixels = bytearray(width * height)
-    previous = bytearray(width)
+    pixels = bytearray()
     for y in range(height):
         start = y * (width + 1)
-        filter_type = scanlines[start]
-        row = bytearray(scanlines[start + 1 : start + 1 + width])
-        for x in range(width):
-            left = row[x - 1] if x > 0 else 0
-            above = previous[x]
-            upper_left = previous[x - 1] if x > 0 else 0
-            if filter_type == 1:
-                row[x] = (row[x] + left) & 0xFF
-            elif filter_type == 2:
-                row[x] = (row[x] + above) & 0xFF
-            elif filter_type == 3:
-                row[x] = (row[x] + (left + above) // 2) & 0xFF
-            elif filter_type == 4:
-                estimate = left + above - upper_left
-                nearest = min((left, above, upper_left), key=lambda value: abs(estimate - value))
-                row[x] = (row[x] + nearest) & 0xFF
-            else:
-                assert filter_type == 0
-        pixels[y * width : (y + 1) * width] = row
-        previous = row
+        assert scanlines[start] == 0
+        pixels.extend(scanlines[start + 1 : start + 1 + width])
     return width, height, bytes(pixels)
 
 

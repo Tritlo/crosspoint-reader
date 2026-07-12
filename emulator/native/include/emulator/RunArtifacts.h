@@ -2,6 +2,7 @@
 
 #include <ArduinoJson.h>
 
+#include <cstdint>
 #include <filesystem>
 #include <fstream>
 #include <string_view>
@@ -10,6 +11,10 @@
 #include "DirectoryStorage.h"
 
 namespace emulator {
+
+inline constexpr uint32_t TRACE_VERSION = 1;
+inline constexpr uint32_t PANEL_MODEL_VERSION = 1;
+inline constexpr std::string_view TIMING_PROFILE = "development-uncalibrated-v0";
 
 class RunArtifacts {
  public:

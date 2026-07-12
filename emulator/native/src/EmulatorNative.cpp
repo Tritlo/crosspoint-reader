@@ -10,6 +10,7 @@
 #include <filesystem>
 #include <iomanip>
 #include <iostream>
+#include <iterator>
 #include <locale>
 #include <optional>
 #include <sstream>
@@ -34,25 +35,24 @@
 
 void setup() __attribute__((weak));
 void loop() __attribute__((weak));
+extern MappedInputManager mappedInputManager;
 
 namespace emulator {
 namespace {
 
 constexpr uint32_t PROTOCOL_VERSION = 1;
-constexpr uint32_t TRACE_VERSION = 1;
-constexpr uint32_t PANEL_MODEL_VERSION = 1;
+constexpr std::string_view SCHEDULER_MODEL = "deterministic-single-core-v1";
+constexpr std::string_view PHYSICAL_BUTTON_NAMES[] = {"back", "confirm", "left", "right", "up", "down", "power"};
 
 int physicalButtonIndex(std::string_view name) {
-  constexpr std::string_view names[] = {"back", "confirm", "left", "right", "up", "down", "power"};
-  for (size_t index = 0; index < sizeof(names) / sizeof(names[0]); ++index) {
-    if (names[index] == name) return static_cast<int>(index);
+  for (size_t index = 0; index < std::size(PHYSICAL_BUTTON_NAMES); ++index) {
+    if (PHYSICAL_BUTTON_NAMES[index] == name) return static_cast<int>(index);
   }
   return -1;
 }
 
 std::string_view physicalButtonName(uint8_t index) {
-  constexpr std::string_view names[] = {"back", "confirm", "left", "right", "up", "down", "power"};
-  return index < sizeof(names) / sizeof(names[0]) ? names[index] : std::string_view{};
+  return index < std::size(PHYSICAL_BUTTON_NAMES) ? PHYSICAL_BUTTON_NAMES[index] : std::string_view{};
 }
 
 std::optional<MappedInputManager::Button> protocolAction(std::string_view name) {
@@ -208,8 +208,6 @@ class Session {
       handleWaitRender(id, params);
     else if (method == "wait.panelIdle")
       handleWaitPanelIdle(id, params);
-    else if (method == "wait.storageIdle")
-      handleWaitStorageIdle(id, params);
     else if (method == "capture.panel")
       handleCapture(id, params, true, false);
     else if (method == "capture.framebuffer")
@@ -253,8 +251,8 @@ class Session {
     result["panelHeight"] = configuration.profile.panelHeight;
     result["controller"] = configuration.profile.controller;
     result["reviewRotationDegrees"] = configuration.profile.reviewRotationDegrees;
-    result["timingProfile"] = "development-uncalibrated-v0";
-    result["schedulerModel"] = "deterministic-single-core-v1";
+    result["timingProfile"] = TIMING_PROFILE;
+    result["schedulerModel"] = SCHEDULER_MODEL;
     result["artifactDirectory"] = std::filesystem::absolute(configuration.artifactDirectory).string();
     result["rtcStart"] = configuration.rtcStart;
     result["randomSeed"] = configuration.randomSeed;
@@ -314,7 +312,7 @@ class Session {
     result["initialized"] = initialized;
     result["deviceProfile"] = configuration.profile.id;
     result["simulatedTimeUs"] = clock.nowMicroseconds();
-    result["scheduler"] = "deterministic-single-core-v1";
+    result["scheduler"] = SCHEDULER_MODEL;
     result["application"] = application.state();
     result["physicalControls"] = physicalControlMask();
     uint8_t debouncedControls = 0;
@@ -358,13 +356,7 @@ class Session {
     fields["pressed"] = pressed;
     fields["mask"] = physicalControlMask();
     record("input.physical", fields);
-
-    JsonDocument resultDocument;
-    JsonObject result = resultDocument.to<JsonObject>();
-    result["control"] = control;
-    result["pressed"] = pressed;
-    result["mask"] = physicalControlMask();
-    sendResult(id, result);
+    sendResult(id, fields);
   }
 
   void handleInputAction(uint64_t id, const JsonObjectConst& params, bool pressed) {
@@ -389,14 +381,7 @@ class Session {
     fields["pressed"] = pressed;
     fields["mask"] = physicalControlMask();
     record("input.action", fields);
-
-    JsonDocument resultDocument;
-    JsonObject result = resultDocument.to<JsonObject>();
-    result["action"] = action;
-    result["physicalControl"] = physicalButtonName(*physical);
-    result["pressed"] = pressed;
-    result["mask"] = physicalControlMask();
-    sendResult(id, result);
+    sendResult(id, fields);
   }
 
   enum class WaitOutcome { Ready, SimulatedTimeout, WallTimeout };
@@ -470,10 +455,6 @@ class Session {
 
   void handleWaitPanelIdle(uint64_t id, const JsonObjectConst& params) {
     completeWait(id, params, [] { return !panelSnapshot().busy; });
-  }
-
-  void handleWaitStorageIdle(uint64_t id, const JsonObjectConst& params) {
-    completeWait(id, params, [] { return true; });
   }
 
   void handleReset(uint64_t id) {

@@ -25,10 +25,7 @@ class DirectoryStorage {
   bool begin(std::string& error);
   bool ready() const { return initialized; }
   const std::filesystem::path& root() const { return storageRoot; }
-  const DeviceProfile& deviceProfile() const { return configuration.profile; }
-  const std::string& rtcStart() const { return configuration.rtcStart; }
-  const std::string& initialPanel() const { return configuration.initialPanel; }
-  const std::optional<std::filesystem::path>& initialPanelPng() const { return configuration.initialPanelPng; }
+  const Configuration& config() const { return configuration; }
   const StorageMetadata& metadata() const { return storageMetadata; }
 
   std::vector<std::string> listFiles(std::string_view devicePath, size_t maxFiles, std::string& error) const;

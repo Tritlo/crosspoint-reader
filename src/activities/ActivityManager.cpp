@@ -31,11 +31,7 @@ ActivityManager::ActivityManager(GfxRenderer& renderer, MappedInputManager& mapp
   stackActivities.reserve(10);
 }
 
-#if CROSSPOINT_EMULATED == 1
 ActivityManager::~ActivityManager() = default;
-#else
-ActivityManager::~ActivityManager() { assert(false); /* should never be called */ }
-#endif
 
 void ActivityManager::begin() {
   xTaskCreatePinnedToCore(&renderTaskTrampoline, "ActivityManagerRender",
@@ -62,8 +58,8 @@ void ActivityManager::renderTaskLoop() {
     if (currentActivity) {
       HalPowerManager::Lock powerLock;  // Ensure we don't go into low-power mode while rendering
       currentActivity->render(std::move(lock));
-      const uint64_t generation = completedRenderGeneration.fetch_add(1) + 1;
 #if CROSSPOINT_EMULATED == 1
+      const uint64_t generation = completedRenderGeneration.fetch_add(1) + 1;
       emulator::runtimeTraceApplication("render", activityIdName(currentActivity->id), generation);
 #endif
     }

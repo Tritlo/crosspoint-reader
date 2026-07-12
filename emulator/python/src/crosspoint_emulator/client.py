@@ -249,11 +249,6 @@ class Emulator:
             "wait.panelIdle", {"timeoutUs": timeout_ms * 1000, "wallTimeoutMs": wall_timeout_ms}
         )
 
-    def wait_for_storage_idle(self, *, timeout_ms: int = 10_000, wall_timeout_ms: int = 5_000) -> dict[str, object]:
-        return self._request(
-            "wait.storageIdle", {"timeoutUs": timeout_ms * 1000, "wallTimeoutMs": wall_timeout_ms}
-        )
-
     def capture_panel(self, name: str = "panel.png") -> Path:
         return self._capture("capture.panel", name)
 
@@ -276,7 +271,7 @@ class Emulator:
         panel = result.get("panelPath")
         if not isinstance(storage, str) or not isinstance(panel, str):
             raise EmulatorError(f"reset response omitted retained state: {result!r}")
-        self._finish_process(wait=True)
+        self._finish_process()
         self._reset_count += 1
         next_artifacts = self._artifact_root / "resets" / str(self._reset_count)
         self._start_process(next_artifacts, sd=Path(storage), initial_panel_png=Path(panel))
@@ -298,9 +293,9 @@ class Emulator:
                 self._request("shutdown")
             except EmulatorError:
                 pass
-        self._finish_process(wait=True)
+        self._finish_process()
 
-    def _finish_process(self, *, wait: bool = False) -> None:
+    def _finish_process(self) -> None:
         process = self._process
         self._process = None
         if process is not None:
@@ -308,12 +303,11 @@ class Emulator:
                 process.stdin.close()
             if process.stdout is not None:
                 process.stdout.close()
-            if wait:
-                try:
-                    process.wait(timeout=5)
-                except subprocess.TimeoutExpired:
-                    process.kill()
-                    process.wait()
+            try:
+                process.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                process.kill()
+                process.wait()
         if self._stderr is not None:
             self._stderr.close()
             self._stderr = None

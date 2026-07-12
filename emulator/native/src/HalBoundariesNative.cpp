@@ -33,7 +33,7 @@ HalGPIO::HalGPIO() : native(std::make_unique<NativeState>()) {}
 HalGPIO::~HalGPIO() = default;
 void HalGPIO::begin() {
   _deviceType =
-      emulator::runtimeStorage().deviceProfile().device == emulator::Device::X3 ? DeviceType::X3 : DeviceType::X4;
+      emulator::runtimeStorage().config().profile.device == emulator::Device::X3 ? DeviceType::X3 : DeviceType::X4;
   BoardConfig::selectDevice(deviceIsX3() ? BoardConfig::Board::XteinkX3 : BoardConfig::Board::XteinkX4);
   native->input.begin();
 }
@@ -90,7 +90,7 @@ HalPowerManager::Lock::~Lock() {
 void HalClock::begin() { _available = gpio.deviceIsX3(); }
 bool HalClock::getTime(uint8_t& hour, uint8_t& minute) const {
   if (!_available) return false;
-  const std::string& rtc = emulator::runtimeStorage().rtcStart();
+  const std::string& rtc = emulator::runtimeStorage().config().rtcStart;
   if (rtc.size() < 16) return false;
   hour = static_cast<uint8_t>(std::stoi(rtc.substr(11, 2)));
   minute = static_cast<uint8_t>(std::stoi(rtc.substr(14, 2)));
