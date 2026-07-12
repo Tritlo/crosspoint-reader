@@ -1,0 +1,23 @@
+[project]
+name = "crosspoint-emulator"
+version = "0.1.0"
+description = "Synchronous Python automation client for the CrossPoint X3/X4 emulator"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+test = ["pytest>=8.0"]
+dev = ["pyright>=1.1.400", "pytest>=8.0"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.pyright]
+typeCheckingMode = "strict"
+pythonVersion = "3.11"
+include = ["src", "tests"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

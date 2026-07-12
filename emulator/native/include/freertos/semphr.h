@@ -5,7 +5,7 @@
 
 struct EmulatorSemaphore;
 using SemaphoreHandle_t = EmulatorSemaphore*;
-using QueueHandle_t = void*;
+#include "freertos/queue.h"
 
 SemaphoreHandle_t xSemaphoreCreateMutex();
 SemaphoreHandle_t xSemaphoreCreateRecursiveMutex();

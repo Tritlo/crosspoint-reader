@@ -41,7 +41,7 @@ class FileBrowserActivity final : public Activity {
  public:
   explicit FileBrowserActivity(GfxRenderer& renderer, MappedInputManager& mappedInput, std::string initialPath = "/",
                                Mode mode = Mode::Books)
-      : Activity("FileBrowser", renderer, mappedInput),
+      : Activity(ActivityId::FileBrowser, "FileBrowser", renderer, mappedInput),
         mode(mode),
         basepath(initialPath.empty() ? "/" : std::move(initialPath)) {}
   void onEnter() override;

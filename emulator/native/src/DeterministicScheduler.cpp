@@ -20,12 +20,18 @@ enum class TaskState { Ready, Running, Blocked, WaitingNotification, Sleeping, S
 
 const char* stateName(TaskState state) {
   switch (state) {
-    case TaskState::Ready: return "ready";
-    case TaskState::Running: return "running";
-    case TaskState::Blocked: return "blocked";
-    case TaskState::WaitingNotification: return "waiting-notification";
-    case TaskState::Sleeping: return "sleeping";
-    case TaskState::Stopped: return "stopped";
+    case TaskState::Ready:
+      return "ready";
+    case TaskState::Running:
+      return "running";
+    case TaskState::Blocked:
+      return "blocked";
+    case TaskState::WaitingNotification:
+      return "waiting-notification";
+    case TaskState::Sleeping:
+      return "sleeping";
+    case TaskState::Stopped:
+      return "stopped";
   }
   return "unknown";
 }
@@ -48,12 +54,15 @@ struct DeterministicScheduler::Impl {
     std::thread thread;
   };
 
-  Impl(SimulatedClock& clock, std::chrono::milliseconds wallTimeLimit)
-      : clock(clock), wallTimeLimit(wallTimeLimit) {}
+  Impl(SimulatedClock& clock, std::chrono::milliseconds wallTimeLimit) : clock(clock), wallTimeLimit(wallTimeLimit) {}
 
-  ~Impl() {
+  ~Impl() { shutdown(); }
+
+  void shutdown() {
     {
       std::lock_guard lock(mutex);
+      if (stopped) return;
+      stopped = true;
       stopping = true;
       condition.notify_all();
     }
@@ -186,8 +195,10 @@ struct DeterministicScheduler::Impl {
     }
 
     const uint32_t result = task.notifications;
-    if (clearOnExit) task.notifications = 0;
-    else if (task.notifications > 0) --task.notifications;
+    if (clearOnExit)
+      task.notifications = 0;
+    else if (task.notifications > 0)
+      --task.notifications;
     task.notificationTimeout = false;
     task.wakeTimeUs = 0;
     return result;
@@ -202,6 +213,11 @@ struct DeterministicScheduler::Impl {
           {task->id, task->name, task->priority, stateName(task->state), task->notifications, task->wakeTimeUs});
     }
     return statuses;
+  }
+
+  bool isShuttingDown() const {
+    std::lock_guard lock(mutex);
+    return stopping;
   }
 
   TaskId currentTaskId() const {
@@ -288,12 +304,12 @@ struct DeterministicScheduler::Impl {
   }
 
   [[noreturn]] void watchdog(const Task& task) const {
-    std::cerr << "emulator: wall-time watchdog: task '" << task.name << "' (id=" << task.id
-              << ") did not yield within " << wallTimeLimit.count() << "ms\n";
+    std::cerr << "emulator: wall-time watchdog: task '" << task.name << "' (id=" << task.id << ") did not yield within "
+              << wallTimeLimit.count() << "ms\n";
     std::cerr << "emulator: scheduler diagnostics at simulatedTimeUs=" << clock.nowMicroseconds() << '\n';
     for (const auto& candidate : tasks) {
-      std::cerr << "  task id=" << candidate->id << " name='" << candidate->name << "' state="
-                << stateName(candidate->state) << " notifications=" << candidate->notifications
+      std::cerr << "  task id=" << candidate->id << " name='" << candidate->name
+                << "' state=" << stateName(candidate->state) << " notifications=" << candidate->notifications
                 << " wakeTimeUs=" << candidate->wakeTimeUs << '\n';
     }
     std::cerr.flush();
@@ -308,6 +324,7 @@ struct DeterministicScheduler::Impl {
   Task* runningTask = nullptr;
   TaskId nextTaskId = 1;
   bool stopping = false;
+  bool stopped = false;
   static thread_local Task* threadTask;
 };
 
@@ -318,8 +335,12 @@ DeterministicScheduler::DeterministicScheduler(SimulatedClock& clock, std::chron
 
 DeterministicScheduler::~DeterministicScheduler() = default;
 
+void DeterministicScheduler::shutdown() { impl->shutdown(); }
+
+bool DeterministicScheduler::isShuttingDown() const { return impl->isShuttingDown(); }
+
 DeterministicScheduler::TaskId DeterministicScheduler::createTask(std::string name, TaskFunction function,
-                                                                 uint32_t priority) {
+                                                                  uint32_t priority) {
   return impl->createTask(std::move(name), std::move(function), priority);
 }
 

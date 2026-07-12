@@ -1,7 +1,11 @@
 #pragma once
 
 #include <Arduino.h>
+#if CROSSPOINT_EMULATED == 0
 #include <InputManager.h>
+#else
+#include <memory>
+#endif
 
 // Display SPI pins (custom pins for XteinkX4, not hardware SPI defaults)
 #define EPD_SCLK 8   // SPI Clock
@@ -51,9 +55,18 @@ class HalGPIO {
 
  private:
   DeviceType _deviceType = DeviceType::X4;
+#if CROSSPOINT_EMULATED != 0
+  class NativeState;
+  std::unique_ptr<NativeState> native;
+#endif
 
  public:
+#if CROSSPOINT_EMULATED == 0
   HalGPIO() = default;
+#else
+  HalGPIO();
+  ~HalGPIO();
+#endif
 
   // Inline device type helpers for cleaner downstream checks
   inline bool deviceIsX3() const { return _deviceType == DeviceType::X3; }

@@ -143,6 +143,48 @@ jobs:
       - name: Run tests
         run: ctest --test-dir build/test --output-on-failure -j
 
+  emulator:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: "latest"
+          enable-cache: false
+
+      - name: Install PlatformIO Core
+        run: uv pip install --system -U https://github.com/pioarduino/platformio-core/archive/refs/tags/v6.1.19.zip
+
+      - name: Install emulator system dependencies
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg zlib1g-dev
+
+      - name: Cache PlatformIO packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.platformio
+          key: pio-${{ runner.os }}-emulator-${{ hashFiles('platformio.ini', 'emulator/native/library.json') }}
+          restore-keys: pio-${{ runner.os }}-emulator-
+
+      - name: Build native emulator
+        run: pio run -e emulator
+
+      - name: Check Python client
+        run: uv run --project emulator/python --extra dev pyright
+
+      - name: Run X3/X4 EPUB scenarios
+        run: uv run --project emulator/python --extra dev pytest -q
+
+      - name: Run native emulator tests
+        run: pio test -e emulator
+
   # This job is used as the PR required actions check, allows for changes to other steps in the future without breaking
   # PR requirements.
   test-status:
@@ -151,6 +193,7 @@ jobs:
       - build
       - clang-format
       - cppcheck
+      - emulator
       - unit-tests
     if: always()
     runs-on: ubuntu-latest

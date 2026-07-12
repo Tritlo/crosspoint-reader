@@ -1,3 +1,5 @@
+#if CROSSPOINT_EMULATED == 0
+
 #include <HalGPIO.h>
 #include <Logging.h>
 #include <Preferences.h>
@@ -304,3 +306,5 @@ HalGPIO::WakeupReason HalGPIO::getWakeupReason() const {
   }
   return WakeupReason::Other;
 }
+
+#endif

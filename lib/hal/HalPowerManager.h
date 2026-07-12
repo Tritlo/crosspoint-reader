@@ -1,10 +1,12 @@
 #pragma once
 
 #include <Arduino.h>
+#if CROSSPOINT_EMULATED == 0
 #include <BatteryMonitor.h>
 #include <InputManager.h>
 #include <Logging.h>
 #include <Wire.h>
+#endif
 #include <freertos/semphr.h>
 
 #include <cassert>

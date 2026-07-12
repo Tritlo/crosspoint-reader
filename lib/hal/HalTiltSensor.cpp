@@ -1,3 +1,5 @@
+#if CROSSPOINT_EMULATED == 0
+
 #include "HalTiltSensor.h"
 
 #include <Logging.h>
@@ -232,3 +234,5 @@ void HalTiltSensor::clearPendingEvents() {
   _hadActivity = false;
   // Intentionally preserve _inTilt so a held tilt doesn't retrigger on next poll
 }
+
+#endif

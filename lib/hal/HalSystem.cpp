@@ -1,3 +1,5 @@
+#if CROSSPOINT_EMULATED == 0
+
 #include "HalSystem.h"
 
 #include <string>
@@ -146,3 +148,5 @@ bool isRebootFromPanic() {
 }
 
 }  // namespace HalSystem
+
+#endif

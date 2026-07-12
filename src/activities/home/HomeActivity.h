@@ -72,7 +72,7 @@ class HomeActivity final : public Activity {
  public:
   explicit HomeActivity(GfxRenderer& renderer, MappedInputManager& mappedInput,
                         HomeMenuItem initialMenuItemValue = HomeMenuItem::NONE)
-      : Activity("Home", renderer, mappedInput), initialMenuItem(initialMenuItemValue) {}
+      : Activity(ActivityId::Home, "Home", renderer, mappedInput), initialMenuItem(initialMenuItemValue) {}
   void onEnter() override;
   void onExit() override;
   void loop() override;

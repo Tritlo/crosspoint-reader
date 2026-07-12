@@ -1,3 +1,5 @@
+#if CROSSPOINT_EMULATED == 0
+
 #include "HalClock.h"
 
 #include <Logging.h>
@@ -180,3 +182,5 @@ bool HalClock::syncFromNTP() {
   LOG_ERR("CLK", "NTP sync timed out");
   return false;
 }
+
+#endif

@@ -12,6 +12,7 @@
 
 #include "GfxRenderer.h"
 #include "MappedInputManager.h"
+#include "activities/ActivityId.h"
 #include "util/ScreenshotInfo.h"
 
 class Activity;    // forward declaration
@@ -65,14 +66,13 @@ class ActivityManager {
   // Whether to trigger a render after the current loop()
   // This variable must only be set by the main loop, to avoid race conditions
   std::atomic<bool> requestedUpdate{false};
+  std::atomic<uint64_t> completedRenderGeneration{0};
+
+  void observeActivityChange() const;
 
  public:
-  explicit ActivityManager(GfxRenderer& renderer, MappedInputManager& mappedInput)
-      : renderer(renderer), mappedInput(mappedInput), renderingMutex(xSemaphoreCreateMutex()) {
-    assert(renderingMutex != nullptr && "Failed to create rendering mutex");
-    stackActivities.reserve(10);
-  }
-  ~ActivityManager() { assert(false); /* should never be called */ };
+  explicit ActivityManager(GfxRenderer& renderer, MappedInputManager& mappedInput);
+  ~ActivityManager();
 
   void begin();
   void loop();
@@ -104,6 +104,8 @@ class ActivityManager {
   bool isReaderActivity() const;
   bool skipLoopDelay() const;
   ScreenshotInfo getScreenshotInfo() const;
+  ActivityId getActivityId() const;
+  uint64_t getRenderGeneration() const { return completedRenderGeneration.load(); }
 
   // If immediate is true, the update will be triggered immediately.
   // Otherwise, it will be deferred until the end of the current loop iteration.

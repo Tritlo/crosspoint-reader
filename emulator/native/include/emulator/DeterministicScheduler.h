@@ -33,6 +33,8 @@ class DeterministicScheduler {
   explicit DeterministicScheduler(SimulatedClock& clock,
                                   std::chrono::milliseconds wallTimeLimit = std::chrono::seconds(5));
   ~DeterministicScheduler();
+  void shutdown();
+  bool isShuttingDown() const;
 
   DeterministicScheduler(const DeterministicScheduler&) = delete;
   DeterministicScheduler& operator=(const DeterministicScheduler&) = delete;

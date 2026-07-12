@@ -15,6 +15,20 @@ This is a calibrated behavioral emulator, not an ESP32 firmware-binary or electr
 source parity take priority over instruction-level fidelity. Nominal device-speed profiles are deliberately deferred
 until they can be measured repeatedly on physical X3 and X4 devices.
 
+### Persistence compatibility decision
+
+Cache paths use a project-owned fixed 32-bit hash that reproduces the ESP32-C3 toolchain's existing libstdc++
+`std::hash<std::string>` result. Native builds must not use the host's 64-bit `std::hash`: that would create different
+`epub_<N>` directories, miss device caches, and strand `progress.bin` in host-only paths. Persisted formats continue to be
+read and written by shared firmware code; native storage does not translate them.
+
+### Capture and presentation decision
+
+Canonical panel and framebuffer PNGs retain controller-native geometry and are compared as decoded grayscale pixels,
+not compressed PNG bytes. `capture.screenshot` and MP4 presentation rotate those pixels 90 degrees clockwise into the
+natural handheld orientation. System zlib keeps stored artifacts compact, while pixel-plane comparisons avoid false
+golden failures when the zlib implementation changes.
+
 ### Why this direction
 
 - CrossPoint already routes display, input, storage, clock, power, system, and tilt behavior through `lib/hal/`.
@@ -56,6 +70,7 @@ until they can be measured repeatedly on physical X3 and X4 devices.
 - Exact ESP32 heap capacity, fragmentation, and OOM behavior; milestone 1 only reports emulator-owned allocations.
 - Wi-Fi, OPDS, OTA, Calibre, USB-state, battery, RTC-device quirks, and X3 tilt behavior beyond deterministic stubs.
 - Pixel-exact physical ghosting, voltage-level or electrochemical panel simulation, and temperature effects.
+- Device surrounds, physical-button overlays, and timing overlays for presentation output.
 - Native Windows/macOS packaging, a live interactive GUI, and remote attachment to an existing emulator process.
 - Seeded scheduling, storage-fault, and slow-device stress profiles.
 
@@ -224,7 +239,9 @@ run/
 
 - Canonical framebuffer captures contain composed 1-bit pixels before refresh behavior.
 - Canonical panel captures contain native-geometry visible grayscale state and are visual-test truth.
-- Presentation captures may rotate, scale, add an X3/X4 surround, show button presses, or overlay timing.
+- `capture.screenshot` writes a human-review presentation PNG rotated into the natural handheld orientation; canonical
+  framebuffer and panel captures stay in controller-native orientation.
+- Other presentation captures may scale, add an X3/X4 surround, show button presses, or overlay timing.
 - MP4 is generated from the trace with the system `ffmpeg` CLI. Record encoding arguments and FFmpeg version.
 - Trace and PNG features work without FFmpeg; video export reports a clear missing-dependency error.
 - Commit compact canonical X3/X4 PNG goldens. Do not commit MP4 goldens; validate generated video duration and frame count.
@@ -305,14 +322,14 @@ Exit criteria:
 
 - Persist the canonical trace, deduplicated panel transition frames, and manifest.
 - Add deterministic trace replay and fixed-FPS sampling.
-- Add optional X3/X4 presentation framing, physical-button overlays, and timing overlays.
+- Rotate replay output into natural handheld orientation; richer optional presentation overlays are deferred.
 - Export MP4 through FFmpeg and validate duration/frame count without committing video binaries.
 
 Exit criteria:
 
 - The EPUB page-turn scenario exports an MP4 for both device profiles.
 - Re-encoding the same trace uses the same simulated duration and visual frame sequence.
-- Changing presentation FPS or overlays requires no emulator rerun.
+- Changing presentation FPS requires no emulator rerun.
 
 ### 7. Later calibration and fidelity
 

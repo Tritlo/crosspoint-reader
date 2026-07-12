@@ -1,3 +1,5 @@
+#if CROSSPOINT_EMULATED == 0
+
 #include "HalStorage.h"
 
 #include <FS.h>  // need to be included before SdFat.h for compatibility with FS.h's File class
@@ -170,3 +172,5 @@ HalFile HalFile::openNextFile() {
 }
 bool HalFile::isOpen() const { return impl != nullptr && impl->file.isOpen(); }  // already thread-safe, no need to wrap
 HalFile::operator bool() const { return isOpen(); }
+
+#endif

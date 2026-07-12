@@ -1,3 +1,5 @@
+#if CROSSPOINT_EMULATED == 0
+
 #include "HalPowerManager.h"
 
 #include <Logging.h>
@@ -156,3 +158,5 @@ HalPowerManager::Lock::~Lock() {
   }
   xSemaphoreGive(powerManager.modeMutex);
 }
+
+#endif

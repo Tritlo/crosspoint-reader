@@ -19,7 +19,23 @@
 #include "settings/SettingsActivity.h"
 #include "util/FullScreenMessageActivity.h"
 
+#if CROSSPOINT_EMULATED == 1
+#include "emulator/FreeRtosCompat.h"
+#endif
+
 static portMUX_TYPE activityManagerSpinlock = portMUX_INITIALIZER_UNLOCKED;
+
+ActivityManager::ActivityManager(GfxRenderer& renderer, MappedInputManager& mappedInput)
+    : renderer(renderer), mappedInput(mappedInput), renderingMutex(xSemaphoreCreateMutex()) {
+  assert(renderingMutex != nullptr && "Failed to create rendering mutex");
+  stackActivities.reserve(10);
+}
+
+#if CROSSPOINT_EMULATED == 1
+ActivityManager::~ActivityManager() = default;
+#else
+ActivityManager::~ActivityManager() { assert(false); /* should never be called */ }
+#endif
 
 void ActivityManager::begin() {
   xTaskCreatePinnedToCore(&renderTaskTrampoline, "ActivityManagerRender",
@@ -46,6 +62,10 @@ void ActivityManager::renderTaskLoop() {
     if (currentActivity) {
       HalPowerManager::Lock powerLock;  // Ensure we don't go into low-power mode while rendering
       currentActivity->render(std::move(lock));
+      const uint64_t generation = completedRenderGeneration.fetch_add(1) + 1;
+#if CROSSPOINT_EMULATED == 1
+      emulator::runtimeTraceApplication("render", activityIdName(currentActivity->id), generation);
+#endif
     }
     // Notify any task blocked in requestUpdateAndWait() that the render is done.
     TaskHandle_t waiter = nullptr;
@@ -91,6 +111,7 @@ void ActivityManager::loop() {
       } else {
         currentActivity = std::move(stackActivities.back());
         stackActivities.pop_back();
+        observeActivityChange();
         LOG_DBG("ACT", "Popped from activity stack, new size = %zu", stackActivities.size());
         // Handle result if necessary
         if (currentActivity->resultHandler) {
@@ -134,6 +155,7 @@ void ActivityManager::loop() {
 
       lock.unlock();  // onEnter may acquire its own lock
       currentActivity->onEnter();
+      observeActivityChange();
 
       // onEnter may request another pending action, we will handle it in the next loop iteration
       continue;
@@ -168,6 +190,7 @@ void ActivityManager::replaceActivity(std::unique_ptr<Activity>&& newActivity) {
     // No current activity, safe to launch immediately
     currentActivity = std::move(newActivity);
     currentActivity->onEnter();
+    observeActivityChange();
   }
 }
 
@@ -263,6 +286,17 @@ ScreenshotInfo ActivityManager::getScreenshotInfo() const {
     return currentActivity->getScreenshotInfo();
   }
   return {};
+}
+
+ActivityId ActivityManager::getActivityId() const {
+  return currentActivity ? currentActivity->id : ActivityId::Unknown;
+}
+
+void ActivityManager::observeActivityChange() const {
+#if CROSSPOINT_EMULATED == 1
+  const ActivityId id = getActivityId();
+  if (id != ActivityId::Unknown) emulator::runtimeTraceApplication("activity", activityIdName(id), 0);
+#endif
 }
 
 void ActivityManager::requestUpdate(bool immediate) {

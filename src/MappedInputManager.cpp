@@ -14,52 +14,7 @@ bool MappedInputManager::isNavDirectionSwapped() const {
 }
 
 bool MappedInputManager::mapButton(const Button button, bool (HalGPIO::*fn)(uint8_t) const) const {
-  const auto sideLayout = SETTINGS.sideButtonLayout;
-
   switch (button) {
-    case Button::Back:
-      // Logical Back maps to user-configured front button.
-      return (gpio.*fn)(SETTINGS.frontButtonBack);
-    case Button::Confirm:
-      // Logical Confirm maps to user-configured front button.
-      return (gpio.*fn)(SETTINGS.frontButtonConfirm);
-    case Button::Left:
-      // Logical Left maps to user-configured front button.
-      return (gpio.*fn)(SETTINGS.frontButtonLeft);
-    case Button::Right:
-      // Logical Right maps to user-configured front button.
-      return (gpio.*fn)(SETTINGS.frontButtonRight);
-    case Button::Up:
-      // Side buttons remain fixed for Up/Down.
-      return (gpio.*fn)(HalGPIO::BTN_UP);
-    case Button::Down:
-      // Side buttons remain fixed for Up/Down.
-      return (gpio.*fn)(HalGPIO::BTN_DOWN);
-    case Button::Power:
-      // Power button bypasses remapping.
-      return (gpio.*fn)(HalGPIO::BTN_POWER);
-    case Button::PageBack:
-      // Reader page navigation uses side buttons and can be swapped via settings.
-      switch (sideLayout) {
-        case CrossPointSettings::PREV_NEXT:
-          return (gpio.*fn)(HalGPIO::BTN_UP);
-        case CrossPointSettings::NEXT_PREV:
-          return (gpio.*fn)(HalGPIO::BTN_DOWN);
-        case CrossPointSettings::SIDE_BUTTONS_DISABLED:
-        default:
-          return false;
-      }
-    case Button::PageForward:
-      // Reader page navigation uses side buttons and can be swapped via settings.
-      switch (sideLayout) {
-        case CrossPointSettings::PREV_NEXT:
-          return (gpio.*fn)(HalGPIO::BTN_DOWN);
-        case CrossPointSettings::NEXT_PREV:
-          return (gpio.*fn)(HalGPIO::BTN_UP);
-        case CrossPointSettings::SIDE_BUTTONS_DISABLED:
-        default:
-          return false;
-      }
     case Button::NavNext:
       // Logical "next item" navigation: side Down + front Right, with the control axis flipped in
       // INVERTED / LANDSCAPE_CCW (frontButtonFollowOrientation) so it matches the rotated hint labels.
@@ -69,9 +24,42 @@ bool MappedInputManager::mapButton(const Button button, bool (HalGPIO::*fn)(uint
       // Logical "previous item" navigation: side Up + front Left, axis-flipped in the same orientations.
       return isNavDirectionSwapped() ? (mapButton(Button::Down, fn) || mapButton(Button::Right, fn))
                                      : (mapButton(Button::Up, fn) || mapButton(Button::Left, fn));
+    default:
+      break;
   }
+  const auto physical = resolvePhysicalButton(button);
+  return physical && (gpio.*fn)(*physical);
+}
 
-  return false;
+std::optional<uint8_t> MappedInputManager::resolvePhysicalButton(const Button button) const {
+  switch (button) {
+    case Button::Back:
+      return SETTINGS.frontButtonBack;
+    case Button::Confirm:
+      return SETTINGS.frontButtonConfirm;
+    case Button::Left:
+      return SETTINGS.frontButtonLeft;
+    case Button::Right:
+      return SETTINGS.frontButtonRight;
+    case Button::Up:
+      return HalGPIO::BTN_UP;
+    case Button::Down:
+      return HalGPIO::BTN_DOWN;
+    case Button::Power:
+      return HalGPIO::BTN_POWER;
+    case Button::PageBack:
+      if (SETTINGS.sideButtonLayout == CrossPointSettings::PREV_NEXT) return HalGPIO::BTN_UP;
+      if (SETTINGS.sideButtonLayout == CrossPointSettings::NEXT_PREV) return HalGPIO::BTN_DOWN;
+      return std::nullopt;
+    case Button::PageForward:
+      if (SETTINGS.sideButtonLayout == CrossPointSettings::PREV_NEXT) return HalGPIO::BTN_DOWN;
+      if (SETTINGS.sideButtonLayout == CrossPointSettings::NEXT_PREV) return HalGPIO::BTN_UP;
+      return std::nullopt;
+    case Button::NavNext:
+    case Button::NavPrevious:
+      return std::nullopt;
+  }
+  return std::nullopt;
 }
 
 bool MappedInputManager::wasPressed(const Button button) const { return mapButton(button, &HalGPIO::wasPressed); }

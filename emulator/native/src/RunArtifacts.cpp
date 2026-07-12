@@ -6,7 +6,7 @@ namespace emulator {
 namespace {
 
 constexpr uint32_t TRACE_VERSION = 1;
-constexpr uint32_t PANEL_MODEL_VERSION = 0;
+constexpr uint32_t PANEL_MODEL_VERSION = 1;
 
 bool writeJsonFile(const std::filesystem::path& path, const JsonDocument& document, std::string& error) {
   std::ofstream output(path, std::ios::binary | std::ios::trunc);
@@ -26,7 +26,7 @@ bool writeJsonFile(const std::filesystem::path& path, const JsonDocument& docume
 
 }  // namespace
 
-bool RunArtifacts::begin(std::string& error) {
+bool RunArtifacts::begin(const StorageMetadata& storage, std::string& error) {
   std::error_code filesystemError;
   std::filesystem::create_directories(configuration.artifactDirectory, filesystemError);
   if (filesystemError) {
@@ -41,9 +41,23 @@ bool RunArtifacts::begin(std::string& error) {
   manifest["panelWidth"] = configuration.profile.panelWidth;
   manifest["panelHeight"] = configuration.profile.panelHeight;
   manifest["controller"] = configuration.profile.controller;
+  manifest["reviewRotationDegrees"] = configuration.profile.reviewRotationDegrees;
   manifest["timingProfile"] = "development-uncalibrated-v0";
   manifest["rtcStart"] = configuration.rtcStart;
   manifest["randomSeed"] = configuration.randomSeed;
+  manifest["initialPanel"] = configuration.initialPanel;
+  if (configuration.initialPanelPng) {
+    manifest["initialPanelSource"] = std::filesystem::absolute(*configuration.initialPanelPng).string();
+  }
+  JsonObject fixture = manifest["fixture"].to<JsonObject>();
+  fixture["identity"] = storage.fixtureIdentity;
+  fixture["files"] = storage.fixtureFileCount;
+  fixture["directories"] = storage.fixtureDirectoryCount;
+  fixture["bytes"] = storage.fixtureBytes;
+  JsonObject environment = manifest["environment"].to<JsonObject>();
+  environment["locale"] = "C";
+  environment["timezone"] = "UTC";
+  environment["filesystemOrdering"] = "sorted-utf8-device-path-v1";
   if (!writeJsonFile(configuration.artifactDirectory / "manifest.json", manifest, error)) return false;
 
   events.open(configuration.artifactDirectory / "events.jsonl", std::ios::binary | std::ios::trunc);

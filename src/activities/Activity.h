@@ -6,6 +6,7 @@
 #include <string>
 #include <utility>
 
+#include "ActivityId.h"
 #include "ActivityManager.h"  // for using the ActivityManager singleton
 #include "ActivityResult.h"
 #include "GfxRenderer.h"
@@ -18,6 +19,7 @@ class Activity {
 
  protected:
   std::string name;
+  ActivityId id;
   GfxRenderer& renderer;
   MappedInputManager& mappedInput;
 
@@ -26,7 +28,9 @@ class Activity {
 
  public:
   explicit Activity(std::string name, GfxRenderer& renderer, MappedInputManager& mappedInput)
-      : name(std::move(name)), renderer(renderer), mappedInput(mappedInput) {}
+      : Activity(ActivityId::Unknown, std::move(name), renderer, mappedInput) {}
+  explicit Activity(ActivityId id, std::string name, GfxRenderer& renderer, MappedInputManager& mappedInput)
+      : name(std::move(name)), id(id), renderer(renderer), mappedInput(mappedInput) {}
   virtual ~Activity() = default;
   virtual void onEnter();
   virtual void onExit();

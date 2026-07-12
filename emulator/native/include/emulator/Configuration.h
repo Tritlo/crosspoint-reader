@@ -15,13 +15,17 @@ struct DeviceProfile {
   uint16_t panelWidth;
   uint16_t panelHeight;
   const char* controller;
+  uint16_t reviewRotationDegrees;
 };
 
 struct Configuration {
   DeviceProfile profile;
   std::filesystem::path artifactDirectory;
+  std::optional<std::filesystem::path> sdFixtureDirectory;
   std::string rtcStart = "2000-01-01T00:00:00Z";
   uint64_t randomSeed = 0;
+  std::string initialPanel = "white";
+  std::optional<std::filesystem::path> initialPanelPng;
 };
 
 const DeviceProfile& profileFor(Device device);

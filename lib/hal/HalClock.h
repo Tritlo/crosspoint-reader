@@ -1,7 +1,9 @@
 #pragma once
 
 #include <Arduino.h>
+#if CROSSPOINT_EMULATED == 0
 #include <Wire.h>
+#endif
 
 #include "HalGPIO.h"
 

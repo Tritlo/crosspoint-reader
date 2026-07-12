@@ -2,6 +2,8 @@
 
 #include <HalGPIO.h>
 
+#include <optional>
+
 class GfxRenderer;
 
 class MappedInputManager {
@@ -24,6 +26,7 @@ class MappedInputManager {
   bool wasAnyPressed() const;
   bool wasAnyReleased() const;
   unsigned long getHeldTime() const;
+  std::optional<uint8_t> resolvePhysicalButton(Button button) const;
   Labels mapLabels(const char* back, const char* confirm, const char* previous, const char* next) const;
   // Returns the raw front button index that was pressed this frame (or -1 if none).
   int getPressedFrontButton() const;
@@ -45,3 +48,5 @@ class MappedInputManager {
 
   bool mapButton(Button button, bool (HalGPIO::*fn)(uint8_t) const) const;
 };
+
+extern MappedInputManager mappedInputManager;
