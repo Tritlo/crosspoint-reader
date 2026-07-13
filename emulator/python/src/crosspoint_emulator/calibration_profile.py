@@ -1586,38 +1586,6 @@ def _workload_metrics(path: Path, serial: str, device_profile: str) -> dict[str,
             result["fileBrowserControlRenderMs"] = _stats(file_browser_render_samples)
             result["fileBrowserControlRenderSamples"] = file_browser_render_samples
         return result
-    if "settings-popup-variants-open" in markers and "settings-popup-variants-home-ready" in markers:
-        variants = (
-            ("sleep-screen", 7),
-            ("refresh-frequency", 5),
-            ("line-spacing", 3),
-            ("paragraph-alignment", 5),
-        )
-        variant_results: list[dict[str, object]] = []
-        all_samples: list[int] = []
-        for name, option_count in variants:
-            start = f"settings-popup-variant-{name}-open"
-            end = f"settings-popup-variant-{name}-samples-ready"
-            missing = [marker for marker in (start, end, f"settings-popup-variant-{name}-cancelled") if marker not in markers]
-            if missing:
-                raise HardwareError(f"Settings popup-variant run is missing markers: {', '.join(missing)}")
-            segment = serial.split(f"CAL:MARK:{start}:", 1)[1].split(f"CAL:MARK:{end}:", 1)[0]
-            samples = _calibration_activity_render_samples(segment, "Settings")
-            if not samples:
-                raise HardwareError(f"Settings popup variant has no render samples: {name}")
-            variant_results.append(
-                {
-                    "name": name,
-                    "optionCount": option_count,
-                    "renderMs": _stats(samples),
-                    "renderSamples": samples,
-                }
-            )
-            all_samples.extend(samples)
-        result["settingsPopupVariants"] = variant_results
-        result["settingsPopupRenderMs"] = _stats(all_samples)
-        result["settingsPopupRenderSamples"] = all_samples
-        return result
     if "settings-open" in markers and "settings-home-ready" in markers:
         if "settings-popup-down-00" in markers:
             required = ("settings-popup-open", "settings-popup-move-ready")

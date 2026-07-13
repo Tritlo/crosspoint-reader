@@ -176,6 +176,15 @@ jobs:
       - name: Build native emulator
         run: pio run -e emulator
 
+      - name: Build Python distribution
+        run: uv build --project emulator/python --out-dir emulator/python/dist
+
+      - name: Smoke-test installed emulator tool
+        run: >-
+          uvx --isolated --from emulator/python/dist/*.whl crosspoint-emulator
+          --executable .pio/build/emulator/program emulator/python/examples/review_home.py
+          --device x4 --artifacts /tmp/crosspoint-package-smoke --video
+
       - name: Check Python client
         run: uv run --project emulator/python --extra dev pyright
 

@@ -173,6 +173,19 @@ missing cache uses the seven-sample `6,471 us` p50; populated caches use
 bytes are not monotonic with duration, and every
 populated observation has three directories, so adding byte or directory coefficients would overfit this one-device data.
 
+### Distribution and extension decision
+
+Ship calibrated timing JSON as Python package data and keep the native runner as a separately built platform artifact.
+The package must work outside this checkout: executable discovery uses an explicit argument/environment override or a
+surrounding source tree, never fixed parent counts from the installed module. Do not put the current Linux-native 10 MB
+runner in a platform-independent wheel; release binaries can be added later as correctly tagged per-platform artifacts.
+
+User automation remains ordinary, self-contained Python. A script launches `Emulator`, owns its fixtures and artifacts,
+requests screenshots where useful, closes the session, and may then export the recorded trace to MP4. The installable
+`crosspoint-emulator` command only executes that script with optional runner/profile overrides, which supports isolated
+`uvx` use without inventing a scenario DSL or a second configuration model. Physical calibration and profile analysis
+stay maintainer tooling rather than public automation abstractions.
+
 ### Why this direction
 
 - CrossPoint already routes display, input, storage, clock, power, system, and tilt behavior through `lib/hal/`.

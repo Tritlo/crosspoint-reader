@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import shutil
 import subprocess
 import tempfile
@@ -12,6 +13,10 @@ from typing import IO, Literal, Self, cast
 DeviceProfile = Literal["x3", "x4"]
 PhysicalControl = Literal["back", "confirm", "left", "right", "up", "down", "power"]
 Action = Literal["back", "confirm", "left", "right", "up", "down", "power", "page_back", "page_forward"]
+
+EXECUTABLE_ENVIRONMENT_VARIABLE = "CROSSPOINT_EMULATOR_EXECUTABLE"
+TIMING_PROFILE_ENVIRONMENT_VARIABLE = "CROSSPOINT_EMULATOR_TIMING_PROFILE"
+_X4_TIMING_PROFILE = "x4-hardware-2026-07-12-v1.json"
 
 
 class EmulatorError(RuntimeError):
@@ -27,6 +32,36 @@ class ProtocolError(EmulatorError):
 
 class WaitTimeout(ProtocolError):
     pass
+
+
+def bundled_timing_profile(device: DeviceProfile) -> Path | None:
+    """Return the installed timing profile for a device, if one is calibrated."""
+    if device == "x3":
+        return None
+    return Path(__file__).with_name("profiles") / _X4_TIMING_PROFILE
+
+
+def find_emulator_executable() -> Path:
+    """Find the native runner from an override or a surrounding source checkout."""
+    configured = os.environ.get(EXECUTABLE_ENVIRONMENT_VARIABLE)
+    if configured:
+        return Path(configured)
+
+    starts = (Path.cwd().resolve(), Path(__file__).resolve().parent)
+    visited: set[Path] = set()
+    for start in starts:
+        for directory in (start, *start.parents):
+            if directory in visited:
+                continue
+            visited.add(directory)
+            executable = directory / ".pio" / "build" / "emulator" / "program"
+            if (directory / "platformio.ini").is_file() and executable.is_file():
+                return executable
+
+    raise EmulatorError(
+        "emulator executable not found; build it with 'pio run -e emulator', pass executable=..., "
+        f"or set {EXECUTABLE_ENVIRONMENT_VARIABLE}"
+    )
 
 
 class Emulator:
@@ -66,18 +101,17 @@ class Emulator:
     ) -> Self:
         emulator = cls()
         emulator._device = device
-        emulator._executable = Path(executable) if executable is not None else emulator._default_executable()
+        emulator._executable = Path(executable) if executable is not None else find_emulator_executable()
         emulator._rtc_start = rtc_start
         emulator._seed = seed
         emulator._keep_artifacts = keep_artifacts
+        configured_timing_profile = os.environ.get(TIMING_PROFILE_ENVIRONMENT_VARIABLE)
         if timing_profile is not None:
             emulator._timing_profile = Path(timing_profile)
-        elif device == "x4":
-            emulator._timing_profile = (
-                Path(__file__).resolve().parents[4] / "emulator" / "profiles" / "x4-hardware-2026-07-12-v1.json"
-            )
+        elif configured_timing_profile:
+            emulator._timing_profile = Path(configured_timing_profile)
         else:
-            emulator._timing_profile = None
+            emulator._timing_profile = bundled_timing_profile(device)
         if artifacts is None:
             emulator._artifact_root = Path(tempfile.mkdtemp(prefix=f"crosspoint-{device}-"))
             emulator._temporary_artifacts = True
@@ -96,10 +130,6 @@ class Emulator:
             raise
         return emulator
 
-    @staticmethod
-    def _default_executable() -> Path:
-        return Path(__file__).resolve().parents[4] / ".pio" / "build" / "emulator" / "program"
-
     def _start_process(
         self,
         artifacts: Path,
@@ -110,6 +140,8 @@ class Emulator:
     ) -> None:
         if not self._executable.is_file():
             raise EmulatorError(f"emulator executable not found: {self._executable}")
+        if self._timing_profile is not None and not self._timing_profile.is_file():
+            raise EmulatorError(f"timing profile not found: {self._timing_profile}")
         artifacts.mkdir(parents=True, exist_ok=True)
         arguments = [
             str(self._executable),

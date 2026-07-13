@@ -10,6 +10,7 @@ lib/I18n/I18nStrings.cpp
 .vs
 build
 **/__pycache__/
+emulator/python/dist/
 /compile_commands.json
 /.cache
 .history/

@@ -2,10 +2,17 @@
 name = "crosspoint-emulator"
 version = "0.1.0"
 description = "Synchronous Python automation client for the CrossPoint X3/X4 emulator"
+readme = "README.md"
+license = "MIT"
 requires-python = ">=3.11"
 dependencies = ["pyserial>=3.5"]
 
+[project.urls]
+Repository = "https://github.com/Tritlo/crosspoint-reader"
+Documentation = "https://github.com/Tritlo/crosspoint-reader/tree/emulator/emulator/python"
+
 [project.scripts]
+crosspoint-emulator = "crosspoint_emulator.cli:main"
 crosspoint-calibrate = "crosspoint_emulator.calibrate:main"
 
 [project.optional-dependencies]
@@ -21,7 +28,7 @@ typeCheckingMode = "strict"
 pythonVersion = "3.11"
 venvPath = "."
 venv = ".venv"
-include = ["src", "tests"]
+include = ["src", "tests", "examples"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
