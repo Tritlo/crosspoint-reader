@@ -393,6 +393,8 @@ uv run --extra calibration crosspoint-calibrate analyze \
 
 The analyzer reports p50 as nominal, p90 as the tolerance boundary, and MAD as dispersion. It keeps whole panel-operation
 time separate from the controller busy wait because e-ink transfer and visible waveform phases are not one delay.
+The generic image tiers are copied into `models.imageFallback` with their source workload so native profile consumption
+does not depend on raw workload key order. Older schema-version-1 profiles without that field retain the original lookup.
 Evidence workloads are retained with the profile and its source manifest but excluded from every runtime model. The
 independent XL-font repeat uses this path: its panel BUSY phases reproduce the fitted refresh modes while content-dependent
 render and display totals remain scenario evidence rather than a second timing charge.

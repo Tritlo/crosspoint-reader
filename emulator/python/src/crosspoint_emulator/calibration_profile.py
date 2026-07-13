@@ -49,6 +49,17 @@ _PAGE_FIELDS = ("prewarm", "bwRender", "display", "grayLsb", "grayMsb", "grayDis
 _LARGE_IMAGE_PIXELS = {"x3": 960 * 540 // 2, "x4": 800 * 480 // 2}
 _SMALL_IMAGE_MAX_BYTES = 16 * 1024
 _MEDIUM_IMAGE_MAX_BYTES = 128 * 1024
+_IMAGE_FALLBACK_FIELDS = (
+    "decodeSourceBytes",
+    "prepareSmallMs",
+    "prepareMediumMs",
+    "prepareLargeMs",
+    "decodeAndCacheSmallMs",
+    "decodeAndCacheMediumMs",
+    "decodeAndCacheLargeMs",
+    "cachedRenderSmallMs",
+    "cachedRenderLargeMs",
+)
 
 
 def _percentile(values: list[int], fraction: float) -> float:
@@ -887,6 +898,20 @@ def _has_cache_population_samples(value: object) -> bool:
     if isinstance(value, list):
         return any(_has_cache_population_samples(child) for child in cast(list[object], value))
     return False
+
+
+def _image_fallback_model(workloads: dict[str, object]) -> dict[str, object]:
+    """Make the existing generic image-tier source explicit in the profile."""
+    for name in sorted(workloads):
+        workload = _object_dict(workloads[name])
+        images = _object_dict(workload.get("images")) if workload is not None else None
+        if images is None or any(field not in images for field in _IMAGE_FALLBACK_FIELDS):
+            continue
+        return {
+            "sourceWorkload": name,
+            **{field: images[field] for field in _IMAGE_FALLBACK_FIELDS},
+        }
+    return {}
 
 
 def _exact_image_decode(workloads: dict[str, object]) -> list[dict[str, int]]:
@@ -1899,6 +1924,7 @@ def build_profile(
         model_workloads[half_path.name] = half_workload
     exact_image_decode = _exact_image_decode(model_workloads)
     exact_image_preparation = _exact_image_preparation(model_workloads)
+    image_fallback = _image_fallback_model(workloads)
     panel_manifest = loaded[1][1]
     camera = _object_dict(panel_manifest.get("camera"))
     fps_value = camera.get("fps") if camera is not None else None
@@ -1934,6 +1960,7 @@ def build_profile(
         "models": {
             "jpegThumbnail": jpeg_thumbnail_model,
             "pngThumbnail": png_thumbnail_model,
+            "imageFallback": image_fallback,
             "exactImageDecode": exact_image_decode,
             "exactImagePreparation": exact_image_preparation,
             "exactIndexingByPath": exact_indexing,

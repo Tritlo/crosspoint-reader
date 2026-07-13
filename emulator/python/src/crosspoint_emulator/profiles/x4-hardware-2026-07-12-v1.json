@@ -1333,6 +1333,77 @@
       "p90": 12.0,
       "samples": 6
     },
+    "imageFallback": {
+      "cachedRenderLargeMs": {
+        "mad": 1,
+        "max": 227,
+        "min": 146,
+        "p50": 149,
+        "p90": 152.0,
+        "samples": 39
+      },
+      "cachedRenderSmallMs": {
+        "mad": 1.0,
+        "max": 25,
+        "min": 21,
+        "p50": 23.0,
+        "p90": 24.1,
+        "samples": 10
+      },
+      "decodeAndCacheLargeMs": {
+        "mad": 0,
+        "max": 1848,
+        "min": 1848,
+        "p50": 1848,
+        "p90": 1848.0,
+        "samples": 1
+      },
+      "decodeAndCacheMediumMs": {
+        "mad": 0,
+        "max": 1095,
+        "min": 1095,
+        "p50": 1095,
+        "p90": 1095.0,
+        "samples": 1
+      },
+      "decodeAndCacheSmallMs": {
+        "mad": 7.0,
+        "max": 90,
+        "min": 76,
+        "p50": 83.0,
+        "p90": 88.6,
+        "samples": 2
+      },
+      "decodeSourceBytes": {
+        "mediumMax": 131072,
+        "smallMax": 16384
+      },
+      "prepareLargeMs": {
+        "mad": 1.5,
+        "max": 1724,
+        "min": 1721,
+        "p50": 1722.5,
+        "p90": 1723.7,
+        "samples": 2
+      },
+      "prepareMediumMs": {
+        "mad": 0,
+        "max": 443,
+        "min": 443,
+        "p50": 443,
+        "p90": 443.0,
+        "samples": 1
+      },
+      "prepareSmallMs": {
+        "mad": 1.0,
+        "max": 163,
+        "min": 161,
+        "p50": 162.0,
+        "p90": 162.8,
+        "samples": 2
+      },
+      "sourceWorkload": "x4-cache-population-v1"
+    },
     "jpegThumbnail": {
       "interceptUs": 435868,
       "kind": "linear-decoded-image-bytes-v1",

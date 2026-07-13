@@ -122,6 +122,7 @@ std::optional<TimingProfile> loadTimingProfile(const std::filesystem::path& path
   const JsonObjectConst halfRender = document["renderMs"]["halfPrimary"];
   const JsonObjectConst jpegThumbnailModel = document["models"]["jpegThumbnail"];
   const JsonObjectConst pngThumbnailModel = document["models"]["pngThumbnail"];
+  JsonObjectConst imageTimings = document["models"]["imageFallback"];
   const JsonArrayConst exactImageDecodeModel = document["models"]["exactImageDecode"];
   const JsonArrayConst exactImagePreparationModel = document["models"]["exactImagePreparation"];
   const JsonArrayConst exactIndexingModel = document["models"]["exactIndexingByPath"];
@@ -146,7 +147,6 @@ std::optional<TimingProfile> loadTimingProfile(const std::filesystem::path& path
   constexpr uint64_t SMALL_STORAGE_BASIS = 4096;
   profile.storage.transferBasisBytes = STORAGE_BASIS;
   uint64_t smallWriteTransferUs = 0;
-  JsonObjectConst imageTimings;
   JsonObjectConst indexingTimings;
   JsonObjectConst warmTimings;
   JsonObjectConst sleepTimings;

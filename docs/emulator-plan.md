@@ -197,6 +197,10 @@ requests screenshots where useful, closes the session, and may then export the r
 stay maintainer tooling rather than public automation abstractions: serial/webcam classes live under
 `crosspoint_emulator.hardware`, and pyserial is installed only through the `calibration` extra.
 
+Derived selectors that would otherwise be recovered from raw workload records belong under the profile's explicit
+`models` object. Raw workload records remain provenance and evidence, not an order-dependent runtime configuration
+surface. Older schema-version-1 profiles retain their original workload fallback when an explicit model is absent.
+
 ### Why this direction
 
 - CrossPoint already routes display, input, storage, clock, power, system, and tilt behavior through `lib/hal/`.
