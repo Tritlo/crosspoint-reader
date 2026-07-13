@@ -233,7 +233,7 @@ surface. Older schema-version-1 profiles retain their original workload fallback
 - Provide Playwright-like synchronous Python control with explicit waits and useful failure artifacts.
 - Capture both composed framebuffer pixels and simulated visible panel pixels.
 - Record a replayable structured run trace and derive deterministic presentation PNGs and MP4 from it.
-- Run unpaced for tests or wall-clock-paced for interactive observation without changing simulated results.
+- Run unpaced on the host while preserving calibrated simulated time in traces and presentation output.
 
 ## Deferred work
 
@@ -291,7 +291,7 @@ test/emulator/
 ### Deterministic time and scheduling
 
 - One simulated clock is authoritative for firmware-visible time, device costs, traces, and video.
-- Tests run unpaced; interactive execution may pace simulated time at 1x or another multiplier.
+- Host execution runs unpaced; trace timestamps and presentation playback retain simulated device time.
 - MP4 duration comes from simulated time, never host execution time.
 - Native FreeRTOS compatibility serializes execution as a deterministic single-core scheduler. Host threads may hold task
   stacks, but only one emulated task runs at a time.
