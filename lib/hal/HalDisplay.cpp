@@ -77,15 +77,7 @@ void HalDisplay::refreshDisplay(HalDisplay::RefreshMode mode, bool turnOffScreen
     einkDisplay.requestResync(1);
   }
 
-#if CROSSPOINT_EMULATED == 1
-  emulator::runtimeSetRenderTimingMode(mode == HALF_REFRESH);
-  const uint64_t startedUs = emulator::runtimeMicroseconds();
-#endif
   einkDisplay.refreshDisplay(convertRefreshMode(mode), turnOffScreen);
-#if CROSSPOINT_EMULATED == 1
-  const char* modeName = mode == FULL_REFRESH ? "full" : (mode == HALF_REFRESH ? "half" : "fast");
-  emulator::runtimeFinishPanelOperation(modeName, startedUs);
-#endif
 }
 
 void HalDisplay::deepSleep() { einkDisplay.deepSleep(); }

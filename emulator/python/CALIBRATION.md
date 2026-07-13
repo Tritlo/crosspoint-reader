@@ -24,12 +24,13 @@ Paint scopes pad only time not already consumed by native rendering or storage; 
 these optional fields retain their previous behavior. X3 deliberately keeps the `development-uncalibrated-v0` timing marker until equivalent
 hardware captures exist. X4 PNG pacing is bounded to the measured RGB8 byte/area ranges and Home target; unsupported
 formats, targets, and extrapolated sizes retain ordinary fallback timing.
-Panel timings distinguish whole operation time from controller BUSY. Direct full-refresh `displayBuffer()` calls, including
-Boot and Sleep, consume the measured `operationUs - busyUs` transfer/setup remainder. The X4 single-buffer driver charges
-that remainder on its real plane sequence: one plane before FAST BUSY and two after, or two before and two after HALF/FULL
-BUSY. Blocking-call duration stays unchanged, while the BUSY trace now marks the controller boundary and async refreshes
-omit the blocking path's post-refresh re-seed. Invalid profiles where an operation is shorter than BUSY are rejected at
-startup.
+Panel timings distinguish whole display intervals from controller BUSY. Natural FAST/HALF Reader calls use the measured
+render-phase intervals; direct FULL `displayBuffer()` calls in Boot and Sleep consume the controlled
+`operationUs - busyUs` transfer/setup remainder. The X4 single-buffer driver charges those remainders on its real plane
+sequence: one plane before FAST BUSY and two after, or two before and two after HALF/FULL BUSY. Blocking-call duration stays
+unchanged, while the BUSY trace marks the controller boundary and async refreshes omit the blocking path's post-refresh
+re-seed. Active display intervals shorter than BUSY are rejected at startup. Controlled FAST/HALF `operationUs` values
+remain profile evidence; current production firmware calls `HalDisplay::refreshDisplay()` only from calibration builds.
 Cold indexing consumes the measured OPF, TOC, book-bin, total, and post-index boundaries separately. The five measured
 files (`stormlight`, WOT, Sun Eater, Mistborn, and LOTR) use exact device-path records because their phases are
 non-monotonic; this is deliberately not a size/count curve. Other EPUBs at or above the firmware's 400-spine threshold

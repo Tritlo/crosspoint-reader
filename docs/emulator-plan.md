@@ -112,12 +112,13 @@ Two further reversible captures measure the English `Go to %` selector at exactl
 `6` ms p50 / `7` ms p90 across 24 later paints at `0`, `1`, and `10` percent. The runtime exposes
 `reader.epub.percent` and pads only this activity's clear-and-redraw remainder. The scenario restores zero before Back
 cancels, so it neither commits progress nor changes the SD; translated selector layouts remain deferred evidence.
-Every panel entry point consumes the measured whole operation, including direct full-refresh `displayBuffer()` calls in
-Boot and Sleep. The X4 single-buffer driver splits the measured non-BUSY remainder around controller BUSY using its actual
-plane sequence: FAST writes one plane before activation and re-seeds two afterward; HALF/FULL write two before and two
-afterward. Blocking calls retain the same whole operation, while async calls correctly omit the post-refresh re-seed.
-Profiles with an operation shorter than their BUSY interval are rejected. This uses the existing panel measurement rather
-than adding a boot-specific delay.
+Every production panel entry point consumes its measured whole display interval. FAST/HALF `displayBuffer()` calls use
+the natural Reader phase measurements; direct FULL calls in Boot and Sleep use the controlled full-operation measurement.
+The X4 single-buffer driver splits the measured non-BUSY remainder around controller BUSY using its actual plane sequence:
+FAST writes one plane before activation and re-seeds two afterward; HALF/FULL write two before and two afterward. Blocking
+calls retain the same whole interval, while async calls correctly omit the post-refresh re-seed. Active display intervals
+shorter than their BUSY component are rejected. `HalDisplay::refreshDisplay()` is calibration-only in current firmware,
+so normal emulator builds do not carry a second unreachable operation-floor hook.
 Generic reads retain fixed open/close costs plus the measured 512 KiB linear rate, which predicts the corrected 4 KiB,
 64 KiB, and 512 KiB totals within `1%`. Writes have a repeatable `6,145 us` first-transfer setup in addition to linear
 payload time. Applying that setup once on the first non-empty write after open predicts all three corrected write totals

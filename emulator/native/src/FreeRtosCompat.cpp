@@ -369,19 +369,6 @@ void runtimeDelayRenderPhase(RenderTimingPhase phase) {
   runtimeApplyTiming(model, {}, delayUs);
 }
 
-void runtimeFinishPanelOperation(std::string_view mode, uint64_t startedUs) {
-  const auto& timing = runtimeStorage().config().timing;
-  if (!timing.calibrated) return;
-  const uint64_t targetUs = mode == "full"   ? timing.panel.fullOperationUs
-                            : mode == "half" ? timing.panel.halfOperationUs
-                                             : timing.panel.fastOperationUs;
-  const uint64_t elapsedUs = runtimeMicroseconds() - startedUs;
-  const std::string_view model = mode == "full"   ? "panel.full.operation"
-                                 : mode == "half" ? "panel.half.operation"
-                                                  : "panel.fast.operation";
-  runtimeApplyTiming(model, mode, targetUs, elapsedUs);
-}
-
 void runtimeFinishImageRender(bool cached, uint16_t width, uint16_t height, uint64_t sourceBytes, uint64_t startedUs) {
   const auto& configuration = runtimeStorage().config();
   const auto& timing = configuration.timing;

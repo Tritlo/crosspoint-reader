@@ -25,8 +25,6 @@ struct PanelTiming {
   uint64_t fullBusyUs = 0;
   uint64_t grayscaleAfterFastBusyUs = 0;
   uint64_t grayscaleAfterHalfBusyUs = 0;
-  uint64_t fastOperationUs = 0;
-  uint64_t halfOperationUs = 0;
   uint64_t fullOperationUs = 0;
 };
 

@@ -159,11 +159,7 @@ std::optional<TimingProfile> loadTimingProfile(const std::filesystem::path& path
   if (!p50Microseconds(panel["fast"]["controllerBusyMs"], 1000, profile.panel.fastBusyUs) ||
       !p50Microseconds(panel["half"]["controllerBusyMs"], 1000, profile.panel.halfBusyUs) ||
       !p50Microseconds(panel["full"]["controllerBusyMs"], 1000, profile.panel.fullBusyUs) ||
-      !p50Microseconds(panel["fast"]["operationUs"], 1, profile.panel.fastOperationUs) ||
-      !p50Microseconds(panel["half"]["operationUs"], 1, profile.panel.halfOperationUs) ||
       !p50Microseconds(panel["full"]["operationUs"], 1, profile.panel.fullOperationUs) ||
-      profile.panel.fastOperationUs < profile.panel.fastBusyUs ||
-      profile.panel.halfOperationUs < profile.panel.halfBusyUs ||
       profile.panel.fullOperationUs < profile.panel.fullBusyUs ||
       !p50Microseconds(fastRender["grayscaleBusy"], 1000, profile.panel.grayscaleAfterFastBusyUs) ||
       !p50Microseconds(halfRender["grayscaleBusy"], 1000, profile.panel.grayscaleAfterHalfBusyUs) ||

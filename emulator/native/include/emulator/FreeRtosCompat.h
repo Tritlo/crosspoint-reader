@@ -46,7 +46,6 @@ void runtimeMarkActivityRenderCleared();
 void runtimeFinishActivityRender();
 void runtimeSetRenderTimingMode(bool halfPrimary);
 void runtimeDelayRenderPhase(RenderTimingPhase phase);
-void runtimeFinishPanelOperation(std::string_view mode, uint64_t startedUs);
 void runtimeFinishImageRender(bool cached, uint16_t width, uint16_t height, uint64_t sourceBytes, uint64_t startedUs);
 void runtimeBeginImagePreparation();
 void runtimeCancelImagePreparation();
