@@ -35,7 +35,8 @@ with Emulator.launch("x4", sd="books", artifacts=artifacts) as device:
 device.export_video(artifacts / "run.mp4", fps=10)
 ```
 
-Every run writes a deterministic event/frame trace. `screenshot()` writes a naturally oriented review PNG at that point;
+Every run writes a deterministic event/frame trace, including the calibrated model selected at each high-level timing
+boundary and compact per-path storage summaries. `screenshot()` writes a naturally oriented review PNG at that point;
 `capture_panel()` and `capture_framebuffer()` retain controller-native geometry. After the session closes,
 `export_video()` samples the trace into a deterministic MP4. A script can request PNGs, video, both, or neither.
 

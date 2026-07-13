@@ -31,6 +31,15 @@ not compressed PNG bytes. `capture.screenshot` and MP4 presentation rotate those
 natural handheld orientation. System zlib keeps stored artifacts compact, while pixel-plane comparisons avoid false
 golden failures when the zlib implementation changes.
 
+### Trace observability decision
+
+Trace v2 records each calibrated high-level boundary as `timing.applied`, including its selected model, target, elapsed
+simulated work, and remaining modeled interval. Direct boundaries block for that remainder; controller BUSY instead
+schedules it as a deadline. Repetitive SD read/write/seek calls are retained as deterministic per-path
+`storage.summary` records rather than hundreds of thousands of byte-level events; calibrated SD costs are similarly
+collapsed by model in `timing.summary`. Open, close, directory, control, render, panel, and capture events remain ordered
+in the canonical trace, so a large cold EPUB stays explainable without turning one run into a tens-of-megabytes log.
+
 ### Physical calibration capture decision
 
 Measure hardware with a calibration-only firmware build and an ordinary Python script, not a second scenario language.

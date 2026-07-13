@@ -16,6 +16,8 @@ using StorageTraceCallback =
     std::function<void(std::string_view operation, std::string_view path, uint64_t bytes, bool success)>;
 using PanelTraceCallback = std::function<void(std::string_view event, std::string_view detail, uint64_t value)>;
 using ApplicationTraceCallback = std::function<void(std::string_view event, std::string_view detail, uint64_t value)>;
+using TimingTraceCallback = std::function<void(std::string_view model, std::string_view detail, uint64_t targetUs,
+                                               uint64_t elapsedUs, uint64_t remainingUs)>;
 
 // Installs the process-wide Arduino/FreeRTOS compatibility context. The
 // emulator intentionally supports one device session per process.
@@ -23,7 +25,7 @@ class FreeRtosRuntime {
  public:
   FreeRtosRuntime(DeterministicScheduler& scheduler, SimulatedClock& clock, DirectoryStorage* storage = nullptr,
                   StorageTraceCallback storageTrace = {}, PanelTraceCallback panelTrace = {},
-                  ApplicationTraceCallback applicationTrace = {});
+                  ApplicationTraceCallback applicationTrace = {}, TimingTraceCallback timingTrace = {});
   ~FreeRtosRuntime();
 
   FreeRtosRuntime(const FreeRtosRuntime&) = delete;
@@ -33,6 +35,8 @@ class FreeRtosRuntime {
 uint64_t runtimeMicroseconds();
 bool runtimeIsActive();
 void runtimeDelay(uint64_t microseconds);
+void runtimeTraceTiming(std::string_view model, std::string_view detail, uint64_t targetUs, uint64_t elapsedUs = 0);
+void runtimeApplyTiming(std::string_view model, std::string_view detail, uint64_t targetUs, uint64_t elapsedUs = 0);
 void runtimeYield();
 void runtimeBlock();
 void runtimeBeginActivityTiming();

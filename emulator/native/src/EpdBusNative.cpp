@@ -293,6 +293,31 @@ RefreshTransferTiming refreshTransferTiming(const NativePanelState& state, const
   return {beforeBusyUs, totalUs - beforeBusyUs};
 }
 
+std::string_view transferBeforeBusyModel(const NativePanelState& state, const std::string& mode) {
+  if (mode == "full") return "panel.full.transfer-before-busy";
+  if (mode == "half") return "panel.half.transfer-before-busy";
+  if (mode == "grayscale") {
+    return state.previousPrimaryMode == "half" ? "panel.grayscale-after-half.transfer"
+                                               : "panel.grayscale-after-fast.transfer";
+  }
+  return "panel.fast.transfer-before-busy";
+}
+
+std::string_view transferAfterBusyModel(const std::string& mode) {
+  if (mode == "full") return "panel.full.transfer-after-busy";
+  if (mode == "half") return "panel.half.transfer-after-busy";
+  return "panel.fast.transfer-after-busy";
+}
+
+std::string_view busyModel(const NativePanelState& state, const std::string& mode) {
+  if (mode == "full") return "panel.full.busy";
+  if (mode == "half") return "panel.half.busy";
+  if (mode == "grayscale") {
+    return state.previousPrimaryMode == "half" ? "panel.grayscale-after-half.busy" : "panel.grayscale-after-fast.busy";
+  }
+  return "panel.fast.busy";
+}
+
 std::vector<uint8_t> targetPixels(const NativePanelState& state, const std::string& mode) {
   std::vector<uint8_t> target(static_cast<size_t>(state.width) * state.height, 0xFF);
   for (size_t pixel = 0; pixel < target.size(); ++pixel) {
@@ -447,12 +472,17 @@ void startRefresh(NativePanelState& state) {
   const std::string mode = pendingMode(state);
   const auto& timing = emulator::runtimeStorage().config().timing;
   const RefreshTransferTiming transfer = refreshTransferTiming(state, mode);
-  if (transfer.beforeBusyUs > 0) emulator::runtimeDelay(transfer.beforeBusyUs);
+  if (transfer.beforeBusyUs > 0) {
+    emulator::runtimeApplyTiming(transferBeforeBusyModel(state, mode), mode, transfer.beforeBusyUs);
+  }
   state.postBusyTransferUs = transfer.afterBusyUs;
   const uint64_t start = emulator::runtimeMicroseconds();
   const uint64_t operationStart = start - transfer.beforeBusyUs;
   advanceVisiblePanel(state, start);
   const uint64_t duration = refreshDurationUs(state, mode);
+  if (timing.calibrated && state.controller == "ssd1677") {
+    emulator::runtimeTraceTiming(busyModel(state, mode), mode, duration);
+  }
   state.pendingRefresh = true;
   state.busyUntilUs = start + duration;
   if (mode == "fast" || mode == "half" || mode == "full") state.previousPrimaryMode = mode;
@@ -564,6 +594,7 @@ void EpdBus::waitBusy(const char* tag) { waitBusy(_busy, tag); }
 void EpdBus::waitBusy(BusyPolarity, const char* tag) {
   auto& state = stateFor(this);
   if (state.pendingRefresh) {
+    const std::string mode = pendingMode(state);
     const uint64_t now = emulator::runtimeMicroseconds();
     if (state.busyUntilUs > now) emulator::runtimeDelay(state.busyUntilUs - now);
     finishRefresh(state);
@@ -573,7 +604,7 @@ void EpdBus::waitBusy(BusyPolarity, const char* tag) {
       // The blocking single-buffer SSD1677 path re-seeds BW and RED after BUSY.
       // Keep the measured whole operation unchanged while leaving BUSY at the
       // controller boundary. Async refreshes have no post-refresh re-seed.
-      emulator::runtimeDelay(postBusyTransferUs);
+      emulator::runtimeApplyTiming(transferAfterBusyModel(mode), mode, postBusyTransferUs);
     }
   } else {
     emulator::runtimeDelay(5000);

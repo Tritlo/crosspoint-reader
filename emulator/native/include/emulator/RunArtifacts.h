@@ -12,7 +12,7 @@
 
 namespace emulator {
 
-inline constexpr uint32_t TRACE_VERSION = 1;
+inline constexpr uint32_t TRACE_VERSION = 2;
 inline constexpr uint32_t PANEL_MODEL_VERSION = 3;
 
 class RunArtifacts {

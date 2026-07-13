@@ -67,6 +67,25 @@ def run_page_turn(profile: DeviceProfile, fixture: Path, artifacts: Path) -> tup
     events = (artifacts / "events.jsonl").read_text(encoding="utf-8")
     normalized = events.replace(str(artifacts.resolve()), "<ARTIFACTS>")
     assert '"activityId":"reader.epub"' in normalized
+    decoded_events = [json.loads(line) for line in events.splitlines()]
+    storage_summaries = [event for event in decoded_events if event["type"] == "storage.summary"]
+    assert storage_summaries
+    assert all(event["count"] > 0 for event in storage_summaries)
+    assert not any(
+        event["type"] == "storage.operation" and event["operation"] in ("read", "write", "seek")
+        for event in decoded_events
+    )
+    timing_events = [event for event in decoded_events if event["type"] == "timing.applied"]
+    timing_summaries = [event for event in decoded_events if event["type"] == "timing.summary"]
+    if profile == "x4":
+        assert timing_events
+        assert timing_summaries
+        assert all(
+            event["remainingUs"] == max(event["targetUs"] - event["elapsedUs"], 0) for event in timing_events
+        )
+    else:
+        assert not timing_events
+        assert not timing_summaries
     return panel, normalized
 
 

@@ -5,6 +5,7 @@
 #include <HalGPIO.h>
 #include <HalStorage.h>
 
+#include <algorithm>
 #include <atomic>
 #include <chrono>
 #include <cstdint>
@@ -16,10 +17,12 @@
 #include <iterator>
 #include <limits>
 #include <locale>
+#include <map>
 #include <optional>
 #include <sstream>
 #include <string>
 #include <string_view>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -129,6 +132,11 @@ class Session {
         runtime(
             scheduler, clock, &storage,
             [this](std::string_view operation, std::string_view path, uint64_t bytes, bool success) {
+              if (operation == "read" || operation == "write" || operation == "seek") {
+                storageSummaries[{std::string(operation), std::string(path), success}].add(bytes,
+                                                                                           clock.nowMicroseconds());
+                return;
+              }
               JsonDocument document;
               JsonObject fields = document.to<JsonObject>();
               fields["operation"] = operation;
@@ -156,6 +164,21 @@ class Session {
                 fields["generation"] = value;
               }
               record(std::string("application.") + std::string(event), fields);
+            },
+            [this](std::string_view model, std::string_view detail, uint64_t targetUs, uint64_t elapsedUs,
+                   uint64_t remainingUs) {
+              if (model.starts_with("storage.")) {
+                timingSummaries[std::string(model)].add(targetUs, elapsedUs, remainingUs);
+                return;
+              }
+              JsonDocument document;
+              JsonObject fields = document.to<JsonObject>();
+              fields["model"] = model;
+              if (!detail.empty()) fields["detail"] = detail;
+              fields["targetUs"] = targetUs;
+              fields["elapsedUs"] = elapsedUs;
+              fields["remainingUs"] = remainingUs;
+              record("timing.applied", fields);
             }),
         application(scheduler, setup, loop) {}
 
@@ -591,6 +614,9 @@ class Session {
       return;
     }
 
+    flushStorageSummaries();
+    flushTimingSummaries();
+
     JsonDocument fieldsDocument;
     JsonObject fields = fieldsDocument.to<JsonObject>();
     fields["panelPath"] = std::filesystem::absolute(panelPath).string();
@@ -676,6 +702,9 @@ class Session {
   }
 
   void handleShutdown(uint64_t id) {
+    flushStorageSummaries();
+    flushTimingSummaries();
+
     JsonDocument fieldsDocument;
     JsonObject fields = fieldsDocument.to<JsonObject>();
     record("session.shutdown", fields);
@@ -692,6 +721,91 @@ class Session {
     std::vector<uint8_t> pixels;
     std::string relativePath;
   };
+
+  struct TimingSummary {
+    void add(uint64_t targetUs, uint64_t elapsedUs, uint64_t delayUs) {
+      ++count;
+      targetTotalUs += targetUs;
+      elapsedTotalUs += elapsedUs;
+      delayTotalUs += delayUs;
+      targetMinUs = std::min(targetMinUs, targetUs);
+      targetMaxUs = std::max(targetMaxUs, targetUs);
+      delayMinUs = std::min(delayMinUs, delayUs);
+      delayMaxUs = std::max(delayMaxUs, delayUs);
+      if (delayUs == 0) ++zeroDelayCount;
+    }
+
+    uint64_t count = 0;
+    uint64_t targetTotalUs = 0;
+    uint64_t elapsedTotalUs = 0;
+    uint64_t delayTotalUs = 0;
+    uint64_t targetMinUs = std::numeric_limits<uint64_t>::max();
+    uint64_t targetMaxUs = 0;
+    uint64_t delayMinUs = std::numeric_limits<uint64_t>::max();
+    uint64_t delayMaxUs = 0;
+    uint64_t zeroDelayCount = 0;
+  };
+
+  struct StorageSummary {
+    void add(uint64_t value, uint64_t simulatedTimeUs) {
+      if (count == 0) firstSimulatedTimeUs = simulatedTimeUs;
+      ++count;
+      valueTotal += value;
+      valueMin = std::min(valueMin, value);
+      valueMax = std::max(valueMax, value);
+      lastSimulatedTimeUs = simulatedTimeUs;
+    }
+
+    uint64_t count = 0;
+    uint64_t valueTotal = 0;
+    uint64_t valueMin = std::numeric_limits<uint64_t>::max();
+    uint64_t valueMax = 0;
+    uint64_t firstSimulatedTimeUs = 0;
+    uint64_t lastSimulatedTimeUs = 0;
+  };
+
+  void flushStorageSummaries() {
+    for (const auto& [key, summary] : storageSummaries) {
+      const auto& [operation, path, success] = key;
+      JsonDocument document;
+      JsonObject fields = document.to<JsonObject>();
+      fields["operation"] = operation;
+      fields["path"] = path;
+      fields["success"] = success;
+      fields["count"] = summary.count;
+      fields["firstSimulatedTimeUs"] = summary.firstSimulatedTimeUs;
+      fields["lastSimulatedTimeUs"] = summary.lastSimulatedTimeUs;
+      if (operation == "seek") {
+        fields["positionMin"] = summary.valueMin;
+        fields["positionMax"] = summary.valueMax;
+      } else {
+        fields["bytesTotal"] = summary.valueTotal;
+        fields["bytesMin"] = summary.valueMin;
+        fields["bytesMax"] = summary.valueMax;
+      }
+      record("storage.summary", fields);
+    }
+    storageSummaries.clear();
+  }
+
+  void flushTimingSummaries() {
+    for (const auto& [model, summary] : timingSummaries) {
+      JsonDocument document;
+      JsonObject fields = document.to<JsonObject>();
+      fields["model"] = model;
+      fields["count"] = summary.count;
+      fields["targetTotalUs"] = summary.targetTotalUs;
+      fields["elapsedTotalUs"] = summary.elapsedTotalUs;
+      fields["delayTotalUs"] = summary.delayTotalUs;
+      fields["targetMinUs"] = summary.targetMinUs;
+      fields["targetMaxUs"] = summary.targetMaxUs;
+      fields["delayMinUs"] = summary.delayMinUs;
+      fields["delayMaxUs"] = summary.delayMaxUs;
+      fields["zeroDelayCount"] = summary.zeroDelayCount;
+      record("timing.summary", fields);
+    }
+    timingSummaries.clear();
+  }
 
   void flushPanelTransitions() {
     if (framePersistenceFailed) return;
@@ -771,6 +885,8 @@ class Session {
   DirectoryStorage storage;
   SimulatedClock clock;
   DeterministicScheduler scheduler;
+  std::map<std::tuple<std::string, std::string, bool>, StorageSummary> storageSummaries;
+  std::map<std::string, TimingSummary> timingSummaries;
   FreeRtosRuntime runtime;
   ApplicationLifecycle application;
   uint64_t sequence = 0;

@@ -34,14 +34,18 @@ void delayStorageOpen(bool writable, std::string_view path, bool directory = fal
       emulator::runtimeSectionTimingActive()) {
     return;
   }
-  emulator::runtimeDelay(directory  ? timing.storage.directoryRootOpenUs
-                         : writable ? timing.storage.writeOpenUs
-                                    : timing.storage.readOpenUs);
+  const uint64_t targetUs = directory  ? timing.storage.directoryRootOpenUs
+                            : writable ? timing.storage.writeOpenUs
+                                       : timing.storage.readOpenUs;
+  const std::string_view model = directory  ? "storage.directory.open"
+                                 : writable ? "storage.write.open"
+                                            : "storage.read.open";
+  emulator::runtimeApplyTiming(model, path, targetUs);
 }
 
-void delayDirectoryNext() {
+void delayDirectoryNext(std::string_view path) {
   const auto& timing = emulator::runtimeStorage().config().timing;
-  if (timing.calibrated) emulator::runtimeDelay(timing.storage.directoryNextUs);
+  if (timing.calibrated) emulator::runtimeApplyTiming("storage.directory.next", path, timing.storage.directoryNextUs);
 }
 
 void delayStorageTransfer(bool writable, std::string_view path, uint64_t bytes, bool firstTransfer = false) {
@@ -54,7 +58,11 @@ void delayStorageTransfer(bool writable, std::string_view path, uint64_t bytes, 
   }
   const uint64_t measuredUs = writable ? timing.storage.writeTransferUs : timing.storage.readTransferUs;
   const uint64_t setupUs = writable && firstTransfer ? timing.storage.writeTransferSetupUs : 0;
-  emulator::runtimeDelay(setupUs + scaledTransferUs(bytes, measuredUs, timing.storage.transferBasisBytes));
+  const std::string_view model =
+      writable ? (firstTransfer ? "storage.write.first-transfer" : "storage.write.transfer") : "storage.read.transfer";
+  const uint64_t targetUs = setupUs + scaledTransferUs(bytes, measuredUs, timing.storage.transferBasisBytes);
+  emulator::runtimeApplyTiming(model, path, targetUs);
+  if (targetUs == 0) emulator::runtimeDelay(0);
 }
 
 void delayStorageClose(std::string_view path) {
@@ -62,7 +70,7 @@ void delayStorageClose(std::string_view path) {
   if (timing.calibrated && !isDerivedImage(path) && !emulator::runtimeColdPostIndexTimingActive() &&
       !emulator::runtimeWarmOpenTimingActive() && !emulator::runtimeImagePreparationActive() &&
       !emulator::runtimeSectionTimingActive()) {
-    emulator::runtimeDelay(timing.storage.closeUs);
+    emulator::runtimeApplyTiming("storage.close", path, timing.storage.closeUs);
   }
 }
 
@@ -432,7 +440,7 @@ bool HalFile::close() {
 HalFile HalFile::openNextFile() {
   HalStorage::StorageLock lock;
   if (!impl || !impl->directory) return {};
-  delayDirectoryNext();
+  delayDirectoryNext(impl->devicePath);
   if (impl->directoryIndex >= impl->entries.size()) return {};
   const auto child = impl->entries[impl->directoryIndex++];
   std::error_code error;
