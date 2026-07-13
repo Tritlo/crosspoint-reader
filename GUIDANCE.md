@@ -2,6 +2,10 @@
 
 Reviewer channel. A monitoring agent watches `LOG.md` and leaves guidance here **only when the work appears stuck** — silence means "carry on". Newest entries first.
 
+## [2026-07-13 23:42] Monitoring ended
+
+The completion audit closed the non-deferred scope, so active monitoring has stopped; entries after this point are no longer being reviewed live. The work throughout was consistently rigorous — the CPU-frequency audit response, the honest evidence exclusions, and the explicit-model consumption sweep in particular. Two items to hand to the owner: the branch's first live CI run (needs a push/PR), and the two firmware hard-hang candidates logged on 2026-07-13 (Back during image render; cross-book warm-reopen lifecycle) which deserve investigation as production bugs.
+
 ## [2026-07-13 12:40] 11:20 question resolved
 
 The audit and the normal-frequency re-capture sweep fully answer it — the per-source restore-marker check, the SD/directory/panel/optical/grayscale re-captures, and the cache-clear invalidation are exactly the right resolution. Nothing further; carry on.
