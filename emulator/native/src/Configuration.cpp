@@ -123,6 +123,9 @@ std::optional<TimingProfile> loadTimingProfile(const std::filesystem::path& path
   const JsonObjectConst jpegThumbnailModel = document["models"]["jpegThumbnail"];
   const JsonObjectConst pngThumbnailModel = document["models"]["pngThumbnail"];
   JsonObjectConst imageTimings = document["models"]["imageFallback"];
+  JsonObjectConst indexingTimings = document["models"]["indexingFallback"];
+  JsonObjectConst warmTimings = document["models"]["warmFallback"];
+  JsonObjectConst sleepTimings = document["models"]["sleepEntry"];
   const JsonArrayConst exactImageDecodeModel = document["models"]["exactImageDecode"];
   const JsonArrayConst exactImagePreparationModel = document["models"]["exactImagePreparation"];
   const JsonArrayConst exactIndexingModel = document["models"]["exactIndexingByPath"];
@@ -147,14 +150,13 @@ std::optional<TimingProfile> loadTimingProfile(const std::filesystem::path& path
   constexpr uint64_t SMALL_STORAGE_BASIS = 4096;
   profile.storage.transferBasisBytes = STORAGE_BASIS;
   uint64_t smallWriteTransferUs = 0;
-  JsonObjectConst indexingTimings;
-  JsonObjectConst warmTimings;
-  JsonObjectConst sleepTimings;
+  const bool hasExplicitWarmTimings = !warmTimings.isNull();
+  const bool hasExplicitSleepTimings = !sleepTimings.isNull();
   for (JsonPairConst workload : document["workloads"].as<JsonObjectConst>()) {
     if (imageTimings.isNull()) imageTimings = workload.value()["images"];
     if (indexingTimings.isNull()) indexingTimings = workload.value()["indexing"];
-    if (!workload.value()["cachedMetadataLoadMs"].isNull()) warmTimings = workload.value();
-    if (!workload.value()["sleep"].isNull()) sleepTimings = workload.value()["sleep"];
+    if (!hasExplicitWarmTimings && !workload.value()["cachedMetadataLoadMs"].isNull()) warmTimings = workload.value();
+    if (!hasExplicitSleepTimings && !workload.value()["sleep"].isNull()) sleepTimings = workload.value()["sleep"];
   }
   if (!p50Microseconds(panel["fast"]["controllerBusyMs"], 1000, profile.panel.fastBusyUs) ||
       !p50Microseconds(panel["half"]["controllerBusyMs"], 1000, profile.panel.halfBusyUs) ||
@@ -370,7 +372,8 @@ std::optional<TimingProfile> loadTimingProfile(const std::filesystem::path& path
     }
     profile.workload.exactWarm.push_back(std::move(exact));
   }
-  const JsonVariantConst warmReadyMs = warmTimings["loads"]["warmMetadataStartToReadyMs"];
+  const JsonVariantConst warmReadyMs = hasExplicitWarmTimings ? warmTimings["metadataStartToPageLoadMs"]
+                                                              : warmTimings["loads"]["warmMetadataStartToReadyMs"];
   if (!warmReadyMs.is<uint64_t>()) {
     error = "timing profile is missing the quiescent warm-open phase duration";
     return std::nullopt;

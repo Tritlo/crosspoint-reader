@@ -1404,6 +1404,14 @@
       },
       "sourceWorkload": "x4-cache-population-v1"
     },
+    "indexingFallback": {
+      "bookBinMs": 14166,
+      "opfPassMs": 6890,
+      "postIndexLoadMs": 1107,
+      "sourceWorkload": "x4-cache-population-v1",
+      "tocPassMs": 1949,
+      "totalIndexingMs": 23007
+    },
     "jpegThumbnail": {
       "interceptUs": 435868,
       "kind": "linear-decoded-image-bytes-v1",
@@ -1558,6 +1566,22 @@
       "p50": 36.0,
       "p90": 36.0,
       "samples": 12
+    },
+    "sleepEntry": {
+      "activityToDeepSleepMs": 4809,
+      "sourceWorkload": "x4-sleep-entry-v3"
+    },
+    "warmFallback": {
+      "cachedMetadataLoadMs": {
+        "mad": 0.5,
+        "max": 59,
+        "min": 58,
+        "p50": 58.5,
+        "p90": 58.9,
+        "samples": 2
+      },
+      "metadataStartToPageLoadMs": 211,
+      "sourceWorkload": "x4-stormlight-warm-quiescent-normal-v2"
     }
   },
   "opticalWaveform": {

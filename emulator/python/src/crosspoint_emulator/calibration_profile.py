@@ -914,6 +914,45 @@ def _image_fallback_model(workloads: dict[str, object]) -> dict[str, object]:
     return {}
 
 
+def _indexing_fallback_model(workloads: dict[str, object]) -> dict[str, object]:
+    fields = ("totalIndexingMs", "opfPassMs", "tocPassMs", "bookBinMs", "postIndexLoadMs")
+    for name in sorted(workloads):
+        workload = _object_dict(workloads[name])
+        indexing = _object_dict(workload.get("indexing")) if workload is not None else None
+        if indexing is None or any(field not in indexing for field in fields):
+            continue
+        return {"sourceWorkload": name, **{field: indexing[field] for field in fields}}
+    return {}
+
+
+def _warm_fallback_model(workloads: dict[str, object]) -> dict[str, object]:
+    for name in sorted(workloads, reverse=True):
+        workload = _object_dict(workloads[name])
+        loads = _object_dict(workload.get("loads")) if workload is not None else None
+        if workload is None or workload.get("cachedMetadataLoadMs") is None or loads is None:
+            continue
+        if loads.get("warmMetadataStartToReadyMs") is None:
+            continue
+        return {
+            "sourceWorkload": name,
+            "cachedMetadataLoadMs": workload["cachedMetadataLoadMs"],
+            "metadataStartToPageLoadMs": loads["warmMetadataStartToReadyMs"],
+        }
+    return {}
+
+
+def _sleep_fallback_model(workloads: dict[str, object]) -> dict[str, object]:
+    for name in sorted(workloads, reverse=True):
+        workload = _object_dict(workloads[name])
+        sleep = _object_dict(workload.get("sleep")) if workload is not None else None
+        if sleep is not None and sleep.get("activityToDeepSleepMs") is not None:
+            return {
+                "sourceWorkload": name,
+                "activityToDeepSleepMs": sleep["activityToDeepSleepMs"],
+            }
+    return {}
+
+
 def _exact_image_decode(workloads: dict[str, object]) -> list[dict[str, int]]:
     records: dict[tuple[int, int, int], dict[str, int]] = {}
 
@@ -1925,6 +1964,9 @@ def build_profile(
     exact_image_decode = _exact_image_decode(model_workloads)
     exact_image_preparation = _exact_image_preparation(model_workloads)
     image_fallback = _image_fallback_model(workloads)
+    indexing_fallback = _indexing_fallback_model(workloads)
+    warm_fallback = _warm_fallback_model(workloads)
+    sleep_fallback = _sleep_fallback_model(workloads)
     panel_manifest = loaded[1][1]
     camera = _object_dict(panel_manifest.get("camera"))
     fps_value = camera.get("fps") if camera is not None else None
@@ -1961,6 +2003,9 @@ def build_profile(
             "jpegThumbnail": jpeg_thumbnail_model,
             "pngThumbnail": png_thumbnail_model,
             "imageFallback": image_fallback,
+            "indexingFallback": indexing_fallback,
+            "warmFallback": warm_fallback,
+            "sleepEntry": sleep_fallback,
             "exactImageDecode": exact_image_decode,
             "exactImagePreparation": exact_image_preparation,
             "exactIndexingByPath": exact_indexing,
