@@ -15,11 +15,11 @@ wheels = [
 name = "crosspoint-emulator"
 version = "0.1.0"
 source = { editable = "." }
-dependencies = [
-    { name = "pyserial" },
-]
 
 [package.optional-dependencies]
+calibration = [
+    { name = "pyserial" },
+]
 dev = [
     { name = "pyright" },
     { name = "pytest" },
@@ -31,11 +31,11 @@ test = [
 [package.metadata]
 requires-dist = [
     { name = "pyright", marker = "extra == 'dev'", specifier = ">=1.1.400" },
-    { name = "pyserial", specifier = ">=3.5" },
+    { name = "pyserial", marker = "extra == 'calibration'", specifier = ">=3.5" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0" },
     { name = "pytest", marker = "extra == 'test'", specifier = ">=8.0" },
 ]
-provides-extras = ["test", "dev"]
+provides-extras = ["calibration", "test", "dev"]
 
 [[package]]
 name = "iniconfig"

@@ -119,7 +119,11 @@ class HardwareDevice:
             serial_module = importlib.import_module("serial")
             serial_constructor = cast(Callable[..., _SerialPort], getattr(serial_module, "Serial"))
             serial_port = serial_constructor(port=port, baudrate=baudrate, timeout=0.1, write_timeout=2.0)
-        except (ImportError, OSError, ValueError) as error:
+        except ImportError as error:
+            raise HardwareError(
+                "physical calibration requires the 'calibration' package extra: crosspoint-emulator[calibration]"
+            ) from error
+        except (OSError, ValueError) as error:
             raise HardwareError(f"cannot open serial port {port}: {error}") from error
 
         device = cls(serial_port, artifacts)

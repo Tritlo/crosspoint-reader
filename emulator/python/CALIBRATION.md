@@ -3,6 +3,9 @@
 This is the maintainer record for physical-device measurement, profile generation, and the current X4 model's evidence
 and limits. User installation and automation live in [README.md](README.md).
 
+Physical serial capture requires the calibration extra. Run the commands below through
+`uv run --extra calibration crosspoint-calibrate ...`; profile and waveform analysis use the same form for consistency.
+
 ## Timing profiles
 
 `Emulator.launch("x4")` automatically loads the bundled `x4-hardware-2026-07-12-v1.json`. The handshake and run
@@ -124,7 +127,7 @@ that can see both USB serial and the webcam:
 ```sh
 pio run -e calibration -t upload
 cd emulator/python
-uv run crosspoint-calibrate record \
+uv run --extra calibration crosspoint-calibrate record \
   --port /dev/ttyACM0 \
   --camera /dev/video0 \
   --input-codec mjpeg \
@@ -137,7 +140,7 @@ uv run crosspoint-calibrate record \
 Record a reset-to-Home boot without writing another scenario:
 
 ```sh
-uv run crosspoint-calibrate record-boot \
+uv run --extra calibration crosspoint-calibrate record-boot \
   --port /dev/ttyACM0 \
   --camera /dev/video0 \
   --input-codec mjpeg \
@@ -160,7 +163,7 @@ requested, so its optical quantization is 40 ms rather than the encoded frame in
 Extract the natural Boot full-refresh pulse train with the same serial/video alignment used by the other analyzers:
 
 ```sh
-uv run crosspoint-calibrate waveform-boot \
+uv run --extra calibration crosspoint-calibrate waveform-boot \
   --run ../../artifacts/calibration/x4-boot-reset-01 \
   --crop 90,70,270,450 \
   --output ../../artifacts/calibration/x4-boot-reset-01/boot-waveform.json
@@ -201,35 +204,35 @@ The normal `default` and release firmware environments do not include the calibr
 Build a versioned profile only from completed runs. Repeat `--sd-run` when sizes are split across captures:
 
 ```sh
-uv run crosspoint-calibrate waveform \
+uv run --extra calibration crosspoint-calibrate waveform \
   --run ../../artifacts/calibration/x4-panel-optical-normal-v5 \
   --crop 90,70,270,450 \
   --threshold 10 \
   --boundary-ms 200 \
   --output ../../artifacts/calibration/x4-panel-optical-normal-v5/optical-waveform.json
 
-uv run crosspoint-calibrate waveform-gray \
+uv run --extra calibration crosspoint-calibrate waveform-gray \
   --run ../../artifacts/calibration/x4-grayscale-optical-normal-v4 \
   --crop 90,70,270,450 \
   --threshold 3 \
   --window-ms 500 \
   --output ../../artifacts/calibration/x4-grayscale-optical-normal-v4/grayscale-waveform.json
 
-uv run crosspoint-calibrate waveform-half \
+uv run --extra calibration crosspoint-calibrate waveform-half \
   --run ../../artifacts/calibration/x4-stormlight-half-pages-v2 \
   --crop 90,70,270,450 \
   --threshold 5 \
   --window-ms 2200 \
   --output ../../artifacts/calibration/x4-stormlight-half-pages-v2/half-waveform.json
 
-uv run crosspoint-calibrate waveform-fast \
+uv run --extra calibration crosspoint-calibrate waveform-fast \
   --run ../../artifacts/calibration/x4-stormlight-fast-pages-v2 \
   --crop 90,70,270,450 \
   --threshold 5 \
   --window-ms 800 \
   --output ../../artifacts/calibration/x4-stormlight-fast-pages-v2/fast-waveform.json
 
-uv run crosspoint-calibrate waveform-image-fast \
+uv run --extra calibration crosspoint-calibrate waveform-image-fast \
   --run ../../artifacts/calibration/x4-stormlight-image-optical-normal-v1 \
   --crop 90,70,270,450 \
   --threshold 5 \
@@ -238,105 +241,105 @@ uv run crosspoint-calibrate waveform-image-fast \
   --target-dark-pixel-percent-min 50 \
   --output ../../artifacts/calibration/x4-stormlight-image-optical-normal-v1/image-fast-waveform.json
 
-uv run crosspoint-calibrate record \
+uv run --extra calibration crosspoint-calibrate record \
   --port /dev/ttyACM0 \
   --camera /dev/video0 \
   --script examples/calibrate_half_image_optical.py \
   --output ../../artifacts/calibration/x4-stormlight-half-image-optical-normal-v1 \
   --fps 30 --video-size 640x480 --rotate 90
 
-uv run crosspoint-calibrate record \
+uv run --extra calibration crosspoint-calibrate record \
   --port /dev/ttyACM0 \
   --camera /dev/video0 \
   --script examples/calibrate_reader_settings.py \
   --output ../../artifacts/calibration/x4-stormlight-xl-font-normal-v6-repeat \
   --fps 30 --video-size 640x480 --rotate 90
 
-uv run crosspoint-calibrate record \
+uv run --extra calibration crosspoint-calibrate record \
   --port /dev/ttyACM0 \
   --camera /dev/video0 \
   --script examples/calibrate_directory.py \
   --output ../../artifacts/calibration/x4-directory-benchmark-normal-v3 \
   --fps 30 --video-size 640x480 --rotate 90
 
-uv run crosspoint-calibrate record \
+uv run --extra calibration crosspoint-calibrate record \
   --port /dev/ttyACM0 \
   --camera /dev/video0 \
   --script examples/calibrate_cache_clear.py \
   --output ../../artifacts/calibration/x4-cache-clear-v2 \
   --fps 30 --video-size 640x480 --rotate 90
 
-uv run crosspoint-calibrate record \
+uv run --extra calibration crosspoint-calibrate record \
   --port /dev/ttyACM0 \
   --camera /dev/video0 \
   --script examples/calibrate_epub_corpus.py \
   --output ../../artifacts/calibration/x4-epub-corpus-v2 \
   --fps 30 --video-size 640x480 --rotate 90
 
-uv run crosspoint-calibrate record \
+uv run --extra calibration crosspoint-calibrate record \
   --port /dev/ttyACM0 \
   --camera /dev/video0 \
   --script examples/calibrate_png_thumbnail.py \
   --output ../../artifacts/calibration/x4-png-thumbnail-v1 \
   --fps 30 --video-size 640x480 --rotate 90
 
-uv run crosspoint-calibrate record \
+uv run --extra calibration crosspoint-calibrate record \
   --port /dev/ttyACM0 \
   --camera /dev/video0 \
   --script examples/calibrate_png_thumbnail_series.py \
   --output ../../artifacts/calibration/x4-png-thumbnail-series-normal-v2 \
   --fps 30 --video-size 640x480 --rotate 90
 
-uv run crosspoint-calibrate record \
+uv run --extra calibration crosspoint-calibrate record \
   --port /dev/ttyACM0 \
   --camera /dev/video0 \
   --script examples/calibrate_cold_index_repeats.py \
   --output ../../artifacts/calibration/x4-stormlight-index-repeats-normal-v1 \
   --fps 30 --video-size 640x480 --rotate 90
 
-uv run crosspoint-calibrate record \
+uv run --extra calibration crosspoint-calibrate record \
   --port /dev/ttyACM0 \
   --camera /dev/video0 \
   --script examples/calibrate_cold_index_corpus_repeats.py \
   --output ../../artifacts/calibration/x4-corpus-index-repeats-normal-v1 \
   --fps 30 --video-size 640x480 --rotate 90
 
-CROSSPOINT_WARM_EPUB=/sun-eater.epub uv run crosspoint-calibrate record \
+CROSSPOINT_WARM_EPUB=/sun-eater.epub uv run --extra calibration crosspoint-calibrate record \
   --port /dev/ttyACM0 \
   --camera /dev/video0 \
   --script examples/calibrate_warm_epub_repeats.py \
   --output ../../artifacts/calibration/x4-sun-eater-warm-normal-v3 \
   --fps 30 --video-size 640x480 --rotate 90
 
-uv run crosspoint-calibrate record \
+uv run --extra calibration crosspoint-calibrate record \
   --port /dev/ttyACM0 \
   --camera /dev/video0 \
   --script examples/calibrate_reader_navigation.py \
   --output ../../artifacts/calibration/x4-reader-navigation-controls-normal-v1 \
   --fps 30 --video-size 640x480 --rotate 90
 
-uv run crosspoint-calibrate record \
+uv run --extra calibration crosspoint-calibrate record \
   --port /dev/ttyACM0 \
   --camera /dev/video0 \
   --script examples/calibrate_reader_percent_navigation.py \
   --output ../../artifacts/calibration/x4-reader-percent-controls-normal-v3 \
   --fps 30 --video-size 640x480 --rotate 90
 
-uv run crosspoint-calibrate record \
+uv run --extra calibration crosspoint-calibrate record \
   --port /dev/ttyACM0 \
   --camera /dev/video0 \
   --script examples/calibrate_reader_popups.py \
   --output ../../artifacts/calibration/x4-reader-popups-normal-v2 \
   --fps 30 --video-size 640x480 --rotate 90
 
-uv run crosspoint-calibrate record \
+uv run --extra calibration crosspoint-calibrate record \
   --port /dev/ttyACM0 \
   --camera /dev/video0 \
   --script examples/calibrate_sleep_entry.py \
   --output ../../artifacts/calibration/x4-sleep-entry-v1 \
   --fps 60 --video-size 640x480 --rotate 90 --camera-tail 3
 
-uv run crosspoint-calibrate analyze \
+uv run --extra calibration crosspoint-calibrate analyze \
   --profile-id x4-hardware-2026-07-12-v1 \
   --page-run ../../artifacts/calibration/x4-page-turns-30-normal-v2 \
   --panel-run ../../artifacts/calibration/x4-panel-modes-normal-v2 \

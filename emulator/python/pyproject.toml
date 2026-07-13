@@ -5,7 +5,7 @@ description = "Synchronous Python automation client for the CrossPoint X3/X4 emu
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.11"
-dependencies = ["pyserial>=3.5"]
+dependencies = []
 
 [project.urls]
 Repository = "https://github.com/Tritlo/crosspoint-reader"
@@ -16,6 +16,7 @@ crosspoint-emulator = "crosspoint_emulator.cli:main"
 crosspoint-calibrate = "crosspoint_emulator.calibrate:main"
 
 [project.optional-dependencies]
+calibration = ["pyserial>=3.5"]
 test = ["pytest>=8.0"]
 dev = ["pyright>=1.1.400", "pytest>=8.0"]
 

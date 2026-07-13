@@ -1,6 +1,6 @@
 from typing import Literal
 
-from crosspoint_emulator import HardwareDevice
+from crosspoint_emulator.hardware import HardwareDevice
 
 
 def press_many(device: HardwareDevice, control: Literal["up", "down"], count: int) -> None:

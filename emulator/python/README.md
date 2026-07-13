@@ -62,8 +62,9 @@ uvx --from 'git+https://github.com/Tritlo/crosspoint-reader.git@emulator#subdire
 Arguments after the script path belong to the script. The command itself only makes the installed package available and
 sets optional runner/profile overrides; it does not impose a second scenario language.
 
-For a persistent local install, use `uv tool install ./emulator/python`. Wheels and source distributions include the
-calibrated X4 timing JSON. X3 intentionally remains marked uncalibrated until an X3 profile is measured.
+For a persistent local install, use `uv tool install ./emulator/python`. Normal automation has no Python runtime
+dependencies. Wheels and source distributions include the calibrated X4 timing JSON. X3 intentionally remains marked
+uncalibrated until an X3 profile is measured.
 
 ## Reproducibility and fixtures
 

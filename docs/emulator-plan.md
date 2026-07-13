@@ -184,7 +184,8 @@ User automation remains ordinary, self-contained Python. A script launches `Emul
 requests screenshots where useful, closes the session, and may then export the recorded trace to MP4. The installable
 `crosspoint-emulator` command only executes that script with optional runner/profile overrides, which supports isolated
 `uvx` use without inventing a scenario DSL or a second configuration model. Physical calibration and profile analysis
-stay maintainer tooling rather than public automation abstractions.
+stay maintainer tooling rather than public automation abstractions: serial/webcam classes live under
+`crosspoint_emulator.hardware`, and pyserial is installed only through the `calibration` extra.
 
 ### Why this direction
 

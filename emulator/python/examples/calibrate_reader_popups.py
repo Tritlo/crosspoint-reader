@@ -1,6 +1,6 @@
 from typing import Literal
 
-from crosspoint_emulator import HardwareDevice
+from crosspoint_emulator.hardware import HardwareDevice
 
 
 def wait_for_render(device: HardwareDevice, marker_host_time_ns: int) -> None:

@@ -2,7 +2,7 @@ import os
 import re
 from pathlib import PurePosixPath
 
-from crosspoint_emulator import HardwareDevice
+from crosspoint_emulator.hardware import HardwareDevice
 
 
 WARM_REPEATS = 3

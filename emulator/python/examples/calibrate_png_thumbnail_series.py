@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from crosspoint_emulator import HardwareDevice
+from crosspoint_emulator.hardware import HardwareDevice
 
 
 _FIXTURES = (
