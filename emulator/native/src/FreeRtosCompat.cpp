@@ -46,6 +46,24 @@ struct RuntimeState {
   PanelTraceCallback panelTrace;
   ApplicationTraceCallback applicationTrace;
   std::vector<std::unique_ptr<EmulatorTaskControl>> tasks;
+  uint64_t warmLoadStartedUs = 0;
+  uint64_t warmPageLoadTargetUs = 0;
+  bool warmOpenTimingActive = false;
+  bool halfPrimaryRender = false;
+  bool thumbnailTimingActive = false;
+  bool coldTocTimingActive = false;
+  bool coldPostIndexTimingActive = false;
+  bool imagePreparationActive = false;
+  uint64_t sectionStreamingStartedUs = 0;
+  bool sectionStreamingStorageActive = false;
+  uint64_t sectionImageDiscoveryStartedUs = 0;
+  uint64_t sleepTransitionStartedUs = 0;
+  uint64_t activityTimingStartedUs = 0;
+  uint64_t activityRenderStartedUs = 0;
+  std::string activityRenderId;
+  uint32_t activityRenderCount = 0;
+  bool activityRenderActive = false;
+  bool activityRenderCleared = false;
 };
 
 RuntimeState runtime;
@@ -68,6 +86,41 @@ EmulatorTaskControl* taskFor(DeterministicScheduler::TaskId id) {
 uint64_t timeoutMicroseconds(TickType_t ticks) {
   if (ticks == portMAX_DELAY) return UINT64_MAX;
   return static_cast<uint64_t>(ticks) * portTICK_PERIOD_MS * 1000;
+}
+
+const IndexingWorkloadTiming* exactIndexingTiming(std::string_view epubPath) {
+  const auto& workloads = runtimeStorage().config().timing.workload.exactIndexing;
+  const auto found = std::find_if(workloads.begin(), workloads.end(),
+                                  [epubPath](const auto& timing) { return timing.path == epubPath; });
+  return found == workloads.end() ? nullptr : &*found;
+}
+
+const WarmWorkloadTiming* exactWarmTiming(std::string_view epubPath) {
+  const auto& workloads = runtimeStorage().config().timing.workload.exactWarm;
+  const auto found = std::find_if(workloads.begin(), workloads.end(),
+                                  [epubPath](const auto& timing) { return timing.path == epubPath; });
+  return found == workloads.end() ? nullptr : &*found;
+}
+
+bool hasIndexingTiming(std::string_view epubPath, bool largeSpine) {
+  const auto& timing = runtimeStorage().config().timing;
+  return timing.calibrated && (largeSpine || exactIndexingTiming(epubPath) != nullptr);
+}
+
+bool hasPngThumbnailPreparationTiming(uint64_t sourceBytes) {
+  const auto& timing = runtimeStorage().config().timing;
+  const auto& model = timing.workload.pngThumbnail;
+  return timing.calibrated && sourceBytes >= model.minImageBytes && sourceBytes <= model.maxImageBytes;
+}
+
+bool hasPngThumbnailConversionTiming(uint32_t sourceWidth, uint32_t sourceHeight, uint8_t bitDepth, uint8_t colorType,
+                                     uint16_t targetWidth, uint16_t targetHeight) {
+  const auto& timing = runtimeStorage().config().timing;
+  const auto& model = timing.workload.pngThumbnail;
+  const uint64_t sourcePixels = static_cast<uint64_t>(sourceWidth) * sourceHeight;
+  return timing.calibrated && bitDepth == model.bitDepth && colorType == model.colorType &&
+         targetWidth == model.targetWidth && targetHeight == model.targetHeight &&
+         sourcePixels >= model.minSourcePixels && sourcePixels <= model.maxSourcePixels;
 }
 
 BaseType_t takeSemaphore(EmulatorSemaphore* semaphore, TickType_t ticksToWait, bool recursiveCall) {
@@ -129,6 +182,24 @@ FreeRtosRuntime::FreeRtosRuntime(DeterministicScheduler& scheduler, SimulatedClo
   runtime.storageTrace = std::move(storageTrace);
   runtime.panelTrace = std::move(panelTrace);
   runtime.applicationTrace = std::move(applicationTrace);
+  runtime.warmLoadStartedUs = 0;
+  runtime.warmPageLoadTargetUs = 0;
+  runtime.warmOpenTimingActive = false;
+  runtime.halfPrimaryRender = false;
+  runtime.thumbnailTimingActive = false;
+  runtime.coldTocTimingActive = false;
+  runtime.coldPostIndexTimingActive = false;
+  runtime.imagePreparationActive = false;
+  runtime.sectionStreamingStartedUs = 0;
+  runtime.sectionStreamingStorageActive = false;
+  runtime.sectionImageDiscoveryStartedUs = 0;
+  runtime.sleepTransitionStartedUs = 0;
+  runtime.activityTimingStartedUs = 0;
+  runtime.activityRenderStartedUs = 0;
+  runtime.activityRenderId.clear();
+  runtime.activityRenderCount = 0;
+  runtime.activityRenderActive = false;
+  runtime.activityRenderCleared = false;
 }
 
 FreeRtosRuntime::~FreeRtosRuntime() {
@@ -139,6 +210,24 @@ FreeRtosRuntime::~FreeRtosRuntime() {
   runtime.storageTrace = {};
   runtime.panelTrace = {};
   runtime.applicationTrace = {};
+  runtime.warmLoadStartedUs = 0;
+  runtime.warmPageLoadTargetUs = 0;
+  runtime.warmOpenTimingActive = false;
+  runtime.halfPrimaryRender = false;
+  runtime.thumbnailTimingActive = false;
+  runtime.coldTocTimingActive = false;
+  runtime.coldPostIndexTimingActive = false;
+  runtime.imagePreparationActive = false;
+  runtime.sectionStreamingStartedUs = 0;
+  runtime.sectionStreamingStorageActive = false;
+  runtime.sectionImageDiscoveryStartedUs = 0;
+  runtime.sleepTransitionStartedUs = 0;
+  runtime.activityTimingStartedUs = 0;
+  runtime.activityRenderStartedUs = 0;
+  runtime.activityRenderId.clear();
+  runtime.activityRenderCount = 0;
+  runtime.activityRenderActive = false;
+  runtime.activityRenderCleared = false;
 }
 
 uint64_t runtimeMicroseconds() { return activeRuntime().clock->nowMicroseconds(); }
@@ -148,6 +237,368 @@ bool runtimeIsActive() { return runtime.scheduler != nullptr && runtime.clock !=
 void runtimeDelay(uint64_t microseconds) { activeRuntime().scheduler->delay(microseconds); }
 
 void runtimeYield() { activeRuntime().scheduler->yield(); }
+
+void runtimeBlock() { activeRuntime().scheduler->block(); }
+
+void runtimeBeginActivityTiming() {
+  auto& state = activeRuntime();
+  state.activityTimingStartedUs = runtimeMicroseconds();
+  state.activityRenderCount = 0;
+  state.activityRenderActive = false;
+  state.activityRenderCleared = false;
+}
+
+void runtimeFinishActivityTiming(std::string_view activityId) {
+  auto& state = activeRuntime();
+  const uint64_t startedUs = state.activityTimingStartedUs;
+  state.activityTimingStartedUs = 0;
+  const auto& timing = runtimeStorage().config().timing;
+  if (startedUs == 0 || !timing.calibrated || activityId != "file_browser") return;
+  const uint64_t elapsedUs = runtimeMicroseconds() - startedUs;
+  const uint64_t targetUs = timing.workload.fileBrowserActivityToDisplayUs - timing.workload.fileBrowserRenderUs;
+  if (targetUs > elapsedUs) {
+    runtimeDelay(targetUs - elapsedUs);
+  }
+}
+
+void runtimeBeginActivityRender(std::string_view activityId) {
+  auto& state = activeRuntime();
+  state.activityRenderStartedUs = runtimeMicroseconds();
+  state.activityRenderId = activityId;
+  state.activityRenderActive = true;
+  state.activityRenderCleared = false;
+}
+
+void runtimeMarkActivityRenderCleared() { activeRuntime().activityRenderCleared = true; }
+
+void runtimeFinishActivityRender() {
+  auto& state = activeRuntime();
+  if (!state.activityRenderActive) return;
+  state.activityRenderActive = false;
+
+  const auto& timing = runtimeStorage().config().timing;
+  uint64_t targetUs = 0;
+  if (timing.calibrated && state.activityRenderId == "home") {
+    targetUs =
+        state.activityRenderCount == 0 ? timing.workload.homeFirstRenderUs : timing.workload.homeSubsequentRenderUs;
+  } else if (timing.calibrated && state.activityRenderId == "file_browser") {
+    targetUs = timing.workload.fileBrowserRenderUs;
+  } else if (timing.calibrated && state.activityRenderId == "settings" && state.activityRenderCleared) {
+    targetUs = state.activityRenderCount == 0 ? timing.workload.settingsFirstRenderUs
+                                              : timing.workload.settingsSubsequentRenderUs;
+  } else if (timing.calibrated && state.activityRenderId == "settings") {
+    targetUs = timing.workload.settingsPopupRenderUs;
+  } else if (timing.calibrated && state.activityRenderId == "reader.epub.menu" && state.activityRenderCleared) {
+    targetUs = state.activityRenderCount == 0 ? timing.workload.readerMenuFirstRenderUs
+                                              : timing.workload.readerMenuSubsequentRenderUs;
+  } else if (timing.calibrated && state.activityRenderId == "reader.epub.menu") {
+    targetUs = timing.workload.readerMenuPopupRenderUs;
+  } else if (timing.calibrated && state.activityRenderId == "reader.epub.percent" && state.activityRenderCleared) {
+    targetUs = state.activityRenderCount == 0 ? timing.workload.readerPercentFirstRenderUs
+                                              : timing.workload.readerPercentSubsequentRenderUs;
+  }
+  ++state.activityRenderCount;
+  const uint64_t elapsedUs = runtimeMicroseconds() - state.activityRenderStartedUs;
+  if (targetUs > elapsedUs) runtimeDelay(targetUs - elapsedUs);
+}
+
+void runtimeSetRenderTimingMode(bool halfPrimary) { activeRuntime().halfPrimaryRender = halfPrimary; }
+
+void runtimeDelayRenderPhase(RenderTimingPhase phase) {
+  const auto& timing = runtimeStorage().config().timing;
+  if (!timing.calibrated) return;
+  const auto& render = activeRuntime().halfPrimaryRender ? timing.render.half : timing.render.fast;
+  uint64_t delayUs = 0;
+  switch (phase) {
+    case RenderTimingPhase::BeforePrimary:
+      delayUs = render.beforePrimaryUs;
+      break;
+    case RenderTimingPhase::GrayscaleLsb:
+      delayUs = render.grayscaleLsbUs;
+      break;
+    case RenderTimingPhase::GrayscaleMsb:
+      delayUs = render.grayscaleMsbUs;
+      break;
+    case RenderTimingPhase::Cleanup:
+      delayUs = render.cleanupUs;
+      break;
+  }
+  runtimeDelay(delayUs);
+}
+
+void runtimeFinishPanelOperation(std::string_view mode, uint64_t startedUs) {
+  const auto& timing = runtimeStorage().config().timing;
+  if (!timing.calibrated) return;
+  const uint64_t targetUs = mode == "full"   ? timing.panel.fullOperationUs
+                            : mode == "half" ? timing.panel.halfOperationUs
+                                             : timing.panel.fastOperationUs;
+  const uint64_t elapsedUs = runtimeMicroseconds() - startedUs;
+  if (targetUs > elapsedUs) runtimeDelay(targetUs - elapsedUs);
+}
+
+void runtimeFinishImageRender(bool cached, uint16_t width, uint16_t height, uint64_t sourceBytes, uint64_t startedUs) {
+  const auto& configuration = runtimeStorage().config();
+  const auto& timing = configuration.timing;
+  if (!timing.calibrated) return;
+  const bool large = static_cast<uint32_t>(width) * height >=
+                     static_cast<uint32_t>(configuration.profile.panelWidth) * configuration.profile.panelHeight / 2;
+  uint64_t targetUs;
+  if (cached) {
+    targetUs = large ? timing.render.cachedLargeImageUs : timing.render.cachedSmallImageUs;
+  } else {
+    const auto exact = std::find_if(timing.render.exactImageDecode.begin(), timing.render.exactImageDecode.end(),
+                                    [sourceBytes, width, height](const auto& candidate) {
+                                      return candidate.sourceBytes == sourceBytes && candidate.width == width &&
+                                             candidate.height == height;
+                                    });
+    if (exact != timing.render.exactImageDecode.end()) {
+      targetUs = exact->durationUs;
+    } else if (sourceBytes <= timing.render.decodeSmallMaxBytes) {
+      targetUs = timing.render.decodeImageUs;
+    } else if (sourceBytes <= timing.render.decodeMediumMaxBytes) {
+      targetUs = timing.render.decodeMediumImageUs;
+    } else {
+      targetUs = timing.render.decodeLargeImageUs;
+    }
+  }
+  const uint64_t elapsedUs = runtimeMicroseconds() - startedUs;
+  if (targetUs > elapsedUs) runtimeDelay(targetUs - elapsedUs);
+}
+
+void runtimeBeginImagePreparation() { activeRuntime().imagePreparationActive = true; }
+
+void runtimeCancelImagePreparation() { activeRuntime().imagePreparationActive = false; }
+
+bool runtimeImagePreparationActive() { return activeRuntime().imagePreparationActive; }
+
+void runtimeFinishImagePreparation(uint64_t sourceBytes, uint64_t startedUs) {
+  activeRuntime().imagePreparationActive = false;
+  const auto& timing = runtimeStorage().config().timing;
+  if (!timing.calibrated) return;
+  uint64_t targetUs;
+  const auto exact =
+      std::find_if(timing.render.exactImagePreparation.begin(), timing.render.exactImagePreparation.end(),
+                   [sourceBytes](const auto& candidate) { return candidate.sourceBytes == sourceBytes; });
+  if (exact != timing.render.exactImagePreparation.end()) {
+    targetUs = exact->durationUs;
+  } else if (sourceBytes <= timing.render.decodeSmallMaxBytes) {
+    targetUs = timing.render.prepareSmallImageUs;
+  } else if (sourceBytes <= timing.render.decodeMediumMaxBytes) {
+    targetUs = timing.render.prepareMediumImageUs;
+  } else {
+    targetUs = timing.render.prepareLargeImageUs;
+  }
+  const uint64_t elapsedUs = runtimeMicroseconds() - startedUs;
+  if (targetUs > elapsedUs) runtimeDelay(targetUs - elapsedUs);
+}
+
+void runtimeBeginSectionStreaming() { activeRuntime().sectionStreamingStartedUs = runtimeMicroseconds(); }
+
+void runtimeActivateSectionStreaming() { activeRuntime().sectionStreamingStorageActive = true; }
+
+void runtimeCancelSectionStreaming() {
+  auto& state = activeRuntime();
+  state.sectionStreamingStartedUs = 0;
+  state.sectionStreamingStorageActive = false;
+}
+
+void runtimeFinishSectionStreaming() {
+  auto& state = activeRuntime();
+  if (state.sectionStreamingStartedUs == 0) return;
+  const uint64_t startedUs = state.sectionStreamingStartedUs;
+  state.sectionStreamingStartedUs = 0;
+  state.sectionStreamingStorageActive = false;
+  const auto& timing = runtimeStorage().config().timing;
+  if (!timing.calibrated) return;
+  const uint64_t elapsedUs = runtimeMicroseconds() - startedUs;
+  if (timing.render.sectionStreamingUs > elapsedUs) {
+    runtimeDelay(timing.render.sectionStreamingUs - elapsedUs);
+  }
+}
+
+void runtimeBeginSectionImageDiscovery() { activeRuntime().sectionImageDiscoveryStartedUs = runtimeMicroseconds(); }
+
+void runtimeCancelSectionImageDiscovery() { activeRuntime().sectionImageDiscoveryStartedUs = 0; }
+
+void runtimeFinishSectionImageDiscovery() {
+  auto& state = activeRuntime();
+  if (state.sectionImageDiscoveryStartedUs == 0) return;
+  const uint64_t startedUs = state.sectionImageDiscoveryStartedUs;
+  state.sectionImageDiscoveryStartedUs = 0;
+  const auto& timing = runtimeStorage().config().timing;
+  if (!timing.calibrated) return;
+  const uint64_t elapsedUs = runtimeMicroseconds() - startedUs;
+  if (timing.render.sectionImageDiscoveryUs > elapsedUs) {
+    runtimeDelay(timing.render.sectionImageDiscoveryUs - elapsedUs);
+  }
+}
+
+bool runtimeSectionTimingActive() {
+  const auto& state = activeRuntime();
+  return state.sectionStreamingStorageActive || state.sectionImageDiscoveryStartedUs != 0;
+}
+
+void runtimeFinishColdIndexingPhase(std::string_view epubPath, bool largeSpine, IndexingTimingPhase phase,
+                                    uint64_t startedUs) {
+  auto& state = activeRuntime();
+  if (phase == IndexingTimingPhase::Toc) state.coldTocTimingActive = false;
+  const auto& timing = runtimeStorage().config().timing;
+  if (!hasIndexingTiming(epubPath, largeSpine)) return;
+  const auto* exact = exactIndexingTiming(epubPath);
+  const uint64_t targetUs =
+      phase == IndexingTimingPhase::Opf   ? (exact != nullptr ? exact->opfUs : timing.workload.coldOpfUs)
+      : phase == IndexingTimingPhase::Toc ? (exact != nullptr ? exact->tocUs : timing.workload.coldTocUs)
+                                          : (exact != nullptr ? exact->bookBinUs : timing.workload.coldBookBinUs);
+  const uint64_t elapsedUs = runtimeMicroseconds() - startedUs;
+  if (targetUs > elapsedUs) runtimeDelay(targetUs - elapsedUs);
+}
+
+void runtimeBeginColdTocTiming(std::string_view epubPath, bool largeSpine) {
+  activeRuntime().coldTocTimingActive = hasIndexingTiming(epubPath, largeSpine);
+}
+
+void runtimeCancelColdTocTiming() { activeRuntime().coldTocTimingActive = false; }
+
+bool runtimeColdTocTimingActive() { return activeRuntime().coldTocTimingActive; }
+
+void runtimeFinishColdIndexing(std::string_view epubPath, bool largeSpine, uint64_t startedUs) {
+  const auto& timing = runtimeStorage().config().timing;
+  if (!hasIndexingTiming(epubPath, largeSpine)) return;
+  const auto* exact = exactIndexingTiming(epubPath);
+  const uint64_t targetUs = exact != nullptr ? exact->totalUs : timing.workload.coldIndexingUs;
+  const uint64_t elapsedUs = runtimeMicroseconds() - startedUs;
+  if (targetUs > elapsedUs) runtimeDelay(targetUs - elapsedUs);
+}
+
+void runtimeBeginColdPostIndexTiming(std::string_view epubPath, bool largeSpine) {
+  activeRuntime().coldPostIndexTimingActive = hasIndexingTiming(epubPath, largeSpine);
+}
+
+void runtimeCancelColdPostIndexTiming() { activeRuntime().coldPostIndexTimingActive = false; }
+
+bool runtimeColdPostIndexTimingActive() { return activeRuntime().coldPostIndexTimingActive; }
+
+void runtimeFinishColdPostIndexLoad(std::string_view epubPath, bool largeSpine, uint64_t startedUs) {
+  activeRuntime().coldPostIndexTimingActive = false;
+  const auto& timing = runtimeStorage().config().timing;
+  if (!hasIndexingTiming(epubPath, largeSpine)) return;
+  const auto* exact = exactIndexingTiming(epubPath);
+  const uint64_t targetUs = exact != nullptr ? exact->postIndexLoadUs : timing.workload.coldPostIndexLoadUs;
+  const uint64_t elapsedUs = runtimeMicroseconds() - startedUs;
+  if (targetUs > elapsedUs) runtimeDelay(targetUs - elapsedUs);
+}
+
+void runtimeBeginWarmOpen(std::string_view epubPath) {
+  auto& state = activeRuntime();
+  state.warmLoadStartedUs = 0;
+  state.warmPageLoadTargetUs = 0;
+  state.warmOpenTimingActive = runtimeStorage().config().timing.calibrated && exactWarmTiming(epubPath) != nullptr;
+}
+
+void runtimeCancelWarmOpen() {
+  auto& state = activeRuntime();
+  state.warmLoadStartedUs = 0;
+  state.warmPageLoadTargetUs = 0;
+  state.warmOpenTimingActive = false;
+}
+
+bool runtimeWarmOpenTimingActive() { return activeRuntime().warmOpenTimingActive; }
+
+void runtimeFinishCachedMetadataLoad(std::string_view epubPath, bool largeSpine, uint64_t startedUs) {
+  auto& state = activeRuntime();
+  state.warmLoadStartedUs = 0;
+  state.warmPageLoadTargetUs = 0;
+  const auto& timing = runtimeStorage().config().timing;
+  const auto* exact = exactWarmTiming(epubPath);
+  if (!timing.calibrated || (!largeSpine && exact == nullptr)) return;
+  const uint64_t metadataTargetUs =
+      exact != nullptr ? exact->cachedMetadataLoadUs : timing.workload.cachedMetadataLoadUs;
+  const uint64_t elapsedUs = runtimeMicroseconds() - startedUs;
+  if (metadataTargetUs > elapsedUs) runtimeDelay(metadataTargetUs - elapsedUs);
+  state.warmLoadStartedUs = startedUs;
+  state.warmPageLoadTargetUs =
+      exact != nullptr ? exact->metadataStartToPageLoadUs : timing.workload.warmReadyFromMetadataStartUs;
+}
+
+void runtimeFinishWarmOpen() {
+  auto& state = activeRuntime();
+  state.warmOpenTimingActive = false;
+  if (state.warmLoadStartedUs == 0) return;
+  const uint64_t elapsedUs = runtimeMicroseconds() - state.warmLoadStartedUs;
+  const uint64_t targetUs = state.warmPageLoadTargetUs;
+  if (targetUs > elapsedUs) runtimeDelay(targetUs - elapsedUs);
+  state.warmLoadStartedUs = 0;
+  state.warmPageLoadTargetUs = 0;
+}
+
+uint64_t runtimeBeginThumbnailGeneration() {
+  auto& state = activeRuntime();
+  state.thumbnailTimingActive = false;
+  return runtimeMicroseconds();
+}
+
+void runtimeConfigureThumbnailGeneration(ThumbnailFormat format, ThumbnailTimingPhase phase, uint64_t sourceBytes,
+                                         uint32_t sourceWidth, uint32_t sourceHeight, uint8_t bitDepth,
+                                         uint8_t colorType, uint16_t targetWidth, uint16_t targetHeight) {
+  auto& state = activeRuntime();
+  if (format == ThumbnailFormat::Jpeg && phase == ThumbnailTimingPhase::Whole) {
+    state.thumbnailTimingActive = true;
+    return;
+  }
+  state.thumbnailTimingActive =
+      format == ThumbnailFormat::Png &&
+      ((phase == ThumbnailTimingPhase::Preparation && hasPngThumbnailPreparationTiming(sourceBytes)) ||
+       (phase == ThumbnailTimingPhase::Conversion &&
+        hasPngThumbnailConversionTiming(sourceWidth, sourceHeight, bitDepth, colorType, targetWidth, targetHeight)));
+}
+
+void runtimeFinishThumbnailGeneration(ThumbnailFormat format, ThumbnailTimingPhase phase, uint64_t sourceBytes,
+                                      uint32_t sourceWidth, uint32_t sourceHeight, uint8_t bitDepth, uint8_t colorType,
+                                      uint16_t targetWidth, uint16_t targetHeight, uint64_t startedUs) {
+  auto& state = activeRuntime();
+  state.thumbnailTimingActive = false;
+  const auto& timing = runtimeStorage().config().timing;
+  if (!timing.calibrated) return;
+  uint64_t targetUs = 0;
+  if (format == ThumbnailFormat::Png && phase == ThumbnailTimingPhase::Preparation) {
+    if (!hasPngThumbnailPreparationTiming(sourceBytes)) return;
+    const auto& model = timing.workload.pngThumbnail;
+    const uint64_t scaledNanoseconds = sourceBytes * model.preparationNanosecondsPerImageByte;
+    targetUs = model.preparationInterceptUs + (scaledNanoseconds + 999) / 1000;
+  } else if (format == ThumbnailFormat::Png && phase == ThumbnailTimingPhase::Conversion) {
+    if (!hasPngThumbnailConversionTiming(sourceWidth, sourceHeight, bitDepth, colorType, targetWidth, targetHeight)) {
+      return;
+    }
+    const auto& model = timing.workload.pngThumbnail;
+    const uint64_t sourcePixels = static_cast<uint64_t>(sourceWidth) * sourceHeight;
+    const uint64_t scaledNanoseconds = sourcePixels * model.conversionNanosecondsPerSourcePixel;
+    targetUs = model.conversionInterceptUs + (scaledNanoseconds + 999) / 1000;
+  } else if (format == ThumbnailFormat::Jpeg && phase == ThumbnailTimingPhase::Whole) {
+    const uint64_t scaledNanoseconds = sourceBytes * timing.workload.jpegThumbnailNanosecondsPerByte;
+    targetUs = timing.workload.jpegThumbnailInterceptUs + (scaledNanoseconds + 999) / 1000;
+  } else {
+    return;
+  }
+  const uint64_t elapsedUs = runtimeMicroseconds() - startedUs;
+  if (targetUs > elapsedUs) runtimeDelay(targetUs - elapsedUs);
+}
+
+bool runtimeThumbnailTimingActive() { return activeRuntime().thumbnailTimingActive; }
+
+void runtimeBeginSleepTransition() { activeRuntime().sleepTransitionStartedUs = runtimeMicroseconds(); }
+
+void runtimeFinishSleepTransition() {
+  auto& state = activeRuntime();
+  if (state.sleepTransitionStartedUs == 0) return;
+  const uint64_t startedUs = state.sleepTransitionStartedUs;
+  state.sleepTransitionStartedUs = 0;
+  const auto& timing = runtimeStorage().config().timing;
+  if (!timing.calibrated) return;
+  const uint64_t elapsedUs = runtimeMicroseconds() - startedUs;
+  if (timing.workload.sleepEntryToDeepSleepUs > elapsedUs) {
+    runtimeDelay(timing.workload.sleepEntryToDeepSleepUs - elapsedUs);
+  }
+}
 
 DirectoryStorage& runtimeStorage() {
   auto& state = activeRuntime();

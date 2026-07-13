@@ -1,0 +1,7595 @@
+{
+  "deviceProfile": "x4",
+  "directory": {
+    "entries": 15,
+    "entryCloseUs": {
+      "mad": 0.5,
+      "max": 79,
+      "min": 65,
+      "p50": 67.5,
+      "p90": 70.0,
+      "samples": 10
+    },
+    "enumerationUs": {
+      "mad": 5.0,
+      "max": 5322,
+      "min": 4625,
+      "p50": 4649.0,
+      "p90": 4722.6,
+      "samples": 10
+    },
+    "perNextUs": {
+      "mad": 0.0,
+      "max": 333,
+      "min": 289,
+      "p50": 291.0,
+      "p90": 295.2,
+      "samples": 10
+    },
+    "rootCloseUs": {
+      "mad": 0.0,
+      "max": 5,
+      "min": 4,
+      "p50": 4.0,
+      "p90": 5.0,
+      "samples": 10
+    },
+    "rootOpenUs": {
+      "mad": 0.0,
+      "max": 80,
+      "min": 12,
+      "p50": 12.0,
+      "p90": 19.7,
+      "samples": 10
+    },
+    "sourceRun": "x4-directory-benchmark-normal-v3",
+    "totalUs": {
+      "mad": 4.5,
+      "max": 5703,
+      "min": 4868,
+      "p50": 4891.0,
+      "p90": 4977.6,
+      "samples": 10
+    }
+  },
+  "evidenceWorkloads": {
+    "x4-home-controls-normal-v3": {
+      "homeControlPressAckToRenderStartMs": {
+        "mad": 0.0,
+        "max": 79,
+        "min": 20,
+        "p50": 20.0,
+        "p90": 20.0,
+        "samples": 12
+      },
+      "homeControlRenderMs": {
+        "mad": 0.0,
+        "max": 13,
+        "min": 12,
+        "p50": 12.0,
+        "p90": 12.0,
+        "samples": 12
+      },
+      "homeControlSamples": [
+        {
+          "control": "down",
+          "pressAckToRenderStartMs": 79,
+          "renderMs": 13
+        },
+        {
+          "control": "up",
+          "pressAckToRenderStartMs": 20,
+          "renderMs": 12
+        },
+        {
+          "control": "down",
+          "pressAckToRenderStartMs": 20,
+          "renderMs": 12
+        },
+        {
+          "control": "up",
+          "pressAckToRenderStartMs": 20,
+          "renderMs": 12
+        },
+        {
+          "control": "down",
+          "pressAckToRenderStartMs": 20,
+          "renderMs": 12
+        },
+        {
+          "control": "up",
+          "pressAckToRenderStartMs": 20,
+          "renderMs": 12
+        },
+        {
+          "control": "down",
+          "pressAckToRenderStartMs": 20,
+          "renderMs": 12
+        },
+        {
+          "control": "up",
+          "pressAckToRenderStartMs": 20,
+          "renderMs": 12
+        },
+        {
+          "control": "down",
+          "pressAckToRenderStartMs": 20,
+          "renderMs": 12
+        },
+        {
+          "control": "up",
+          "pressAckToRenderStartMs": 20,
+          "renderMs": 12
+        },
+        {
+          "control": "down",
+          "pressAckToRenderStartMs": 20,
+          "renderMs": 12
+        },
+        {
+          "control": "up",
+          "pressAckToRenderStartMs": 20,
+          "renderMs": 12
+        }
+      ],
+      "sourceRun": "x4-home-controls-normal-v3"
+    },
+    "x4-home-recents-variants-normal-v1": {
+      "confirmHoldToConfirmationMs": {
+        "mad": 5,
+        "max": 1117,
+        "min": 1020,
+        "p50": 1025,
+        "p90": 1043.4,
+        "samples": 9
+      },
+      "confirmHoldToConfirmationSamples": [
+        1020,
+        1020,
+        1117,
+        1025,
+        1025,
+        1025,
+        1025,
+        1020,
+        1020
+      ],
+      "sourceRun": "x4-home-recents-variants-normal-v1"
+    },
+    "x4-stormlight-xl-font-normal-v6-repeat": {
+      "images": {
+        "cachedRenderLargeMs": {
+          "mad": 2,
+          "max": 229,
+          "min": 145,
+          "p50": 150,
+          "p90": 181.6,
+          "samples": 27
+        },
+        "cachedRenderMs": {
+          "mad": 3,
+          "max": 229,
+          "min": 21,
+          "p50": 148,
+          "p90": 152.0,
+          "samples": 37
+        },
+        "cachedRenderSamples": [
+          {
+            "cacheBytes": 914,
+            "height": 70,
+            "renderMs": {
+              "mad": 0,
+              "max": 22,
+              "min": 21,
+              "p50": 22,
+              "p90": 22.0,
+              "samples": 5
+            },
+            "width": 50
+          },
+          {
+            "cacheBytes": 1880,
+            "height": 67,
+            "renderMs": {
+              "mad": 1,
+              "max": 25,
+              "min": 22,
+              "p50": 23,
+              "p90": 24.2,
+              "samples": 5
+            },
+            "width": 112
+          },
+          {
+            "cacheBytes": 80044,
+            "height": 690,
+            "renderMs": {
+              "mad": 1,
+              "max": 226,
+              "min": 145,
+              "p50": 147,
+              "p90": 149.0,
+              "samples": 13
+            },
+            "width": 464
+          },
+          {
+            "cacheBytes": 81088,
+            "height": 699,
+            "renderMs": {
+              "mad": 1.0,
+              "max": 229,
+              "min": 149,
+              "p50": 151.0,
+              "p90": 205.2,
+              "samples": 14
+            },
+            "width": 464
+          }
+        ],
+        "cachedRenderSmallMs": {
+          "mad": 0.0,
+          "max": 25,
+          "min": 21,
+          "p50": 22.0,
+          "p90": 23.2,
+          "samples": 10
+        },
+        "decodeAndCacheMediumMs": {
+          "mad": 0,
+          "max": 1098,
+          "min": 1098,
+          "p50": 1098,
+          "p90": 1098.0,
+          "samples": 1
+        },
+        "decodeAndCacheMs": {
+          "mad": 11,
+          "max": 1098,
+          "min": 79,
+          "p50": 90,
+          "p90": 896.4,
+          "samples": 3
+        },
+        "decodeAndCacheSamples": [
+          {
+            "archiveCompressedBytes": 66465,
+            "cacheBytes": 80044,
+            "generationMs": 1098,
+            "height": 690,
+            "imageBytes": 66507,
+            "sourceHeight": 722,
+            "sourceWidth": 485,
+            "width": 464
+          },
+          {
+            "archiveCompressedBytes": 1025,
+            "cacheBytes": 914,
+            "generationMs": 79,
+            "height": 70,
+            "imageBytes": 1073,
+            "sourceHeight": 70,
+            "sourceWidth": 50,
+            "width": 50
+          },
+          {
+            "archiveCompressedBytes": 1149,
+            "cacheBytes": 1880,
+            "generationMs": 90,
+            "height": 67,
+            "imageBytes": 1256,
+            "sourceHeight": 67,
+            "sourceWidth": 112,
+            "width": 112
+          }
+        ],
+        "decodeAndCacheSmallMs": {
+          "mad": 5.5,
+          "max": 90,
+          "min": 79,
+          "p50": 84.5,
+          "p90": 88.9,
+          "samples": 2
+        },
+        "decodeSourceBytes": {
+          "mediumMax": 131072,
+          "smallMax": 16384
+        },
+        "htmlToImageMs": {
+          "mad": 16,
+          "max": 162,
+          "min": 112,
+          "p50": 128,
+          "p90": 155.2,
+          "samples": 3
+        },
+        "htmlToImageSamples": [
+          112,
+          128,
+          162
+        ],
+        "prepareMediumMs": {
+          "mad": 0,
+          "max": 451,
+          "min": 451,
+          "p50": 451,
+          "p90": 451.0,
+          "samples": 1
+        },
+        "prepareSamples": [
+          {
+            "archiveCompressedBytes": 66465,
+            "generationMs": 451,
+            "imageBytes": 66507,
+            "sourceHeight": 722,
+            "sourceWidth": 485
+          },
+          {
+            "archiveCompressedBytes": 1025,
+            "generationMs": 163,
+            "imageBytes": 1073,
+            "sourceHeight": 70,
+            "sourceWidth": 50
+          },
+          {
+            "archiveCompressedBytes": 1149,
+            "generationMs": 164,
+            "imageBytes": 1256,
+            "sourceHeight": 67,
+            "sourceWidth": 112
+          }
+        ],
+        "prepareSmallMs": {
+          "mad": 0.5,
+          "max": 164,
+          "min": 163,
+          "p50": 163.5,
+          "p90": 163.9,
+          "samples": 2
+        }
+      },
+      "loads": {
+        "xlOpenToReadyMs": 246
+      },
+      "sectionStreamMs": {
+        "mad": 2,
+        "max": 324,
+        "min": 314,
+        "p50": 322,
+        "p90": 324.0,
+        "samples": 5
+      },
+      "sectionStreamSamples": [
+        314,
+        320,
+        324,
+        322,
+        324
+      ],
+      "sourceRun": "x4-stormlight-xl-font-normal-v6-repeat",
+      "xlPages": {
+        "all": {
+          "bwRender": {
+            "mad": 36,
+            "max": 1113,
+            "min": 23,
+            "p50": 59,
+            "p90": 416.2,
+            "samples": 9
+          },
+          "cleanup": {
+            "mad": 0,
+            "max": 80,
+            "min": 79,
+            "p50": 80,
+            "p90": 80.0,
+            "samples": 9
+          },
+          "display": {
+            "mad": 327,
+            "max": 2044,
+            "min": 747,
+            "p50": 1716,
+            "p90": 2043.2,
+            "samples": 9
+          },
+          "grayDisplay": {
+            "mad": 1,
+            "max": 146,
+            "min": 63,
+            "p50": 64,
+            "p90": 146.0,
+            "samples": 9
+          },
+          "grayLsb": {
+            "mad": 39,
+            "max": 984,
+            "min": 94,
+            "p50": 136,
+            "p90": 968.0,
+            "samples": 9
+          },
+          "grayMsb": {
+            "mad": 41,
+            "max": 992,
+            "min": 92,
+            "p50": 138,
+            "p90": 974.4,
+            "samples": 9
+          },
+          "grayscaleBusy": {
+            "mad": 0,
+            "max": 144,
+            "min": 62,
+            "p50": 62,
+            "p90": 144.0,
+            "samples": 9
+          },
+          "prewarm": {
+            "mad": 6,
+            "max": 29,
+            "min": 0,
+            "p50": 14,
+            "p90": 27.4,
+            "samples": 9
+          },
+          "primaryBusy": {
+            "mad": 0,
+            "max": 1723,
+            "min": 506,
+            "p50": 506,
+            "p90": 1722.2,
+            "samples": 9
+          },
+          "total": {
+            "mad": 435,
+            "max": 4906,
+            "min": 1121,
+            "p50": 2494,
+            "p90": 4242.0,
+            "samples": 9
+          }
+        },
+        "fastPrimary": {
+          "bwRender": {
+            "mad": 86.0,
+            "max": 1113,
+            "min": 23,
+            "p50": 112.5,
+            "p90": 677.5,
+            "samples": 6
+          },
+          "cleanup": {
+            "mad": 0.0,
+            "max": 80,
+            "min": 79,
+            "p50": 79.0,
+            "p90": 80.0,
+            "samples": 6
+          },
+          "display": {
+            "mad": 187.0,
+            "max": 1716,
+            "min": 747,
+            "p50": 1529.0,
+            "p90": 1716.0,
+            "samples": 6
+          },
+          "grayDisplay": {
+            "mad": 0.0,
+            "max": 64,
+            "min": 63,
+            "p50": 64.0,
+            "p90": 64.0,
+            "samples": 6
+          },
+          "grayLsb": {
+            "mad": 47.5,
+            "max": 984,
+            "min": 97,
+            "p50": 144.5,
+            "p90": 974.0,
+            "samples": 6
+          },
+          "grayMsb": {
+            "mad": 48.5,
+            "max": 992,
+            "min": 96,
+            "p50": 145.0,
+            "p90": 981.0,
+            "samples": 6
+          },
+          "grayscaleBusy": {
+            "mad": 0.0,
+            "max": 63,
+            "min": 62,
+            "p50": 62.0,
+            "p90": 62.5,
+            "samples": 6
+          },
+          "prewarm": {
+            "mad": 6.0,
+            "max": 20,
+            "min": 0,
+            "p50": 13.5,
+            "p90": 19.5,
+            "samples": 6
+          },
+          "primaryBusy": {
+            "mad": 0.0,
+            "max": 506,
+            "min": 506,
+            "p50": 506.0,
+            "p90": 506.0,
+            "samples": 6
+          },
+          "total": {
+            "mad": 961.5,
+            "max": 4906,
+            "min": 1121,
+            "p50": 2089.5,
+            "p90": 4491.0,
+            "samples": 6
+          }
+        },
+        "halfPrimary": {
+          "bwRender": {
+            "mad": 5,
+            "max": 59,
+            "min": 26,
+            "p50": 31,
+            "p90": 53.4,
+            "samples": 3
+          },
+          "cleanup": {
+            "mad": 0,
+            "max": 80,
+            "min": 80,
+            "p50": 80,
+            "p90": 80.0,
+            "samples": 3
+          },
+          "display": {
+            "mad": 0,
+            "max": 2044,
+            "min": 2043,
+            "p50": 2043,
+            "p90": 2043.8,
+            "samples": 3
+          },
+          "grayDisplay": {
+            "mad": 0,
+            "max": 146,
+            "min": 146,
+            "p50": 146,
+            "p90": 146.0,
+            "samples": 3
+          },
+          "grayLsb": {
+            "mad": 13,
+            "max": 136,
+            "min": 94,
+            "p50": 107,
+            "p90": 130.2,
+            "samples": 3
+          },
+          "grayMsb": {
+            "mad": 14,
+            "max": 138,
+            "min": 92,
+            "p50": 106,
+            "p90": 131.6,
+            "samples": 3
+          },
+          "grayscaleBusy": {
+            "mad": 0,
+            "max": 144,
+            "min": 144,
+            "p50": 144,
+            "p90": 144.0,
+            "samples": 3
+          },
+          "prewarm": {
+            "mad": 2,
+            "max": 29,
+            "min": 13,
+            "p50": 27,
+            "p90": 28.6,
+            "samples": 3
+          },
+          "primaryBusy": {
+            "mad": 0,
+            "max": 1723,
+            "min": 1722,
+            "p50": 1722,
+            "p90": 1722.8,
+            "samples": 3
+          },
+          "total": {
+            "mad": 46,
+            "max": 2632,
+            "min": 2494,
+            "p50": 2540,
+            "p90": 2613.6,
+            "samples": 3
+          }
+        }
+      }
+    }
+  },
+  "firmwareVersion": "1.4.1-dev-emulator-f42919ca-calibration-dirty37a6d99e",
+  "id": "x4-hardware-2026-07-12-v1",
+  "limitations": [
+    "One X4 and one SD card were measured; this is not a population or temperature profile.",
+    "Render phases are content-specific and retain the observed fast/half refresh split.",
+    "All five exact cold-index workloads and the XL-font variant have same-device repeat samples.",
+    "Half-primary render phases use the controlled every-page-refresh workload; image-heavy fast-primary pages remain workload evidence.",
+    "Reader half-refresh video uses the repeated inverted-target and target-settling peaks from natural page content.",
+    "Reader fast-refresh video uses the repeated direct-transition window from natural page content.",
+    "Image-heavy reader fast-refresh video uses a separate direct-transition window for majority-dark targets.",
+    "Sources span calibration-only command revisions; each source entry records its exact firmware label.",
+    "Exact indexing workloads are device-path-specific; renamed and unmeasured EPUBs use fallback timing.",
+    "Exact warm-open workloads use per-path p50 phases; p90 and MAD remain tolerance evidence.",
+    "Exact image preparation and decode workloads match measured source bytes and output dimensions before tier fallback.",
+    "Settings paint timing distinguishes full clear-and-redraw renders from a provisional shared popup floor; only the current English Reader Font Size layout was calibrated.",
+    "Reader menu paint timing is the current Stormlight clear-and-redraw menu without optional footnote or saved-bookmark rows; those variants and book-specific chapter lists remain deferred evidence.",
+    "Reader menu popup paint timing pools the current English Orientation and Auto Turn overlays; translated labels remain deferred evidence.",
+    "Reader percent-selector paint timing covers the current English fixed layout at 0, 1, and 10 percent; translated layouts remain deferred evidence.",
+    "PNG thumbnail preparation and conversion pacing cover measured RGB8 source byte and area ranges at the X4 Home target; other formats, targets, and extrapolated inputs retain fallback timing.",
+    "Directory timing is measured over one populated root and scales per openNextFile call.",
+    "Populated cache-clear timing is a per-file fit over three-directory caches; byte and directory costs are not independently identified.",
+    "Panel operation includes data transfer and controller busy time; controllerBusyMs isolates the busy wait.",
+    "Webcam optical phases are camera-observed, target-dependent evidence; serial/device timings remain canonical."
+  ],
+  "models": {
+    "cacheClear": {
+      "kind": "linear-file-count-v1",
+      "noCacheUs": {
+        "mad": 35,
+        "max": 6512,
+        "min": 6385,
+        "p50": 6471,
+        "p90": 6509.0,
+        "samples": 7
+      },
+      "populated": {
+        "directoryCounts": [
+          3
+        ],
+        "interceptUs": 74036,
+        "maxAbsoluteRelativeErrorPercent": 12.894,
+        "perFileUs": 17504,
+        "sampleCount": 11
+      },
+      "samples": [
+        {
+          "directoryCount": 0,
+          "durationUs": 6385,
+          "fileBytes": 0,
+          "fileCount": 0
+        },
+        {
+          "directoryCount": 0,
+          "durationUs": 6436,
+          "fileBytes": 0,
+          "fileCount": 0
+        },
+        {
+          "directoryCount": 0,
+          "durationUs": 6468,
+          "fileBytes": 0,
+          "fileCount": 0
+        },
+        {
+          "directoryCount": 0,
+          "durationUs": 6471,
+          "fileBytes": 0,
+          "fileCount": 0
+        },
+        {
+          "directoryCount": 0,
+          "durationUs": 6480,
+          "fileBytes": 0,
+          "fileCount": 0
+        },
+        {
+          "directoryCount": 0,
+          "durationUs": 6507,
+          "fileBytes": 0,
+          "fileCount": 0
+        },
+        {
+          "directoryCount": 0,
+          "durationUs": 6512,
+          "fileBytes": 0,
+          "fileCount": 0
+        },
+        {
+          "directoryCount": 3,
+          "durationUs": 167160,
+          "fileBytes": 5393,
+          "fileCount": 6
+        },
+        {
+          "directoryCount": 3,
+          "durationUs": 176252,
+          "fileBytes": 5393,
+          "fileCount": 6
+        },
+        {
+          "directoryCount": 3,
+          "durationUs": 206460,
+          "fileBytes": 345020,
+          "fileCount": 8
+        },
+        {
+          "directoryCount": 3,
+          "durationUs": 204209,
+          "fileBytes": 424060,
+          "fileCount": 8
+        },
+        {
+          "directoryCount": 3,
+          "durationUs": 245757,
+          "fileBytes": 429056,
+          "fileCount": 8
+        },
+        {
+          "directoryCount": 3,
+          "durationUs": 219918,
+          "fileBytes": 468618,
+          "fileCount": 8
+        },
+        {
+          "directoryCount": 3,
+          "durationUs": 220546,
+          "fileBytes": 468618,
+          "fileCount": 8
+        },
+        {
+          "directoryCount": 3,
+          "durationUs": 267880,
+          "fileBytes": 191249,
+          "fileCount": 12
+        },
+        {
+          "directoryCount": 3,
+          "durationUs": 534090,
+          "fileBytes": 652800,
+          "fileCount": 26
+        },
+        {
+          "directoryCount": 3,
+          "durationUs": 534688,
+          "fileBytes": 652800,
+          "fileCount": 26
+        },
+        {
+          "directoryCount": 3,
+          "durationUs": 645518,
+          "fileBytes": 820771,
+          "fileCount": 33
+        }
+      ]
+    },
+    "exactImageDecode": [
+      {
+        "durationMs": 76,
+        "height": 70,
+        "sourceBytes": 1073,
+        "width": 50
+      },
+      {
+        "durationMs": 86,
+        "height": 67,
+        "sourceBytes": 1256,
+        "width": 112
+      },
+      {
+        "durationMs": 650,
+        "height": 587,
+        "sourceBytes": 12502,
+        "width": 464
+      },
+      {
+        "durationMs": 409,
+        "height": 246,
+        "sourceBytes": 22788,
+        "width": 464
+      },
+      {
+        "durationMs": 1042,
+        "height": 637,
+        "sourceBytes": 62757,
+        "width": 424
+      },
+      {
+        "durationMs": 1171,
+        "height": 690,
+        "sourceBytes": 66507,
+        "width": 464
+      },
+      {
+        "durationMs": 886,
+        "height": 353,
+        "sourceBytes": 96769,
+        "width": 464
+      },
+      {
+        "durationMs": 1606,
+        "height": 715,
+        "sourceBytes": 222713,
+        "width": 464
+      },
+      {
+        "durationMs": 1882,
+        "height": 746,
+        "sourceBytes": 256811,
+        "width": 464
+      },
+      {
+        "durationMs": 1917,
+        "height": 699,
+        "sourceBytes": 290426,
+        "width": 464
+      },
+      {
+        "durationMs": 1978,
+        "height": 696,
+        "sourceBytes": 305810,
+        "width": 464
+      }
+    ],
+    "exactImagePreparation": [
+      {
+        "durationMs": 161,
+        "sourceBytes": 1073
+      },
+      {
+        "durationMs": 178,
+        "sourceBytes": 1256
+      },
+      {
+        "durationMs": 192,
+        "sourceBytes": 12502
+      },
+      {
+        "durationMs": 287,
+        "sourceBytes": 22788
+      },
+      {
+        "durationMs": 429,
+        "sourceBytes": 62757
+      },
+      {
+        "durationMs": 447,
+        "sourceBytes": 66507
+      },
+      {
+        "durationMs": 591,
+        "sourceBytes": 96769
+      },
+      {
+        "durationMs": 1333,
+        "sourceBytes": 222713
+      },
+      {
+        "durationMs": 1532,
+        "sourceBytes": 256811
+      },
+      {
+        "durationMs": 1732,
+        "sourceBytes": 290426
+      },
+      {
+        "durationMs": 1845,
+        "sourceBytes": 305810
+      }
+    ],
+    "exactIndexingByPath": [
+      {
+        "bookBinMs": 4753,
+        "coldOpenToReadyMs": {
+          "mad": 239.0,
+          "max": 11222,
+          "min": 10744,
+          "p50": 10983.0,
+          "p90": 11174.2,
+          "samples": 2
+        },
+        "manifestItems": 454,
+        "opfPassMs": 1972,
+        "path": "/lotr.epub",
+        "phaseStatistics": {
+          "bookBinMs": {
+            "mad": 1,
+            "max": 5069,
+            "min": 4752,
+            "p50": 4753,
+            "p90": 5005.8,
+            "samples": 3
+          },
+          "opfPassMs": {
+            "mad": 1,
+            "max": 2042,
+            "min": 1971,
+            "p50": 1972,
+            "p90": 2028.0,
+            "samples": 3
+          },
+          "postIndexLoadMs": {
+            "mad": 33,
+            "max": 573,
+            "min": 450,
+            "p50": 483,
+            "p90": 555.0,
+            "samples": 3
+          },
+          "tocPassMs": {
+            "mad": 7,
+            "max": 2442,
+            "min": 2424,
+            "p50": 2431,
+            "p90": 2439.8,
+            "samples": 3
+          },
+          "totalIndexingMs": {
+            "mad": 80,
+            "max": 9483,
+            "min": 9147,
+            "p50": 9227,
+            "p90": 9431.8,
+            "samples": 3
+          }
+        },
+        "postIndexLoadMs": 483,
+        "runtimePhaseSumMs": 9156,
+        "sampleCount": 3,
+        "spineItems": 334,
+        "tocItems": 147,
+        "tocPassMs": 2431,
+        "totalIndexingMs": 9227
+      },
+      {
+        "bookBinMs": 5422,
+        "coldOpenToReadyMs": {
+          "mad": 940.5,
+          "max": 16415,
+          "min": 14534,
+          "p50": 15474.5,
+          "p90": 16226.9,
+          "samples": 2
+        },
+        "manifestItems": 624,
+        "opfPassMs": 2213,
+        "path": "/mistborn.epub",
+        "phaseStatistics": {
+          "bookBinMs": {
+            "mad": 26,
+            "max": 7143,
+            "min": 5396,
+            "p50": 5422,
+            "p90": 6798.8,
+            "samples": 3
+          },
+          "opfPassMs": {
+            "mad": 12,
+            "max": 3091,
+            "min": 2201,
+            "p50": 2213,
+            "p90": 2915.4,
+            "samples": 3
+          },
+          "postIndexLoadMs": {
+            "mad": 2,
+            "max": 512,
+            "min": 496,
+            "p50": 510,
+            "p90": 511.6,
+            "samples": 3
+          },
+          "tocPassMs": {
+            "mad": 150,
+            "max": 5704,
+            "min": 5305,
+            "p50": 5455,
+            "p90": 5654.2,
+            "samples": 3
+          },
+          "totalIndexingMs": {
+            "mad": 620,
+            "max": 14812,
+            "min": 12929,
+            "p50": 14192,
+            "p90": 14688.0,
+            "samples": 3
+          }
+        },
+        "postIndexLoadMs": 510,
+        "runtimePhaseSumMs": 13090,
+        "sampleCount": 3,
+        "spineItems": 370,
+        "tocItems": 205,
+        "tocPassMs": 5455,
+        "totalIndexingMs": 14192
+      },
+      {
+        "bookBinMs": 15966,
+        "coldOpenToReadyMs": {
+          "mad": 118,
+          "max": 25473,
+          "min": 25143,
+          "p50": 25261,
+          "p90": 25430.6,
+          "samples": 3
+        },
+        "manifestItems": 1686,
+        "opfPassMs": 5112,
+        "path": "/stormlight.epub",
+        "phaseStatistics": {
+          "bookBinMs": {
+            "mad": 80.0,
+            "max": 16064,
+            "min": 15729,
+            "p50": 15966.0,
+            "p90": 16053.2,
+            "samples": 4
+          },
+          "opfPassMs": {
+            "mad": 10.0,
+            "max": 5125,
+            "min": 5091,
+            "p50": 5111.5,
+            "p90": 5122.9,
+            "samples": 4
+          },
+          "postIndexLoadMs": {
+            "mad": 1.5,
+            "max": 1218,
+            "min": 1108,
+            "p50": 1110.5,
+            "p90": 1185.9,
+            "samples": 4
+          },
+          "tocPassMs": {
+            "mad": 54.0,
+            "max": 2066,
+            "min": 1946,
+            "p50": 2009.0,
+            "p90": 2064.2,
+            "samples": 4
+          },
+          "totalIndexingMs": {
+            "mad": 88.0,
+            "max": 23256,
+            "min": 22778,
+            "p50": 23081.0,
+            "p90": 23203.8,
+            "samples": 4
+          }
+        },
+        "postIndexLoadMs": 1111,
+        "runtimePhaseSumMs": 23087,
+        "sampleCount": 4,
+        "spineItems": 844,
+        "tocItems": 776,
+        "tocPassMs": 2009,
+        "totalIndexingMs": 23087
+      },
+      {
+        "bookBinMs": 11832,
+        "coldOpenToReadyMs": {
+          "mad": 87.5,
+          "max": 20136,
+          "min": 19961,
+          "p50": 20048.5,
+          "p90": 20118.5,
+          "samples": 2
+        },
+        "manifestItems": 844,
+        "opfPassMs": 4480,
+        "path": "/sun-eater.epub",
+        "phaseStatistics": {
+          "bookBinMs": {
+            "mad": 728,
+            "max": 12913,
+            "min": 11104,
+            "p50": 11832,
+            "p90": 12696.8,
+            "samples": 3
+          },
+          "opfPassMs": {
+            "mad": 65,
+            "max": 4921,
+            "min": 4415,
+            "p50": 4480,
+            "p90": 4832.8,
+            "samples": 3
+          },
+          "postIndexLoadMs": {
+            "mad": 1,
+            "max": 418,
+            "min": 415,
+            "p50": 417,
+            "p90": 417.8,
+            "samples": 3
+          },
+          "tocPassMs": {
+            "mad": 34,
+            "max": 1693,
+            "min": 1249,
+            "p50": 1283,
+            "p90": 1611.0,
+            "samples": 3
+          },
+          "totalIndexingMs": {
+            "mad": 164,
+            "max": 18611,
+            "min": 16835,
+            "p50": 18447,
+            "p90": 18578.2,
+            "samples": 3
+          }
+        },
+        "postIndexLoadMs": 417,
+        "runtimePhaseSumMs": 17595,
+        "sampleCount": 3,
+        "spineItems": 808,
+        "tocItems": 434,
+        "tocPassMs": 1283,
+        "totalIndexingMs": 18447
+      },
+      {
+        "bookBinMs": 14047,
+        "coldOpenToReadyMs": {
+          "mad": 227.5,
+          "max": 25062,
+          "min": 24607,
+          "p50": 24834.5,
+          "p90": 25016.5,
+          "samples": 2
+        },
+        "manifestItems": 1506,
+        "opfPassMs": 4804,
+        "path": "/wot.epub",
+        "phaseStatistics": {
+          "bookBinMs": {
+            "mad": 5,
+            "max": 15708,
+            "min": 14042,
+            "p50": 14047,
+            "p90": 15375.8,
+            "samples": 3
+          },
+          "opfPassMs": {
+            "mad": 74,
+            "max": 5474,
+            "min": 4730,
+            "p50": 4804,
+            "p90": 5340.0,
+            "samples": 3
+          },
+          "postIndexLoadMs": {
+            "mad": 39,
+            "max": 1117,
+            "min": 823,
+            "p50": 862,
+            "p90": 1066.0,
+            "samples": 3
+          },
+          "tocPassMs": {
+            "mad": 4,
+            "max": 1663,
+            "min": 1600,
+            "p50": 1659,
+            "p90": 1662.2,
+            "samples": 3
+          },
+          "totalIndexingMs": {
+            "mad": 743,
+            "max": 22114,
+            "min": 20438,
+            "p50": 21181,
+            "p90": 21927.4,
+            "samples": 3
+          }
+        },
+        "postIndexLoadMs": 862,
+        "runtimePhaseSumMs": 20510,
+        "sampleCount": 3,
+        "spineItems": 831,
+        "tocItems": 785,
+        "tocPassMs": 1659,
+        "totalIndexingMs": 21181
+      }
+    ],
+    "exactWarmByPath": [
+      {
+        "cachedMetadataLoadMs": {
+          "mad": 0,
+          "max": 56,
+          "min": 56,
+          "p50": 56,
+          "p90": 56.0,
+          "samples": 3
+        },
+        "metadataStartToPageLoadMs": {
+          "mad": 0,
+          "max": 202,
+          "min": 200,
+          "p50": 202,
+          "p90": 202.0,
+          "samples": 3
+        },
+        "path": "/lotr.epub"
+      },
+      {
+        "cachedMetadataLoadMs": {
+          "mad": 0,
+          "max": 56,
+          "min": 55,
+          "p50": 56,
+          "p90": 56.0,
+          "samples": 3
+        },
+        "metadataStartToPageLoadMs": {
+          "mad": 1,
+          "max": 202,
+          "min": 200,
+          "p50": 201,
+          "p90": 201.8,
+          "samples": 3
+        },
+        "path": "/mistborn.epub"
+      },
+      {
+        "cachedMetadataLoadMs": {
+          "mad": 0,
+          "max": 58,
+          "min": 58,
+          "p50": 58,
+          "p90": 58.0,
+          "samples": 3
+        },
+        "metadataStartToPageLoadMs": {
+          "mad": 1,
+          "max": 207,
+          "min": 205,
+          "p50": 206,
+          "p90": 206.8,
+          "samples": 3
+        },
+        "path": "/stormlight.epub"
+      },
+      {
+        "cachedMetadataLoadMs": {
+          "mad": 0,
+          "max": 72,
+          "min": 71,
+          "p50": 72,
+          "p90": 72.0,
+          "samples": 3
+        },
+        "metadataStartToPageLoadMs": {
+          "mad": 1,
+          "max": 226,
+          "min": 224,
+          "p50": 225,
+          "p90": 225.8,
+          "samples": 3
+        },
+        "path": "/sun-eater.epub"
+      },
+      {
+        "cachedMetadataLoadMs": {
+          "mad": 0,
+          "max": 160,
+          "min": 159,
+          "p50": 160,
+          "p90": 160.0,
+          "samples": 3
+        },
+        "metadataStartToPageLoadMs": {
+          "mad": 0,
+          "max": 306,
+          "min": 305,
+          "p50": 306,
+          "p90": 306.0,
+          "samples": 3
+        },
+        "path": "/wot.epub"
+      }
+    ],
+    "fileBrowserActivityToDisplayMs": {
+      "mad": 0.0,
+      "max": 38,
+      "min": 38,
+      "p50": 38.0,
+      "p90": 38.0,
+      "samples": 2
+    },
+    "fileBrowserRenderMs": {
+      "mad": 0.0,
+      "max": 26,
+      "min": 26,
+      "p50": 26.0,
+      "p90": 26.0,
+      "samples": 26
+    },
+    "homeFirstRenderMs": {
+      "mad": 0.0,
+      "max": 72,
+      "min": 71,
+      "p50": 72.0,
+      "p90": 72.0,
+      "samples": 6
+    },
+    "homeSubsequentRenderMs": {
+      "mad": 0.0,
+      "max": 12,
+      "min": 12,
+      "p50": 12.0,
+      "p90": 12.0,
+      "samples": 6
+    },
+    "jpegThumbnail": {
+      "interceptUs": 435868,
+      "kind": "linear-decoded-image-bytes-v1",
+      "maxAbsoluteRelativeErrorPercent": 9.38,
+      "nanosecondsPerImageByte": 10590,
+      "samples": [
+        {
+          "generationMs": 886,
+          "imageBytes": 43333
+        },
+        {
+          "generationMs": 2649,
+          "imageBytes": 222713
+        },
+        {
+          "generationMs": 3482,
+          "imageBytes": 256811
+        },
+        {
+          "generationMs": 3405,
+          "imageBytes": 290426
+        },
+        {
+          "generationMs": 3608,
+          "imageBytes": 305810
+        }
+      ]
+    },
+    "pngThumbnail": {
+      "bitDepth": 8,
+      "colorType": 2,
+      "conversionInterceptUs": 120586,
+      "conversionMaxAbsoluteRelativeErrorPercent": 4.359,
+      "conversionNanosecondsPerSourcePixel": 2168,
+      "kind": "png-two-phase-v1",
+      "maxImageBytes": 68617,
+      "maxSourcePixels": 2474268,
+      "minImageBytes": 9360,
+      "minSourcePixels": 154722,
+      "preparationInterceptUs": 48615,
+      "preparationMaxAbsoluteRelativeErrorPercent": 0.973,
+      "preparationNanosecondsPerImageByte": 6975,
+      "samples": [
+        {
+          "conversionMs": 437,
+          "imageBytes": 9360,
+          "preparationMs": 114,
+          "sourceHeight": 482,
+          "sourceWidth": 321
+        },
+        {
+          "conversionMs": 1459,
+          "imageBytes": 27844,
+          "preparationMs": 241,
+          "sourceHeight": 963,
+          "sourceWidth": 642
+        },
+        {
+          "conversionMs": 3182,
+          "imageBytes": 51237,
+          "preparationMs": 410,
+          "sourceHeight": 1445,
+          "sourceWidth": 963
+        },
+        {
+          "conversionMs": 5462,
+          "imageBytes": 68617,
+          "preparationMs": 525,
+          "sourceHeight": 1927,
+          "sourceWidth": 1284
+        }
+      ],
+      "targetHeight": 226,
+      "targetWidth": 135
+    },
+    "readerMenuFirstRenderMs": {
+      "mad": 0.5,
+      "max": 21,
+      "min": 20,
+      "p50": 20.5,
+      "p90": 20.9,
+      "samples": 2
+    },
+    "readerMenuPopupRenderMs": {
+      "mad": 0.5,
+      "max": 9,
+      "min": 7,
+      "p50": 7.5,
+      "p90": 8.3,
+      "samples": 28
+    },
+    "readerMenuSubsequentRenderMs": {
+      "mad": 0.0,
+      "max": 19,
+      "min": 19,
+      "p50": 19.0,
+      "p90": 19.0,
+      "samples": 12
+    },
+    "readerPercentFirstRenderMs": {
+      "mad": 0.0,
+      "max": 7,
+      "min": 7,
+      "p50": 7.0,
+      "p90": 7.0,
+      "samples": 2
+    },
+    "readerPercentSubsequentRenderMs": {
+      "mad": 0.0,
+      "max": 7,
+      "min": 6,
+      "p50": 6.0,
+      "p90": 7.0,
+      "samples": 24
+    },
+    "sectionImageDiscoveryMs": {
+      "mad": 21.0,
+      "max": 234,
+      "min": 108,
+      "p50": 130.0,
+      "p90": 197.5,
+      "samples": 6
+    },
+    "sectionStreamingMs": {
+      "mad": 16.5,
+      "max": 416,
+      "min": 261,
+      "p50": 337.5,
+      "p90": 371.4,
+      "samples": 14
+    },
+    "settingsFirstRenderMs": {
+      "mad": 0.0,
+      "max": 27,
+      "min": 27,
+      "p50": 27.0,
+      "p90": 27.0,
+      "samples": 2
+    },
+    "settingsPopupRenderMs": {
+      "mad": 0.0,
+      "max": 7,
+      "min": 6,
+      "p50": 7.0,
+      "p90": 7.0,
+      "samples": 14
+    },
+    "settingsSubsequentRenderMs": {
+      "mad": 0.0,
+      "max": 36,
+      "min": 35,
+      "p50": 36.0,
+      "p90": 36.0,
+      "samples": 12
+    }
+  },
+  "opticalWaveform": {
+    "alignment": "ffmpeg-first-frame-decoded-host-ns-v1",
+    "captureFps": 30,
+    "changeThreshold": 10.0,
+    "crop": {
+      "height": 450,
+      "width": 270,
+      "x": 90,
+      "y": 70
+    },
+    "decodedSourceFrames": 866,
+    "frameQuantizationMs": 40.0,
+    "grayscale": {
+      "alignment": "ffmpeg-first-frame-decoded-host-ns-v1",
+      "analysisWindowMs": 500.0,
+      "captureFps": 30,
+      "changeThreshold": 3.0,
+      "crop": {
+        "height": 450,
+        "width": 270,
+        "x": 90,
+        "y": 70
+      },
+      "decodedSourceFrames": 1143,
+      "frameQuantizationMs": 40.0,
+      "limitations": [
+        "Batch-start alignment uses serial receipt plus device-measured per-operation offsets.",
+        "The full-screen light/dark targets isolate waveform timing but are not representative page content.",
+        "No detected transition means every operation stayed below the configured change threshold; lowering the threshold would model camera noise rather than a measured panel phase.",
+        "Auto-exposure, perspective, lighting, and 40 ms camera-source quantization (25 FPS observed) affect optical phase estimates."
+      ],
+      "observedSourceFps": 25.0,
+      "primaries": {
+        "fast": {
+          "byTarget": {
+            "dark": {
+              "dominantChangeMs": {
+                "mad": 9.372,
+                "max": 474.136,
+                "min": 124.806,
+                "p50": 408.808,
+                "p90": 451.204,
+                "samples": 5
+              },
+              "finalY": {
+                "mad": 2.079,
+                "max": 121.773,
+                "min": 70.941,
+                "p50": 75.115,
+                "p90": 103.942,
+                "samples": 5
+              },
+              "visibleChangeEndMs": {
+                "mad": 16.0,
+                "max": 474.136,
+                "min": 424.806,
+                "p50": 450.136,
+                "p90": 470.936,
+                "samples": 5
+              },
+              "visibleChangeStartMs": {
+                "mad": 9.33,
+                "max": 108.808,
+                "min": 58.136,
+                "p50": 74.136,
+                "p90": 98.671,
+                "samples": 5
+              }
+            },
+            "light": {
+              "dominantChangeMs": {
+                "mad": 8.084,
+                "max": 112.136,
+                "min": 70.808,
+                "p50": 88.052,
+                "p90": 105.736,
+                "samples": 5
+              },
+              "finalY": {
+                "mad": 3.936,
+                "max": 87.754,
+                "min": 70.352,
+                "p50": 77.029,
+                "p90": 84.97,
+                "samples": 5
+              },
+              "visibleChangeEndMs": {
+                "mad": 8.002,
+                "max": 454.722,
+                "min": 429.466,
+                "p50": 445.436,
+                "p90": 454.208,
+                "samples": 5
+              },
+              "visibleChangeStartMs": {
+                "mad": 8.032,
+                "max": 96.136,
+                "min": 54.722,
+                "p50": 78.806,
+                "p90": 92.417,
+                "samples": 5
+              }
+            }
+          },
+          "operationUs": {
+            "mad": 1.0,
+            "max": 63516.0,
+            "min": 63439.0,
+            "p50": 63513.0,
+            "p90": 63515.1,
+            "samples": 10
+          },
+          "visibleChangeDetected": true
+        },
+        "half": {
+          "byTarget": {},
+          "operationUs": {
+            "mad": 0.5,
+            "max": 145516.0,
+            "min": 145421.0,
+            "p50": 145514.0,
+            "p90": 145515.1,
+            "samples": 10
+          },
+          "visibleChangeDetected": false
+        }
+      },
+      "sourceFrameIntervalMs": {
+        "max": 360.164,
+        "min": 35.7,
+        "p50": 40.0,
+        "p90": 40.1
+      },
+      "sourceRun": "x4-grayscale-optical-normal-v4",
+      "videoSha256": "3fe3b19682789e081a72140585c36d46089f25a19bc3cf5a37f27a159d50b8e2"
+    },
+    "limitations": [
+      "The first-frame host timestamp is observed after camera decoding and may retain driver buffering.",
+      "Auto-exposure, perspective, lighting, and 40 ms camera-source quantization (25 FPS observed) affect optical phase estimates.",
+      "The crop excludes the bezel but is not perspective-rectified."
+    ],
+    "modes": {
+      "fast": {
+        "byTarget": {
+          "black": {
+            "dominantChangeMs": {
+              "mad": 10.564,
+              "max": 361.132,
+              "min": 340.005,
+              "p50": 350.568,
+              "p90": 359.019,
+              "samples": 2
+            },
+            "interiorChangeEndMs": {
+              "mad": 10.564,
+              "max": 394.462,
+              "min": 373.335,
+              "p50": 383.898,
+              "p90": 392.349,
+              "samples": 2
+            },
+            "interiorChangeSpanMs": {
+              "mad": 0.005,
+              "max": 66.67,
+              "min": 66.66,
+              "p50": 66.665,
+              "p90": 66.669,
+              "samples": 2
+            },
+            "interiorChangeStartMs": {
+              "mad": 10.569,
+              "max": 327.802,
+              "min": 306.665,
+              "p50": 317.233,
+              "p90": 325.688,
+              "samples": 2
+            }
+          },
+          "white": {
+            "dominantChangeMs": {
+              "mad": 0.0,
+              "max": 317.097,
+              "min": 317.097,
+              "p50": 317.097,
+              "p90": 317.097,
+              "samples": 1
+            },
+            "interiorChangeEndMs": {
+              "mad": 0.0,
+              "max": 417.097,
+              "min": 417.097,
+              "p50": 417.097,
+              "p90": 417.097,
+              "samples": 1
+            },
+            "interiorChangeSpanMs": {
+              "mad": 0.0,
+              "max": 100.0,
+              "min": 100.0,
+              "p50": 100.0,
+              "p90": 100.0,
+              "samples": 1
+            },
+            "interiorChangeStartMs": {
+              "mad": 0.0,
+              "max": 317.097,
+              "min": 317.097,
+              "p50": 317.097,
+              "p90": 317.097,
+              "samples": 1
+            }
+          }
+        }
+      },
+      "full": {
+        "byTarget": {
+          "black": {
+            "dominantChangeMs": {
+              "mad": 5.959,
+              "max": 2958.805,
+              "min": 2946.888,
+              "p50": 2952.847,
+              "p90": 2957.614,
+              "samples": 2
+            },
+            "interiorChangeEndMs": {
+              "mad": 10.691,
+              "max": 3046.888,
+              "min": 3025.505,
+              "p50": 3036.197,
+              "p90": 3044.75,
+              "samples": 2
+            },
+            "interiorChangeSpanMs": {
+              "mad": 0.0,
+              "max": 1766.7,
+              "min": 1766.7,
+              "p50": 1766.7,
+              "p90": 1766.7,
+              "samples": 2
+            },
+            "interiorChangeStartMs": {
+              "mad": 10.691,
+              "max": 1280.188,
+              "min": 1258.805,
+              "p50": 1269.497,
+              "p90": 1278.05,
+              "samples": 2
+            }
+          },
+          "white": {
+            "dominantChangeMs": {
+              "mad": 0.0,
+              "max": 2686.176,
+              "min": 2686.176,
+              "p50": 2686.176,
+              "p90": 2686.176,
+              "samples": 1
+            },
+            "interiorChangeEndMs": {
+              "mad": 0.0,
+              "max": 2719.476,
+              "min": 2719.476,
+              "p50": 2719.476,
+              "p90": 2719.476,
+              "samples": 1
+            },
+            "interiorChangeSpanMs": {
+              "mad": 0.0,
+              "max": 1133.3,
+              "min": 1133.3,
+              "p50": 1133.3,
+              "p90": 1133.3,
+              "samples": 1
+            },
+            "interiorChangeStartMs": {
+              "mad": 0.0,
+              "max": 1586.176,
+              "min": 1586.176,
+              "p50": 1586.176,
+              "p90": 1586.176,
+              "samples": 1
+            }
+          }
+        },
+        "pulseIntervalMs": {
+          "mad": 33.35,
+          "max": 333.4,
+          "min": 233.3,
+          "p50": 266.7,
+          "p90": 333.35,
+          "samples": 16
+        }
+      },
+      "half": {
+        "byTarget": {
+          "black": {
+            "dominantChangeMs": {
+              "mad": 6.403,
+              "max": 1088.134,
+              "min": 1075.329,
+              "p50": 1081.732,
+              "p90": 1086.854,
+              "samples": 2
+            },
+            "interiorChangeEndMs": {
+              "mad": 6.403,
+              "max": 1188.134,
+              "min": 1175.329,
+              "p50": 1181.732,
+              "p90": 1186.854,
+              "samples": 2
+            },
+            "interiorChangeSpanMs": {
+              "mad": 0.0,
+              "max": 100.0,
+              "min": 100.0,
+              "p50": 100.0,
+              "p90": 100.0,
+              "samples": 2
+            },
+            "interiorChangeStartMs": {
+              "mad": 6.403,
+              "max": 1088.134,
+              "min": 1075.329,
+              "p50": 1081.732,
+              "p90": 1086.854,
+              "samples": 2
+            }
+          },
+          "white": {
+            "dominantChangeMs": {
+              "mad": 0.0,
+              "max": 1115.021,
+              "min": 1115.021,
+              "p50": 1115.021,
+              "p90": 1115.021,
+              "samples": 1
+            },
+            "interiorChangeEndMs": {
+              "mad": 0.0,
+              "max": 1215.021,
+              "min": 1215.021,
+              "p50": 1215.021,
+              "p90": 1215.021,
+              "samples": 1
+            },
+            "interiorChangeSpanMs": {
+              "mad": 0.0,
+              "max": 133.3,
+              "min": 133.3,
+              "p50": 133.3,
+              "p90": 133.3,
+              "samples": 1
+            },
+            "interiorChangeStartMs": {
+              "mad": 0.0,
+              "max": 1081.721,
+              "min": 1081.721,
+              "p50": 1081.721,
+              "p90": 1081.721,
+              "samples": 1
+            }
+          }
+        }
+      }
+    },
+    "observedSourceFps": 25.0,
+    "readerFast": {
+      "alignment": "ffmpeg-first-frame-decoded-host-ns-v1",
+      "analysisWindowMs": 800.0,
+      "captureFps": 30,
+      "changeThreshold": 5.0,
+      "crop": {
+        "height": 450,
+        "width": 270,
+        "x": 90,
+        "y": 70
+      },
+      "decodedSourceFrames": 1998,
+      "dominantChangeMs": {
+        "mad": 12.254,
+        "max": 295.57,
+        "min": 255.158,
+        "p50": 276.226,
+        "p90": 294.627,
+        "samples": 12
+      },
+      "frameQuantizationMs": 40.0,
+      "limitations": [
+        "The first-frame host timestamp is observed after camera decoding and may retain driver buffering.",
+        "The page-content change is represented as one direct old-to-new transition without an inverted state.",
+        "Auto-exposure, perspective, lighting, and 40 ms camera-source quantization (25 FPS observed) affect optical phase estimates."
+      ],
+      "observedSourceFps": 25.0,
+      "sourceFrameIntervalMs": {
+        "max": 359.988,
+        "min": 35.7,
+        "p50": 40.0,
+        "p90": 40.1
+      },
+      "sourceRun": "x4-stormlight-fast-pages-v2",
+      "transitionEndMs": {
+        "mad": 13.144,
+        "max": 332.587,
+        "min": 292.469,
+        "p50": 309.576,
+        "p90": 325.509,
+        "samples": 12
+      },
+      "transitionStartMs": {
+        "mad": 8.175,
+        "max": 294.867,
+        "min": 255.158,
+        "p50": 266.196,
+        "p90": 285.083,
+        "samples": 12
+      },
+      "videoSha256": "1277c58a7ecdae562ad373acd9d6269af73fdfe79d4aa88b213794d727e7c6af"
+    },
+    "readerHalf": {
+      "alignment": "ffmpeg-first-frame-decoded-host-ns-v1",
+      "analysisWindowMs": 2200.0,
+      "captureFps": 30,
+      "changeThreshold": 5.0,
+      "crop": {
+        "height": 450,
+        "width": 270,
+        "x": 90,
+        "y": 70
+      },
+      "decodedSourceFrames": 1878,
+      "frameQuantizationMs": 40.0,
+      "invertedTargetStartMs": {
+        "mad": 4.601,
+        "max": 363.661,
+        "min": 330.479,
+        "p50": 352.557,
+        "p90": 358.459,
+        "samples": 9
+      },
+      "limitations": [
+        "The first-frame host timestamp is observed after camera decoding and may retain driver buffering.",
+        "The two dominant page-content changes are interpreted as inverted-target drive and target settling.",
+        "Auto-exposure, perspective, lighting, and 40 ms camera-source quantization (25 FPS observed) affect optical phase estimates."
+      ],
+      "observedSourceFps": 25.0,
+      "sourceFrameIntervalMs": {
+        "max": 360.074,
+        "min": 35.5,
+        "p50": 40.0,
+        "p90": 40.1
+      },
+      "sourceRun": "x4-stormlight-half-pages-v2",
+      "targetSettleMs": {
+        "mad": 6.853,
+        "max": 1122.805,
+        "min": 1081.508,
+        "p50": 1097.179,
+        "p90": 1119.887,
+        "samples": 9
+      },
+      "videoSha256": "716dfe3eaf52733641375ce3051ff1cbe788a8b0128dcf257074da75ac866fe1"
+    },
+    "readerImageFast": {
+      "alignment": "ffmpeg-first-frame-decoded-host-ns-v1",
+      "analysisWindowMs": 800.0,
+      "captureFps": 30,
+      "changeThreshold": 5.0,
+      "crop": {
+        "height": 450,
+        "width": 270,
+        "x": 90,
+        "y": 70
+      },
+      "decodedSourceFrames": 1696,
+      "dominantChangeMs": {
+        "mad": 13.571,
+        "max": 303.773,
+        "min": 251.456,
+        "p50": 283.937,
+        "p90": 300.882,
+        "samples": 8
+      },
+      "frameQuantizationMs": 40.0,
+      "limitations": [
+        "The first-frame host timestamp is observed after camera decoding and may retain driver buffering.",
+        "Source samples render an image over at least half of the X4 panel; runtime uses the recorded conservative majority-dark target selector.",
+        "The image-content change is represented as one lighter direct-drive phase followed by the settled target.",
+        "Auto-exposure, perspective, lighting, and 40 ms camera-source quantization (25 FPS observed) affect optical phase estimates."
+      ],
+      "observedSourceFps": 25.0,
+      "sourceFrameIntervalMs": {
+        "max": 360.057,
+        "min": 35.79,
+        "p50": 40.0,
+        "p90": 40.1
+      },
+      "sourceImageAreaFractionMin": 0.5,
+      "sourceImageAreaPixelsMin": 192000,
+      "sourceRun": "x4-stormlight-image-optical-normal-v1",
+      "targetDarkPixelPercentMin": 50,
+      "transitionEndMs": {
+        "mad": 9.207,
+        "max": 362.075,
+        "min": 331.62,
+        "p50": 342.846,
+        "p90": 357.938,
+        "samples": 8
+      },
+      "transitionStartMs": {
+        "mad": 9.546,
+        "max": 266.343,
+        "min": 228.675,
+        "p50": 248.283,
+        "p90": 265.417,
+        "samples": 8
+      },
+      "videoSha256": "519439965c70efdd07790a3f10ce4dd2cd625de6c6005a008235afefaef91459"
+    },
+    "sourceFrameIntervalMs": {
+      "max": 360.06,
+      "min": 35.8,
+      "p50": 40.0,
+      "p90": 40.1
+    },
+    "sourceRun": "x4-panel-optical-normal-v5",
+    "videoSha256": "acf6401c14a5dc66769c132da1c472cfd35076b6eca3491dca21841a1fa1a26f"
+  },
+  "panel": {
+    "fast": {
+      "controllerBusyMs": {
+        "mad": 0.0,
+        "max": 506,
+        "min": 506,
+        "p50": 506.0,
+        "p90": 506.0,
+        "samples": 10
+      },
+      "operationUs": {
+        "mad": 2.0,
+        "max": 743969,
+        "min": 743762,
+        "p50": 743848.0,
+        "p90": 743866.4,
+        "samples": 10
+      }
+    },
+    "full": {
+      "controllerBusyMs": {
+        "mad": 0.0,
+        "max": 3744,
+        "min": 3743,
+        "p50": 3744.0,
+        "p90": 3744.0,
+        "samples": 10
+      },
+      "operationUs": {
+        "mad": 6.0,
+        "max": 4060849,
+        "min": 4059848,
+        "p50": 4060843.0,
+        "p90": 4060849.0,
+        "samples": 10
+      }
+    },
+    "half": {
+      "controllerBusyMs": {
+        "mad": 0.0,
+        "max": 1723,
+        "min": 1722,
+        "p50": 1723.0,
+        "p90": 1723.0,
+        "samples": 10
+      },
+      "operationUs": {
+        "mad": 6.0,
+        "max": 2039861,
+        "min": 2038847,
+        "p50": 2039848.0,
+        "p90": 2039852.0,
+        "samples": 10
+      }
+    }
+  },
+  "renderMs": {
+    "all": {
+      "bwRender": {
+        "mad": 1.0,
+        "max": 62,
+        "min": 58,
+        "p50": 60.0,
+        "p90": 62.0,
+        "samples": 30
+      },
+      "cleanup": {
+        "mad": 0.0,
+        "max": 80,
+        "min": 80,
+        "p50": 80.0,
+        "p90": 80.0,
+        "samples": 30
+      },
+      "display": {
+        "mad": 0.0,
+        "max": 2044,
+        "min": 747,
+        "p50": 747.0,
+        "p90": 748.0,
+        "samples": 30
+      },
+      "grayDisplay": {
+        "mad": 0.0,
+        "max": 146,
+        "min": 63,
+        "p50": 64.0,
+        "p90": 64.0,
+        "samples": 30
+      },
+      "grayLsb": {
+        "mad": 0.5,
+        "max": 141,
+        "min": 139,
+        "p50": 140.5,
+        "p90": 141.0,
+        "samples": 30
+      },
+      "grayMsb": {
+        "mad": 0.5,
+        "max": 145,
+        "min": 142,
+        "p50": 143.5,
+        "p90": 145.0,
+        "samples": 30
+      },
+      "grayscaleBusy": {
+        "mad": 0.0,
+        "max": 145,
+        "min": 62,
+        "p50": 62.0,
+        "p90": 63.0,
+        "samples": 30
+      },
+      "prewarm": {
+        "mad": 12.0,
+        "max": 45,
+        "min": 21,
+        "p50": 33.0,
+        "p90": 45.0,
+        "samples": 30
+      },
+      "primaryBusy": {
+        "mad": 0.0,
+        "max": 1723,
+        "min": 506,
+        "p50": 506.0,
+        "p90": 507.0,
+        "samples": 30
+      },
+      "total": {
+        "mad": 15.5,
+        "max": 2656,
+        "min": 1258,
+        "p50": 1276.5,
+        "p90": 1279.0,
+        "samples": 30
+      }
+    },
+    "fastPrimary": {
+      "bwRender": {
+        "mad": 1.0,
+        "max": 62,
+        "min": 58,
+        "p50": 60.0,
+        "p90": 62.0,
+        "samples": 28
+      },
+      "cleanup": {
+        "mad": 0.0,
+        "max": 80,
+        "min": 80,
+        "p50": 80.0,
+        "p90": 80.0,
+        "samples": 28
+      },
+      "display": {
+        "mad": 0.0,
+        "max": 748,
+        "min": 747,
+        "p50": 747.0,
+        "p90": 748.0,
+        "samples": 28
+      },
+      "grayDisplay": {
+        "mad": 0.0,
+        "max": 64,
+        "min": 63,
+        "p50": 64.0,
+        "p90": 64.0,
+        "samples": 28
+      },
+      "grayLsb": {
+        "mad": 0.5,
+        "max": 141,
+        "min": 139,
+        "p50": 140.5,
+        "p90": 141.0,
+        "samples": 28
+      },
+      "grayMsb": {
+        "mad": 0.5,
+        "max": 145,
+        "min": 142,
+        "p50": 143.5,
+        "p90": 145.0,
+        "samples": 28
+      },
+      "grayscaleBusy": {
+        "mad": 0.0,
+        "max": 63,
+        "min": 62,
+        "p50": 62.0,
+        "p90": 63.0,
+        "samples": 28
+      },
+      "prewarm": {
+        "mad": 12.0,
+        "max": 45,
+        "min": 21,
+        "p50": 33.0,
+        "p90": 45.0,
+        "samples": 28
+      },
+      "primaryBusy": {
+        "mad": 0.0,
+        "max": 507,
+        "min": 506,
+        "p50": 506.0,
+        "p90": 506.3,
+        "samples": 28
+      },
+      "total": {
+        "mad": 9.5,
+        "max": 1279,
+        "min": 1258,
+        "p50": 1268.5,
+        "p90": 1278.0,
+        "samples": 28
+      }
+    },
+    "halfPrimary": {
+      "bwRender": {
+        "mad": 4,
+        "max": 61,
+        "min": 22,
+        "p50": 56,
+        "p90": 60.2,
+        "samples": 9
+      },
+      "cleanup": {
+        "mad": 0,
+        "max": 80,
+        "min": 80,
+        "p50": 80,
+        "p90": 80.0,
+        "samples": 9
+      },
+      "display": {
+        "mad": 0,
+        "max": 2045,
+        "min": 2043,
+        "p50": 2043,
+        "p90": 2044.2,
+        "samples": 9
+      },
+      "grayDisplay": {
+        "mad": 0,
+        "max": 146,
+        "min": 145,
+        "p50": 146,
+        "p90": 146.0,
+        "samples": 9
+      },
+      "grayLsb": {
+        "mad": 4,
+        "max": 140,
+        "min": 91,
+        "p50": 135,
+        "p90": 139.2,
+        "samples": 9
+      },
+      "grayMsb": {
+        "mad": 5,
+        "max": 145,
+        "min": 91,
+        "p50": 138,
+        "p90": 143.4,
+        "samples": 9
+      },
+      "grayscaleBusy": {
+        "mad": 0,
+        "max": 145,
+        "min": 144,
+        "p50": 144,
+        "p90": 145.0,
+        "samples": 9
+      },
+      "prewarm": {
+        "mad": 4,
+        "max": 47,
+        "min": 14,
+        "p50": 23,
+        "p90": 46.2,
+        "samples": 9
+      },
+      "primaryBusy": {
+        "mad": 0,
+        "max": 1723,
+        "min": 1722,
+        "p50": 1723,
+        "p90": 1723.0,
+        "samples": 9
+      },
+      "total": {
+        "mad": 27,
+        "max": 2658,
+        "min": 2489,
+        "p50": 2622,
+        "p90": 2650.8,
+        "samples": 9
+      }
+    }
+  },
+  "schemaVersion": 1,
+  "sourceFirmwareVersions": [
+    "1.4.1-dev-emulator-f42919ca-calibration-dirty37a6d99e",
+    "1.4.1-dev-emulator-f42919ca-calibration-dirty53758060",
+    "1.4.1-dev-emulator-f42919ca-calibration-dirty56e8767e",
+    "1.4.1-dev-emulator-f42919ca-calibration-dirty6b9cdc1f",
+    "1.4.1-dev-emulator-f42919ca-calibration-dirty6da1149a",
+    "1.4.1-dev-emulator-f42919ca-calibration-dirty833702f8",
+    "1.4.1-dev-emulator-f42919ca-calibration-dirtyca7b2857",
+    "1.4.1-dev-emulator-f42919ca-calibration-dirtye0ed86e0",
+    "1.4.1-dev-emulator-f42919ca-calibration-dirtye9d99898"
+  ],
+  "sources": [
+    {
+      "captureFps": 30,
+      "firmwareVersion": "1.4.1-dev-emulator-f42919ca-calibration-dirty37a6d99e",
+      "run": "x4-page-turns-30-normal-v2",
+      "scenarioSha256": "d2c4df95c16a0bd2de954e108af5aecd0856e6475bb3a19efd2f980da8228835",
+      "startedUtc": "2026-07-13T10:05:54Z",
+      "status": "complete"
+    },
+    {
+      "captureFps": 30,
+      "firmwareVersion": "1.4.1-dev-emulator-f42919ca-calibration-dirty37a6d99e",
+      "run": "x4-panel-modes-normal-v2",
+      "scenarioSha256": "9c571df6a93dc7bbd44c29b19cf1daae21e6f1f24935842d0f3353125eadfa4b",
+      "startedUtc": "2026-07-13T09:45:08Z",
+      "status": "complete"
+    },
+    {
+      "captureFps": 30,
+      "firmwareVersion": "1.4.1-dev-emulator-f42919ca-calibration-dirty37a6d99e",
+      "run": "x4-sd-small-normal-v2",
+      "scenarioSha256": "04785c8f487270b9db169d35803bf273680b58b4a938501c00face3e2adc0970",
+      "startedUtc": "2026-07-13T09:44:07Z",
+      "status": "complete"
+    },
+    {
+      "captureFps": 30,
+      "firmwareVersion": "1.4.1-dev-emulator-f42919ca-calibration-dirty37a6d99e",
+      "run": "x4-sd-512k-normal-v3",
+      "scenarioSha256": "2b87cfd3af2fb744a9224a324d34e71a858f6dc297befa6e6c4fda5b559dad6f",
+      "startedUtc": "2026-07-13T09:43:22Z",
+      "status": "complete"
+    },
+    {
+      "captureFps": 30,
+      "firmwareVersion": "1.4.1-dev-emulator-f42919ca-calibration-dirty37a6d99e",
+      "run": "x4-stormlight-cold-normal-v3",
+      "scenarioSha256": "635cfe2997206bb7981dbd7ca5f43c507b85b819e102aa1b06f5af750268d26f",
+      "startedUtc": "2026-07-13T10:01:18Z",
+      "status": "complete"
+    },
+    {
+      "captureFps": 30,
+      "firmwareVersion": "1.4.1-dev-emulator-f42919ca-calibration-dirty37a6d99e",
+      "run": "x4-stormlight-xl-font-normal-v5",
+      "scenarioSha256": "81441c268e4b0d5bce98bae2724991d53db40c667d07c00d633b42a6a0f76a04",
+      "startedUtc": "2026-07-13T10:03:17Z",
+      "status": "complete"
+    },
+    {
+      "captureFps": 30,
+      "firmwareVersion": "1.4.1-dev-emulator-f42919ca-calibration-dirty37a6d99e",
+      "run": "x4-stormlight-warm-quiescent-normal-v2",
+      "scenarioSha256": "15be17ee0949d6157ebd146c1b1adc2481aca2a8ba71362d59b4cb370b17dcd6",
+      "startedUtc": "2026-07-13T10:04:39Z",
+      "status": "complete"
+    },
+    {
+      "captureFps": 30,
+      "firmwareVersion": "1.4.1-dev-emulator-f42919ca-calibration-dirty37a6d99e",
+      "run": "x4-panel-optical-normal-v5",
+      "scenarioSha256": "2dfeb9e3e576d198afec96cbfc6ae394e6691938e0e886fc5d0fff7e6954c0d0",
+      "startedUtc": "2026-07-13T09:47:25Z",
+      "status": "complete"
+    },
+    {
+      "captureFps": 30,
+      "firmwareVersion": "1.4.1-dev-emulator-f42919ca-calibration-dirty37a6d99e",
+      "run": "x4-grayscale-optical-normal-v4",
+      "scenarioSha256": "59b92baddd0d95c4913af480a62f6e25f1810d8f41cb76ddbeb298a19f3690bc",
+      "startedUtc": "2026-07-13T09:48:26Z",
+      "status": "complete"
+    },
+    {
+      "captureFps": 30,
+      "firmwareVersion": "1.4.1-dev-emulator-f42919ca-calibration-dirty56e8767e",
+      "run": "x4-stormlight-half-pages-v2",
+      "scenarioSha256": "beb767bec3b9a77499e7c9aae5c4e62faa8f45fdff79b1a7dc6ab0b853dba8a7",
+      "startedUtc": "2026-07-12T21:59:55Z",
+      "status": "complete"
+    },
+    {
+      "captureFps": 30,
+      "firmwareVersion": "1.4.1-dev-emulator-f42919ca-calibration-dirty56e8767e",
+      "run": "x4-stormlight-fast-pages-v2",
+      "scenarioSha256": "162159e857c3d09a4fc191a92b0a2762da26a77de2c4f377ab7f94478aebe4b0",
+      "startedUtc": "2026-07-12T22:24:08Z",
+      "status": "complete"
+    },
+    {
+      "captureFps": 30,
+      "firmwareVersion": "1.4.1-dev-emulator-f42919ca-calibration-dirtyca7b2857",
+      "run": "x4-stormlight-image-optical-normal-v1",
+      "scenarioSha256": "635cfe2997206bb7981dbd7ca5f43c507b85b819e102aa1b06f5af750268d26f",
+      "startedUtc": "2026-07-13T13:55:15Z",
+      "status": "complete"
+    },
+    {
+      "captureFps": 30,
+      "firmwareVersion": "1.4.1-dev-emulator-f42919ca-calibration-dirty37a6d99e",
+      "run": "x4-directory-benchmark-normal-v3",
+      "scenarioSha256": "a960057f1de39809101c552bda10f1328d76822606295f0655a2d03547dd1568",
+      "startedUtc": "2026-07-13T09:44:33Z",
+      "status": "complete"
+    },
+    {
+      "captureFps": 30,
+      "firmwareVersion": "1.4.1-dev-emulator-f42919ca-calibration-dirty833702f8",
+      "run": "x4-epub-corpus-v2",
+      "scenarioSha256": "a0aaf1c5186253785ad004817352ff6948fd452dbe64e37733e39335ae06d3e8",
+      "startedUtc": "2026-07-13T02:04:32Z",
+      "status": "complete"
+    },
+    {
+      "captureFps": 30,
+      "firmwareVersion": "1.4.1-dev-emulator-f42919ca-calibration-dirty6da1149a",
+      "run": "x4-cache-clear-v2",
+      "scenarioSha256": "6c7fc518b956082463d487729be8b35087661afec983b1f9ea8f03a746a15956",
+      "startedUtc": "2026-07-13T02:25:41Z",
+      "status": "complete"
+    },
+    {
+      "captureFps": 60,
+      "firmwareVersion": "1.4.1-dev-emulator-f42919ca-calibration-dirty6b9cdc1f",
+      "run": "x4-sleep-entry-v3",
+      "scenarioSha256": "81db56a8e251cc8ae70ab4f12ad466592c4529b05fb62ae363955fba915675d1",
+      "startedUtc": "2026-07-13T02:37:00Z",
+      "status": "complete"
+    },
+    {
+      "captureFps": 30,
+      "firmwareVersion": "1.4.1-dev-emulator-f42919ca-calibration-dirty833702f8",
+      "run": "x4-library-navigation-v3",
+      "scenarioSha256": "b827107ffefe09c68f02647689d9d08f9dc7de5c310caaee7a8aa14c6b076eb1",
+      "startedUtc": "2026-07-12T22:49:14Z",
+      "status": "complete"
+    },
+    {
+      "captureFps": 30,
+      "firmwareVersion": "1.4.1-dev-emulator-f42919ca-calibration-dirtye9d99898",
+      "run": "x4-cache-population-v1",
+      "scenarioSha256": "a028bfdc24ee2f0b5ea6779217d5e78a93bd23479b5958a528cff632b836e018",
+      "startedUtc": "2026-07-13T11:02:08Z",
+      "status": "complete"
+    },
+    {
+      "captureFps": 30,
+      "firmwareVersion": "1.4.1-dev-emulator-f42919ca-calibration-dirtye9d99898",
+      "run": "x4-cache-population-v2-repeat",
+      "scenarioSha256": "a028bfdc24ee2f0b5ea6779217d5e78a93bd23479b5958a528cff632b836e018",
+      "startedUtc": "2026-07-13T11:05:33Z",
+      "status": "complete"
+    },
+    {
+      "captureFps": 30,
+      "firmwareVersion": "1.4.1-dev-emulator-f42919ca-calibration-dirtye9d99898",
+      "run": "x4-cache-population-corpus-v1",
+      "scenarioSha256": "5902b228879e59481c2af53dafa3112ea39505333aea018dee6111058651add6",
+      "startedUtc": "2026-07-13T11:08:44Z",
+      "status": "complete"
+    },
+    {
+      "captureFps": 30,
+      "firmwareVersion": "1.4.1-dev-emulator-f42919ca-calibration-dirtye9d99898",
+      "run": "x4-cache-population-corpus-v2-noop-repeat",
+      "scenarioSha256": "5902b228879e59481c2af53dafa3112ea39505333aea018dee6111058651add6",
+      "startedUtc": "2026-07-13T11:10:02Z",
+      "status": "complete"
+    },
+    {
+      "captureFps": 30,
+      "firmwareVersion": "1.4.1-dev-emulator-f42919ca-calibration-dirtyca7b2857",
+      "run": "x4-png-thumbnail-normal-v9",
+      "scenarioSha256": "7aee470b6caf4c6b85349f8eb6388269a8850f03f488491b2a83a3ca06de40fe",
+      "startedUtc": "2026-07-13T11:53:33Z",
+      "status": "complete"
+    },
+    {
+      "captureFps": 30,
+      "firmwareVersion": "1.4.1-dev-emulator-f42919ca-calibration-dirtyca7b2857",
+      "run": "x4-png-thumbnail-series-normal-v2",
+      "scenarioSha256": "032ed62eeaed840f552fc1a58934a949ba7967b65164fda68b471800bb029a14",
+      "startedUtc": "2026-07-13T12:32:39Z",
+      "status": "complete"
+    },
+    {
+      "captureFps": 30,
+      "firmwareVersion": "1.4.1-dev-emulator-f42919ca-calibration-dirtyca7b2857",
+      "run": "x4-stormlight-index-repeats-normal-v1",
+      "scenarioSha256": "60011bd0c5bf2715fc784156935b280c8cbac8bc62db4650f2f80b7124f1e3c1",
+      "startedUtc": "2026-07-13T13:14:58Z",
+      "status": "complete"
+    },
+    {
+      "captureFps": 30,
+      "firmwareVersion": "1.4.1-dev-emulator-f42919ca-calibration-dirtyca7b2857",
+      "run": "x4-corpus-index-repeats-normal-v1",
+      "scenarioSha256": "b278f51ace9df77f3621dc14b650a50a5753ced4c9bf2b5b4943dd974936808e",
+      "startedUtc": "2026-07-13T13:29:40Z",
+      "status": "complete"
+    },
+    {
+      "captureFps": 30,
+      "decodedSourceFrames": 464,
+      "firmwareVersion": "1.4.1-dev-emulator-f42919ca-calibration-dirtyca7b2857",
+      "observedSourceFps": 25.0,
+      "run": "x4-file-browser-controls-normal-v1",
+      "scenarioSha256": "7ddf403a44803c2d76dbe8dbca2026dcea3d35c6c79d1c9b6e2b0113c29c2b93",
+      "sourceFrameIntervalMs": {
+        "max": 360.03,
+        "min": 35.9,
+        "p50": 40.0,
+        "p90": 40.1
+      },
+      "startedUtc": "2026-07-13T17:03:22Z",
+      "status": "complete"
+    },
+    {
+      "captureFps": 30,
+      "decodedSourceFrames": 474,
+      "firmwareVersion": "1.4.1-dev-emulator-f42919ca-calibration-dirtyca7b2857",
+      "observedSourceFps": 25.0,
+      "run": "x4-file-browser-controls-normal-v2",
+      "scenarioSha256": "7ddf403a44803c2d76dbe8dbca2026dcea3d35c6c79d1c9b6e2b0113c29c2b93",
+      "sourceFrameIntervalMs": {
+        "max": 360.001,
+        "min": 36.0,
+        "p50": 40.0,
+        "p90": 40.02
+      },
+      "startedUtc": "2026-07-13T17:04:29Z",
+      "status": "complete"
+    },
+    {
+      "captureFps": 30,
+      "decodedSourceFrames": 1160,
+      "firmwareVersion": "1.4.1-dev-emulator-f42919ca-calibration-dirtyca7b2857",
+      "observedSourceFps": 25.0,
+      "run": "x4-settings-controls-normal-v1",
+      "scenarioSha256": "95d02ce4db8e67ea909b51f6111dd91ff337a7842cd6779935bb9e6a84b05fd7",
+      "sourceFrameIntervalMs": {
+        "max": 360.0,
+        "min": 35.6,
+        "p50": 40.0,
+        "p90": 40.1
+      },
+      "startedUtc": "2026-07-13T17:22:12Z",
+      "status": "complete"
+    },
+    {
+      "captureFps": 30,
+      "decodedSourceFrames": 933,
+      "firmwareVersion": "1.4.1-dev-emulator-f42919ca-calibration-dirtyca7b2857",
+      "observedSourceFps": 25.0,
+      "run": "x4-settings-controls-normal-v2",
+      "scenarioSha256": "95d02ce4db8e67ea909b51f6111dd91ff337a7842cd6779935bb9e6a84b05fd7",
+      "sourceFrameIntervalMs": {
+        "max": 360.088,
+        "min": 35.6,
+        "p50": 40.0,
+        "p90": 40.1
+      },
+      "startedUtc": "2026-07-13T17:25:16Z",
+      "status": "complete"
+    },
+    {
+      "captureFps": 30,
+      "decodedSourceFrames": 1182,
+      "firmwareVersion": "1.4.1-dev-emulator-f42919ca-calibration-dirtye0ed86e0",
+      "observedSourceFps": 25.0,
+      "run": "x4-settings-popup-controls-normal-v1",
+      "scenarioSha256": "026d90d0afed764e44db4c50bc67a1dac4c252b4ac41dc770316216152f79797",
+      "sourceFrameIntervalMs": {
+        "max": 360.033,
+        "min": 35.8,
+        "p50": 40.0,
+        "p90": 40.1
+      },
+      "startedUtc": "2026-07-13T18:47:00Z",
+      "status": "complete"
+    },
+    {
+      "captureFps": 30,
+      "decodedSourceFrames": 1216,
+      "firmwareVersion": "1.4.1-dev-emulator-f42919ca-calibration-dirtye0ed86e0",
+      "observedSourceFps": 25.0,
+      "run": "x4-settings-popup-controls-normal-v2",
+      "scenarioSha256": "026d90d0afed764e44db4c50bc67a1dac4c252b4ac41dc770316216152f79797",
+      "sourceFrameIntervalMs": {
+        "max": 359.237,
+        "min": 35.61,
+        "p50": 40.0,
+        "p90": 40.1
+      },
+      "startedUtc": "2026-07-13T18:48:08Z",
+      "status": "complete"
+    },
+    {
+      "captureFps": 30,
+      "decodedSourceFrames": 940,
+      "firmwareVersion": "1.4.1-dev-emulator-f42919ca-calibration-dirtyca7b2857",
+      "observedSourceFps": 25.0,
+      "run": "x4-reader-navigation-controls-normal-v1",
+      "scenarioSha256": "23214e90590b7c3223dfbe4a918e9c1ffc557d92ad807bbedd895805cd2e60dd",
+      "sourceFrameIntervalMs": {
+        "max": 44.28,
+        "min": 35.75,
+        "p50": 40.0,
+        "p90": 40.1
+      },
+      "startedUtc": "2026-07-13T17:41:15Z",
+      "status": "complete"
+    },
+    {
+      "captureFps": 30,
+      "decodedSourceFrames": 1013,
+      "firmwareVersion": "1.4.1-dev-emulator-f42919ca-calibration-dirtyca7b2857",
+      "observedSourceFps": 25.0,
+      "run": "x4-reader-navigation-controls-normal-v2",
+      "scenarioSha256": "23214e90590b7c3223dfbe4a918e9c1ffc557d92ad807bbedd895805cd2e60dd",
+      "sourceFrameIntervalMs": {
+        "max": 359.177,
+        "min": 35.8,
+        "p50": 40.0,
+        "p90": 40.1
+      },
+      "startedUtc": "2026-07-13T17:42:36Z",
+      "status": "complete"
+    },
+    {
+      "captureFps": 30,
+      "decodedSourceFrames": 1099,
+      "firmwareVersion": "1.4.1-dev-emulator-f42919ca-calibration-dirtyca7b2857",
+      "observedSourceFps": 25.0,
+      "run": "x4-reader-percent-controls-normal-v3",
+      "scenarioSha256": "a14452c0c2f180ae318a1a752d557273ff928b000c830d2c2422650e1dd900f3",
+      "sourceFrameIntervalMs": {
+        "max": 360.274,
+        "min": 35.8,
+        "p50": 40.0,
+        "p90": 40.1
+      },
+      "startedUtc": "2026-07-13T18:07:57Z",
+      "status": "complete"
+    },
+    {
+      "captureFps": 30,
+      "decodedSourceFrames": 982,
+      "firmwareVersion": "1.4.1-dev-emulator-f42919ca-calibration-dirtyca7b2857",
+      "observedSourceFps": 25.0,
+      "run": "x4-reader-percent-controls-normal-v4",
+      "scenarioSha256": "a14452c0c2f180ae318a1a752d557273ff928b000c830d2c2422650e1dd900f3",
+      "sourceFrameIntervalMs": {
+        "max": 360.064,
+        "min": 35.6,
+        "p50": 40.0,
+        "p90": 40.1
+      },
+      "startedUtc": "2026-07-13T18:09:12Z",
+      "status": "complete"
+    },
+    {
+      "captureFps": 30,
+      "decodedSourceFrames": 1373,
+      "firmwareVersion": "1.4.1-dev-emulator-f42919ca-calibration-dirtye0ed86e0",
+      "observedSourceFps": 25.0,
+      "run": "x4-reader-popups-normal-v2",
+      "scenarioSha256": "1f727bd14937ddc77e3af9ff5b2320c37ac657b7868c98d0656f6fc1707557a3",
+      "sourceFrameIntervalMs": {
+        "max": 360.08,
+        "min": 35.6,
+        "p50": 40.0,
+        "p90": 40.1
+      },
+      "startedUtc": "2026-07-13T18:28:05Z",
+      "status": "complete"
+    },
+    {
+      "captureFps": 30,
+      "decodedSourceFrames": 1445,
+      "firmwareVersion": "1.4.1-dev-emulator-f42919ca-calibration-dirtye0ed86e0",
+      "observedSourceFps": 25.0,
+      "run": "x4-reader-popups-normal-v3",
+      "scenarioSha256": "1f727bd14937ddc77e3af9ff5b2320c37ac657b7868c98d0656f6fc1707557a3",
+      "sourceFrameIntervalMs": {
+        "max": 360.071,
+        "min": 35.5,
+        "p50": 40.0,
+        "p90": 40.1
+      },
+      "startedUtc": "2026-07-13T18:29:23Z",
+      "status": "complete"
+    },
+    {
+      "captureFps": 30,
+      "firmwareVersion": "1.4.1-dev-emulator-f42919ca-calibration-dirty53758060",
+      "run": "x4-stormlight-warm-normal-v3",
+      "scenarioSha256": "b4dd2223c03ba1ec592010ad2a0d71cec480d6d916c3b046e6630cc90a73c96c",
+      "startedUtc": "2026-07-13T09:20:51Z",
+      "status": "complete"
+    },
+    {
+      "captureFps": 30,
+      "firmwareVersion": "1.4.1-dev-emulator-f42919ca-calibration-dirty53758060",
+      "run": "x4-wot-warm-normal-v3",
+      "scenarioSha256": "b4dd2223c03ba1ec592010ad2a0d71cec480d6d916c3b046e6630cc90a73c96c",
+      "startedUtc": "2026-07-13T09:23:47Z",
+      "status": "complete"
+    },
+    {
+      "captureFps": 30,
+      "firmwareVersion": "1.4.1-dev-emulator-f42919ca-calibration-dirty53758060",
+      "run": "x4-sun-eater-warm-normal-v3",
+      "scenarioSha256": "b4dd2223c03ba1ec592010ad2a0d71cec480d6d916c3b046e6630cc90a73c96c",
+      "startedUtc": "2026-07-13T09:14:10Z",
+      "status": "complete"
+    },
+    {
+      "captureFps": 30,
+      "firmwareVersion": "1.4.1-dev-emulator-f42919ca-calibration-dirty53758060",
+      "run": "x4-mistborn-warm-normal-v2",
+      "scenarioSha256": "b4dd2223c03ba1ec592010ad2a0d71cec480d6d916c3b046e6630cc90a73c96c",
+      "startedUtc": "2026-07-13T09:16:45Z",
+      "status": "complete"
+    },
+    {
+      "captureFps": 30,
+      "firmwareVersion": "1.4.1-dev-emulator-f42919ca-calibration-dirty53758060",
+      "run": "x4-lotr-warm-normal-v2",
+      "scenarioSha256": "b4dd2223c03ba1ec592010ad2a0d71cec480d6d916c3b046e6630cc90a73c96c",
+      "startedUtc": "2026-07-13T09:18:44Z",
+      "status": "complete"
+    },
+    {
+      "captureFps": 30,
+      "firmwareVersion": "1.4.1-dev-emulator-f42919ca-calibration-dirtyca7b2857",
+      "run": "x4-stormlight-xl-font-normal-v6-repeat",
+      "scenarioSha256": "81441c268e4b0d5bce98bae2724991d53db40c667d07c00d633b42a6a0f76a04",
+      "startedUtc": "2026-07-13T13:41:40Z",
+      "status": "complete"
+    },
+    {
+      "captureFps": 30,
+      "decodedSourceFrames": 453,
+      "firmwareVersion": "1.4.1-dev-emulator-f42919ca-calibration-dirtyca7b2857",
+      "observedSourceFps": 25.0,
+      "run": "x4-home-controls-normal-v3",
+      "scenarioSha256": "5bf2129edf1e40d5be4c2a218653cd9c844b4140eb252c5e26f2392e2cfa883b",
+      "sourceFrameIntervalMs": {
+        "max": 360.009,
+        "min": 35.9,
+        "p50": 40.0,
+        "p90": 40.1
+      },
+      "startedUtc": "2026-07-13T16:47:19Z",
+      "status": "complete"
+    },
+    {
+      "captureFps": 30,
+      "decodedSourceFrames": 2955,
+      "firmwareVersion": "1.4.1-dev-emulator-f42919ca-calibration-dirtyca7b2857",
+      "observedSourceFps": 25.0,
+      "run": "x4-home-recents-variants-normal-v1",
+      "scenarioSha256": "4f67798ecf331ea39fdded770ef7365355c066db5c38e96f2f7e5faa91af0e0f",
+      "sourceFrameIntervalMs": {
+        "max": 360.081,
+        "min": 35.7,
+        "p50": 40.0,
+        "p90": 40.1
+      },
+      "startedUtc": "2026-07-13T16:22:08Z",
+      "status": "complete"
+    }
+  ],
+  "statistics": {
+    "dispersion": "MAD",
+    "nominal": "p50",
+    "tolerance": "p90"
+  },
+  "status": "provisional-single-device",
+  "storage": {
+    "4096": {
+      "read": {
+        "closeUs": {
+          "mad": 0.0,
+          "max": 5,
+          "min": 4,
+          "p50": 4.0,
+          "p90": 5.0,
+          "samples": 20
+        },
+        "ioMiBPerSecondP50": 0.689602,
+        "ioUs": {
+          "mad": 16.5,
+          "max": 5761,
+          "min": 5641,
+          "p50": 5664.5,
+          "p90": 5697.1,
+          "samples": 20
+        },
+        "openUs": {
+          "mad": 38.0,
+          "max": 13147,
+          "min": 12935,
+          "p50": 13020.5,
+          "p90": 13103.8,
+          "samples": 20
+        },
+        "totalUs": {
+          "mad": 40.5,
+          "max": 18913,
+          "min": 18580,
+          "p50": 18690.0,
+          "p90": 18789.6,
+          "samples": 20
+        }
+      },
+      "write": {
+        "closeUs": {
+          "mad": 0.5,
+          "max": 11,
+          "min": 4,
+          "p50": 5.0,
+          "p90": 5.0,
+          "samples": 20
+        },
+        "ioMiBPerSecondP50": 0.311379,
+        "ioUs": {
+          "mad": 71.5,
+          "max": 16094,
+          "min": 12363,
+          "p50": 12545.0,
+          "p90": 15245.6,
+          "samples": 20
+        },
+        "openUs": {
+          "mad": 63.0,
+          "max": 13059,
+          "min": 10074,
+          "p50": 10937.5,
+          "p90": 11062.4,
+          "samples": 20
+        },
+        "totalUs": {
+          "mad": 145.5,
+          "max": 29158,
+          "min": 23156,
+          "p50": 23488.0,
+          "p90": 26323.2,
+          "samples": 20
+        }
+      }
+    },
+    "524288": {
+      "read": {
+        "closeUs": {
+          "mad": 0,
+          "max": 6,
+          "min": 4,
+          "p50": 4,
+          "p90": 5.2,
+          "samples": 5
+        },
+        "ioMiBPerSecondP50": 0.709916,
+        "ioUs": {
+          "mad": 93,
+          "max": 704402,
+          "min": 703498,
+          "p50": 704309,
+          "p90": 704384.4,
+          "samples": 5
+        },
+        "openUs": {
+          "mad": 15,
+          "max": 13077,
+          "min": 13043,
+          "p50": 13062,
+          "p90": 13071.0,
+          "samples": 5
+        },
+        "totalUs": {
+          "mad": 124,
+          "max": 717483,
+          "min": 716564,
+          "p50": 717359,
+          "p90": 717459.4,
+          "samples": 5
+        }
+      },
+      "write": {
+        "closeUs": {
+          "mad": 1,
+          "max": 12,
+          "min": 4,
+          "p50": 5,
+          "p90": 9.2,
+          "samples": 5
+        },
+        "ioMiBPerSecondP50": 0.605771,
+        "ioUs": {
+          "mad": 1733,
+          "max": 827128,
+          "min": 819057,
+          "p50": 825395,
+          "p90": 827083.6,
+          "samples": 5
+        },
+        "openUs": {
+          "mad": 90,
+          "max": 11813,
+          "min": 9850,
+          "p50": 10947,
+          "p90": 11502.6,
+          "samples": 5
+        },
+        "totalUs": {
+          "mad": 1605,
+          "max": 838041,
+          "min": 830008,
+          "p50": 836436,
+          "p90": 837576.2,
+          "samples": 5
+        }
+      }
+    },
+    "65536": {
+      "read": {
+        "closeUs": {
+          "mad": 0.5,
+          "max": 6,
+          "min": 4,
+          "p50": 5.0,
+          "p90": 5.0,
+          "samples": 20
+        },
+        "ioMiBPerSecondP50": 0.701892,
+        "ioUs": {
+          "mad": 15.5,
+          "max": 89088,
+          "min": 89017,
+          "p50": 89045.0,
+          "p90": 89063.5,
+          "samples": 20
+        },
+        "openUs": {
+          "mad": 45.0,
+          "max": 13108,
+          "min": 12965,
+          "p50": 13033.0,
+          "p90": 13083.5,
+          "samples": 20
+        },
+        "totalUs": {
+          "mad": 32.5,
+          "max": 102157,
+          "min": 102005,
+          "p50": 102083.5,
+          "p90": 102121.9,
+          "samples": 20
+        }
+      },
+      "write": {
+        "closeUs": {
+          "mad": 0.5,
+          "max": 11,
+          "min": 4,
+          "p50": 5.0,
+          "p90": 5.0,
+          "samples": 20
+        },
+        "ioMiBPerSecondP50": 0.5768,
+        "ioUs": {
+          "mad": 147.5,
+          "max": 109691,
+          "min": 108046,
+          "p50": 108356.5,
+          "p90": 109090.8,
+          "samples": 20
+        },
+        "openUs": {
+          "mad": 33.5,
+          "max": 12839,
+          "min": 9704,
+          "p50": 10920.5,
+          "p90": 10969.9,
+          "samples": 20
+        },
+        "totalUs": {
+          "mad": 125.0,
+          "max": 122535,
+          "min": 118942,
+          "p50": 119227.0,
+          "p90": 119959.0,
+          "samples": 20
+        }
+      }
+    }
+  },
+  "videoEvidence": {
+    "captureFps": 30,
+    "decodedSourceFrames": 866,
+    "frameQuantizationMs": 40.0,
+    "observedSourceFps": 25.0,
+    "reviewRotationDegrees": 90,
+    "sourceFrameIntervalMs": {
+      "max": 360.06,
+      "min": 35.8,
+      "p50": 40.0,
+      "p90": 40.1
+    }
+  },
+  "warmWorkloads": {
+    "x4-lotr-warm-normal-v2": {
+      "epubPath": "/lotr.epub",
+      "images": {
+        "cachedRenderLargeMs": {
+          "mad": 1.0,
+          "max": 225,
+          "min": 149,
+          "p50": 152.0,
+          "p90": 224.0,
+          "samples": 42
+        },
+        "cachedRenderMs": {
+          "mad": 1.0,
+          "max": 225,
+          "min": 149,
+          "p50": 152.0,
+          "p90": 224.0,
+          "samples": 42
+        },
+        "cachedRenderSamples": [
+          {
+            "cacheBytes": 82944,
+            "height": 715,
+            "renderMs": {
+              "mad": 1.0,
+              "max": 225,
+              "min": 149,
+              "p50": 152.0,
+              "p90": 224.0,
+              "samples": 42
+            },
+            "width": 464
+          }
+        ],
+        "decodeSourceBytes": {
+          "mediumMax": 131072,
+          "smallMax": 16384
+        }
+      },
+      "sourceRun": "x4-lotr-warm-normal-v2",
+      "warm": {
+        "cachedMetadataLoadMs": {
+          "mad": 0,
+          "max": 56,
+          "min": 56,
+          "p50": 56,
+          "p90": 56.0,
+          "samples": 3
+        },
+        "metadataStartToPageLoadMs": {
+          "mad": 0,
+          "max": 202,
+          "min": 200,
+          "p50": 202,
+          "p90": 202.0,
+          "samples": 3
+        },
+        "openToReadyMs": {
+          "mad": 1,
+          "max": 336,
+          "min": 332,
+          "p50": 335,
+          "p90": 335.8,
+          "samples": 3
+        }
+      }
+    },
+    "x4-mistborn-warm-normal-v2": {
+      "epubPath": "/mistborn.epub",
+      "images": {
+        "cachedRenderLargeMs": {
+          "mad": 1.0,
+          "max": 228,
+          "min": 146,
+          "p50": 149.0,
+          "p90": 227.0,
+          "samples": 42
+        },
+        "cachedRenderMs": {
+          "mad": 1.0,
+          "max": 228,
+          "min": 146,
+          "p50": 149.0,
+          "p90": 227.0,
+          "samples": 42
+        },
+        "cachedRenderSamples": [
+          {
+            "cacheBytes": 80740,
+            "height": 696,
+            "renderMs": {
+              "mad": 1.0,
+              "max": 228,
+              "min": 146,
+              "p50": 149.0,
+              "p90": 227.0,
+              "samples": 42
+            },
+            "width": 464
+          }
+        ],
+        "decodeSourceBytes": {
+          "mediumMax": 131072,
+          "smallMax": 16384
+        }
+      },
+      "sourceRun": "x4-mistborn-warm-normal-v2",
+      "warm": {
+        "cachedMetadataLoadMs": {
+          "mad": 0,
+          "max": 56,
+          "min": 55,
+          "p50": 56,
+          "p90": 56.0,
+          "samples": 3
+        },
+        "metadataStartToPageLoadMs": {
+          "mad": 1,
+          "max": 202,
+          "min": 200,
+          "p50": 201,
+          "p90": 201.8,
+          "samples": 3
+        },
+        "openToReadyMs": {
+          "mad": 0,
+          "max": 314,
+          "min": 313,
+          "p50": 314,
+          "p90": 314.0,
+          "samples": 3
+        }
+      }
+    },
+    "x4-stormlight-warm-normal-v3": {
+      "epubPath": "/stormlight.epub",
+      "images": {
+        "cachedRenderLargeMs": {
+          "mad": 1.0,
+          "max": 228,
+          "min": 148,
+          "p50": 151.0,
+          "p90": 228.0,
+          "samples": 42
+        },
+        "cachedRenderMs": {
+          "mad": 1.0,
+          "max": 228,
+          "min": 148,
+          "p50": 151.0,
+          "p90": 228.0,
+          "samples": 42
+        },
+        "cachedRenderSamples": [
+          {
+            "cacheBytes": 81088,
+            "height": 699,
+            "renderMs": {
+              "mad": 1.0,
+              "max": 228,
+              "min": 148,
+              "p50": 151.0,
+              "p90": 228.0,
+              "samples": 42
+            },
+            "width": 464
+          }
+        ],
+        "decodeSourceBytes": {
+          "mediumMax": 131072,
+          "smallMax": 16384
+        }
+      },
+      "sourceRun": "x4-stormlight-warm-normal-v3",
+      "warm": {
+        "cachedMetadataLoadMs": {
+          "mad": 0,
+          "max": 58,
+          "min": 58,
+          "p50": 58,
+          "p90": 58.0,
+          "samples": 3
+        },
+        "metadataStartToPageLoadMs": {
+          "mad": 1,
+          "max": 207,
+          "min": 205,
+          "p50": 206,
+          "p90": 206.8,
+          "samples": 3
+        },
+        "openToReadyMs": {
+          "mad": 4,
+          "max": 328,
+          "min": 318,
+          "p50": 322,
+          "p90": 326.8,
+          "samples": 3
+        }
+      }
+    },
+    "x4-sun-eater-warm-normal-v3": {
+      "epubPath": "/sun-eater.epub",
+      "images": {
+        "cachedRenderLargeMs": {
+          "mad": 1.0,
+          "max": 250,
+          "min": 162,
+          "p50": 165.0,
+          "p90": 249.0,
+          "samples": 42
+        },
+        "cachedRenderMs": {
+          "mad": 1.0,
+          "max": 250,
+          "min": 162,
+          "p50": 165.0,
+          "p90": 249.0,
+          "samples": 42
+        },
+        "cachedRenderSamples": [
+          {
+            "cacheBytes": 86540,
+            "height": 746,
+            "renderMs": {
+              "mad": 1.0,
+              "max": 250,
+              "min": 162,
+              "p50": 165.0,
+              "p90": 249.0,
+              "samples": 42
+            },
+            "width": 464
+          }
+        ],
+        "decodeSourceBytes": {
+          "mediumMax": 131072,
+          "smallMax": 16384
+        }
+      },
+      "sourceRun": "x4-sun-eater-warm-normal-v3",
+      "warm": {
+        "cachedMetadataLoadMs": {
+          "mad": 0,
+          "max": 72,
+          "min": 71,
+          "p50": 72,
+          "p90": 72.0,
+          "samples": 3
+        },
+        "metadataStartToPageLoadMs": {
+          "mad": 1,
+          "max": 226,
+          "min": 224,
+          "p50": 225,
+          "p90": 225.8,
+          "samples": 3
+        },
+        "openToReadyMs": {
+          "mad": 3,
+          "max": 355,
+          "min": 349,
+          "p50": 352,
+          "p90": 354.4,
+          "samples": 3
+        }
+      }
+    },
+    "x4-wot-warm-normal-v3": {
+      "epubPath": "/wot.epub",
+      "images": {
+        "cachedRenderLargeMs": {
+          "mad": 1.0,
+          "max": 174,
+          "min": 124,
+          "p50": 126.0,
+          "p90": 173.0,
+          "samples": 42
+        },
+        "cachedRenderMs": {
+          "mad": 1.0,
+          "max": 174,
+          "min": 124,
+          "p50": 126.0,
+          "p90": 173.0,
+          "samples": 42
+        },
+        "cachedRenderSamples": [
+          {
+            "cacheBytes": 68096,
+            "height": 587,
+            "renderMs": {
+              "mad": 1.0,
+              "max": 174,
+              "min": 124,
+              "p50": 126.0,
+              "p90": 173.0,
+              "samples": 42
+            },
+            "width": 464
+          }
+        ],
+        "decodeSourceBytes": {
+          "mediumMax": 131072,
+          "smallMax": 16384
+        }
+      },
+      "sourceRun": "x4-wot-warm-normal-v3",
+      "warm": {
+        "cachedMetadataLoadMs": {
+          "mad": 0,
+          "max": 160,
+          "min": 159,
+          "p50": 160,
+          "p90": 160.0,
+          "samples": 3
+        },
+        "metadataStartToPageLoadMs": {
+          "mad": 0,
+          "max": 306,
+          "min": 305,
+          "p50": 306,
+          "p90": 306.0,
+          "samples": 3
+        },
+        "openToReadyMs": {
+          "mad": 1,
+          "max": 432,
+          "min": 426,
+          "p50": 427,
+          "p90": 431.0,
+          "samples": 3
+        }
+      }
+    }
+  },
+  "workloads": {
+    "x4-cache-clear-v2": {
+      "cacheClearUs": {
+        "mad": 0,
+        "max": 747440,
+        "min": 747440,
+        "p50": 747440,
+        "p90": 747440.0,
+        "samples": 1
+      },
+      "sourceRun": "x4-cache-clear-v2"
+    },
+    "x4-cache-population-corpus-v1": {
+      "cacheClearSamples": [
+        {
+          "directoryCount": 3,
+          "durationUs": 267880,
+          "fileBytes": 191249,
+          "fileCount": 12
+        },
+        {
+          "directoryCount": 3,
+          "durationUs": 245757,
+          "fileBytes": 429056,
+          "fileCount": 8
+        },
+        {
+          "directoryCount": 3,
+          "durationUs": 204209,
+          "fileBytes": 424060,
+          "fileCount": 8
+        },
+        {
+          "directoryCount": 3,
+          "durationUs": 206460,
+          "fileBytes": 345020,
+          "fileCount": 8
+        }
+      ],
+      "cacheClearUs": {
+        "mad": 20774.0,
+        "max": 267880,
+        "min": 204209,
+        "p50": 226108.5,
+        "p90": 261243.1,
+        "samples": 4
+      },
+      "sourceRun": "x4-cache-population-corpus-v1"
+    },
+    "x4-cache-population-corpus-v2-noop-repeat": {
+      "cacheClearSamples": [
+        {
+          "directoryCount": 0,
+          "durationUs": 6468,
+          "fileBytes": 0,
+          "fileCount": 0
+        },
+        {
+          "directoryCount": 0,
+          "durationUs": 6507,
+          "fileBytes": 0,
+          "fileCount": 0
+        },
+        {
+          "directoryCount": 0,
+          "durationUs": 6385,
+          "fileBytes": 0,
+          "fileCount": 0
+        },
+        {
+          "directoryCount": 0,
+          "durationUs": 6480,
+          "fileBytes": 0,
+          "fileCount": 0
+        }
+      ],
+      "cacheClearUs": {
+        "mad": 19.5,
+        "max": 6507,
+        "min": 6385,
+        "p50": 6474.0,
+        "p90": 6498.9,
+        "samples": 4
+      },
+      "sourceRun": "x4-cache-population-corpus-v2-noop-repeat"
+    },
+    "x4-cache-population-v1": {
+      "cacheClearSamples": [
+        {
+          "directoryCount": 3,
+          "durationUs": 645518,
+          "fileBytes": 820771,
+          "fileCount": 33
+        },
+        {
+          "directoryCount": 3,
+          "durationUs": 219918,
+          "fileBytes": 468618,
+          "fileCount": 8
+        },
+        {
+          "directoryCount": 3,
+          "durationUs": 534688,
+          "fileBytes": 652800,
+          "fileCount": 26
+        }
+      ],
+      "cacheClearUs": {
+        "mad": 110830,
+        "max": 645518,
+        "min": 219918,
+        "p50": 534688,
+        "p90": 623352.0,
+        "samples": 3
+      },
+      "epubPath": "/stormlight.epub",
+      "images": {
+        "cachedRenderLargeMs": {
+          "mad": 1,
+          "max": 227,
+          "min": 146,
+          "p50": 149,
+          "p90": 152.0,
+          "samples": 39
+        },
+        "cachedRenderMs": {
+          "mad": 2,
+          "max": 227,
+          "min": 21,
+          "p50": 149,
+          "p90": 151.2,
+          "samples": 49
+        },
+        "cachedRenderSamples": [
+          {
+            "cacheBytes": 914,
+            "height": 70,
+            "renderMs": {
+              "mad": 0,
+              "max": 22,
+              "min": 21,
+              "p50": 22,
+              "p90": 22.0,
+              "samples": 5
+            },
+            "width": 50
+          },
+          {
+            "cacheBytes": 1880,
+            "height": 67,
+            "renderMs": {
+              "mad": 0,
+              "max": 25,
+              "min": 24,
+              "p50": 24,
+              "p90": 24.6,
+              "samples": 5
+            },
+            "width": 112
+          },
+          {
+            "cacheBytes": 80044,
+            "height": 690,
+            "renderMs": {
+              "mad": 1,
+              "max": 227,
+              "min": 146,
+              "p50": 147,
+              "p90": 149.0,
+              "samples": 13
+            },
+            "width": 464
+          },
+          {
+            "cacheBytes": 81088,
+            "height": 699,
+            "renderMs": {
+              "mad": 1.0,
+              "max": 226,
+              "min": 148,
+              "p50": 150.0,
+              "p90": 152.0,
+              "samples": 26
+            },
+            "width": 464
+          }
+        ],
+        "cachedRenderSmallMs": {
+          "mad": 1.0,
+          "max": 25,
+          "min": 21,
+          "p50": 23.0,
+          "p90": 24.1,
+          "samples": 10
+        },
+        "decodeAndCacheLargeMs": {
+          "mad": 0,
+          "max": 1848,
+          "min": 1848,
+          "p50": 1848,
+          "p90": 1848.0,
+          "samples": 1
+        },
+        "decodeAndCacheMediumMs": {
+          "mad": 0,
+          "max": 1095,
+          "min": 1095,
+          "p50": 1095,
+          "p90": 1095.0,
+          "samples": 1
+        },
+        "decodeAndCacheMs": {
+          "mad": 509.5,
+          "max": 1848,
+          "min": 76,
+          "p50": 592.5,
+          "p90": 1622.1,
+          "samples": 4
+        },
+        "decodeAndCacheSamples": [
+          {
+            "archiveCompressedBytes": 260206,
+            "cacheBytes": 81088,
+            "generationMs": 1848,
+            "height": 699,
+            "imageBytes": 290426,
+            "sourceHeight": 1498,
+            "sourceWidth": 994,
+            "width": 464
+          },
+          {
+            "archiveCompressedBytes": 66465,
+            "cacheBytes": 80044,
+            "generationMs": 1095,
+            "height": 690,
+            "imageBytes": 66507,
+            "sourceHeight": 722,
+            "sourceWidth": 485,
+            "width": 464
+          },
+          {
+            "archiveCompressedBytes": 1025,
+            "cacheBytes": 914,
+            "generationMs": 76,
+            "height": 70,
+            "imageBytes": 1073,
+            "sourceHeight": 70,
+            "sourceWidth": 50,
+            "width": 50
+          },
+          {
+            "archiveCompressedBytes": 1149,
+            "cacheBytes": 1880,
+            "generationMs": 90,
+            "height": 67,
+            "imageBytes": 1256,
+            "sourceHeight": 67,
+            "sourceWidth": 112,
+            "width": 112
+          }
+        ],
+        "decodeAndCacheSmallMs": {
+          "mad": 7.0,
+          "max": 90,
+          "min": 76,
+          "p50": 83.0,
+          "p90": 88.6,
+          "samples": 2
+        },
+        "decodeSourceBytes": {
+          "mediumMax": 131072,
+          "smallMax": 16384
+        },
+        "htmlToImageMs": {
+          "mad": 4,
+          "max": 162,
+          "min": 109,
+          "p50": 113,
+          "p90": 150.0,
+          "samples": 5
+        },
+        "htmlToImageSamples": [
+          109,
+          110,
+          113,
+          132,
+          162
+        ],
+        "prepareLargeMs": {
+          "mad": 1.5,
+          "max": 1724,
+          "min": 1721,
+          "p50": 1722.5,
+          "p90": 1723.7,
+          "samples": 2
+        },
+        "prepareMediumMs": {
+          "mad": 0,
+          "max": 443,
+          "min": 443,
+          "p50": 443,
+          "p90": 443.0,
+          "samples": 1
+        },
+        "prepareSamples": [
+          {
+            "archiveCompressedBytes": 260206,
+            "generationMs": 1721,
+            "imageBytes": 290426,
+            "sourceHeight": 1498,
+            "sourceWidth": 994
+          },
+          {
+            "archiveCompressedBytes": 260206,
+            "generationMs": 1724,
+            "imageBytes": 290426,
+            "sourceHeight": 1498,
+            "sourceWidth": 994
+          },
+          {
+            "archiveCompressedBytes": 66465,
+            "generationMs": 443,
+            "imageBytes": 66507,
+            "sourceHeight": 722,
+            "sourceWidth": 485
+          },
+          {
+            "archiveCompressedBytes": 1025,
+            "generationMs": 161,
+            "imageBytes": 1073,
+            "sourceHeight": 70,
+            "sourceWidth": 50
+          },
+          {
+            "archiveCompressedBytes": 1149,
+            "generationMs": 163,
+            "imageBytes": 1256,
+            "sourceHeight": 67,
+            "sourceWidth": 112
+          }
+        ],
+        "prepareSmallMs": {
+          "mad": 1.0,
+          "max": 163,
+          "min": 161,
+          "p50": 162.0,
+          "p90": 162.8,
+          "samples": 2
+        },
+        "thumbnailConversionMs": {
+          "mad": 8.0,
+          "max": 1471,
+          "min": 1455,
+          "p50": 1463.0,
+          "p90": 1469.4,
+          "samples": 2
+        },
+        "thumbnailGenerationMs": {
+          "mad": 11.0,
+          "max": 3444,
+          "min": 3422,
+          "p50": 3433.0,
+          "p90": 3441.8,
+          "samples": 2
+        },
+        "thumbnailInput": {
+          "archiveCompressedBytes": {
+            "mad": 0.0,
+            "max": 260206,
+            "min": 260206,
+            "p50": 260206.0,
+            "p90": 260206.0,
+            "samples": 2
+          },
+          "format": "jpg",
+          "imageBytes": {
+            "mad": 0.0,
+            "max": 290426,
+            "min": 290426,
+            "p50": 290426.0,
+            "p90": 290426.0,
+            "samples": 2
+          },
+          "sourceHeight": {
+            "mad": 0.0,
+            "max": 1498,
+            "min": 1498,
+            "p50": 1498.0,
+            "p90": 1498.0,
+            "samples": 2
+          },
+          "sourceWidth": {
+            "mad": 0.0,
+            "max": 994,
+            "min": 994,
+            "p50": 994.0,
+            "p90": 994.0,
+            "samples": 2
+          },
+          "targetHeight": {
+            "mad": 0.0,
+            "max": 226,
+            "min": 226,
+            "p50": 226.0,
+            "p90": 226.0,
+            "samples": 2
+          },
+          "targetWidth": {
+            "mad": 0.0,
+            "max": 135,
+            "min": 135,
+            "p50": 135.0,
+            "p90": 135.0,
+            "samples": 2
+          }
+        },
+        "thumbnailPreparationMs": {
+          "mad": 3.0,
+          "max": 1973,
+          "min": 1967,
+          "p50": 1970.0,
+          "p90": 1972.4,
+          "samples": 2
+        }
+      },
+      "indexing": {
+        "bookBinMs": 14166,
+        "manifestItems": 1686,
+        "opfPassMs": 6890,
+        "postIndexLoadMs": 1107,
+        "spineItems": 844,
+        "tocItems": 776,
+        "tocPassMs": 1949,
+        "totalIndexingMs": 23007
+      },
+      "sectionStreamMs": {
+        "mad": 7.0,
+        "max": 345,
+        "min": 288,
+        "p50": 320.0,
+        "p90": 333.1,
+        "samples": 8
+      },
+      "sectionStreamSamples": [
+        288,
+        295,
+        317,
+        319,
+        326,
+        328,
+        321,
+        345
+      ],
+      "sourceRun": "x4-cache-population-v1"
+    },
+    "x4-cache-population-v2-repeat": {
+      "cacheClearSamples": [
+        {
+          "directoryCount": 0,
+          "durationUs": 6512,
+          "fileBytes": 0,
+          "fileCount": 0
+        },
+        {
+          "directoryCount": 3,
+          "durationUs": 220546,
+          "fileBytes": 468618,
+          "fileCount": 8
+        },
+        {
+          "directoryCount": 3,
+          "durationUs": 534090,
+          "fileBytes": 652800,
+          "fileCount": 26
+        }
+      ],
+      "cacheClearUs": {
+        "mad": 214034,
+        "max": 534090,
+        "min": 6512,
+        "p50": 220546,
+        "p90": 471381.2,
+        "samples": 3
+      },
+      "epubPath": "/stormlight.epub",
+      "images": {
+        "cachedRenderLargeMs": {
+          "mad": 1,
+          "max": 227,
+          "min": 145,
+          "p50": 149,
+          "p90": 151.0,
+          "samples": 39
+        },
+        "cachedRenderMs": {
+          "mad": 2,
+          "max": 227,
+          "min": 21,
+          "p50": 149,
+          "p90": 151.0,
+          "samples": 49
+        },
+        "cachedRenderSamples": [
+          {
+            "cacheBytes": 914,
+            "height": 70,
+            "renderMs": {
+              "mad": 0,
+              "max": 22,
+              "min": 21,
+              "p50": 22,
+              "p90": 22.0,
+              "samples": 5
+            },
+            "width": 50
+          },
+          {
+            "cacheBytes": 1880,
+            "height": 67,
+            "renderMs": {
+              "mad": 0,
+              "max": 24,
+              "min": 24,
+              "p50": 24,
+              "p90": 24.0,
+              "samples": 5
+            },
+            "width": 112
+          },
+          {
+            "cacheBytes": 80044,
+            "height": 690,
+            "renderMs": {
+              "mad": 1,
+              "max": 227,
+              "min": 145,
+              "p50": 147,
+              "p90": 148.8,
+              "samples": 13
+            },
+            "width": 464
+          },
+          {
+            "cacheBytes": 81088,
+            "height": 699,
+            "renderMs": {
+              "mad": 1.0,
+              "max": 225,
+              "min": 148,
+              "p50": 150.0,
+              "p90": 151.0,
+              "samples": 26
+            },
+            "width": 464
+          }
+        ],
+        "cachedRenderSmallMs": {
+          "mad": 1.0,
+          "max": 24,
+          "min": 21,
+          "p50": 23.0,
+          "p90": 24.0,
+          "samples": 10
+        },
+        "decodeAndCacheLargeMs": {
+          "mad": 6.0,
+          "max": 1853,
+          "min": 1841,
+          "p50": 1847.0,
+          "p90": 1851.8,
+          "samples": 2
+        },
+        "decodeAndCacheMediumMs": {
+          "mad": 0,
+          "max": 1102,
+          "min": 1102,
+          "p50": 1102,
+          "p90": 1102.0,
+          "samples": 1
+        },
+        "decodeAndCacheMs": {
+          "mad": 751,
+          "max": 1853,
+          "min": 75,
+          "p50": 1102,
+          "p90": 1848.2,
+          "samples": 5
+        },
+        "decodeAndCacheSamples": [
+          {
+            "archiveCompressedBytes": 260206,
+            "cacheBytes": 81088,
+            "generationMs": 1841,
+            "height": 699,
+            "imageBytes": 290426,
+            "sourceHeight": 1498,
+            "sourceWidth": 994,
+            "width": 464
+          },
+          {
+            "archiveCompressedBytes": 260206,
+            "cacheBytes": 81088,
+            "generationMs": 1853,
+            "height": 699,
+            "imageBytes": 290426,
+            "sourceHeight": 1498,
+            "sourceWidth": 994,
+            "width": 464
+          },
+          {
+            "archiveCompressedBytes": 66465,
+            "cacheBytes": 80044,
+            "generationMs": 1102,
+            "height": 690,
+            "imageBytes": 66507,
+            "sourceHeight": 722,
+            "sourceWidth": 485,
+            "width": 464
+          },
+          {
+            "archiveCompressedBytes": 1025,
+            "cacheBytes": 914,
+            "generationMs": 75,
+            "height": 70,
+            "imageBytes": 1073,
+            "sourceHeight": 70,
+            "sourceWidth": 50,
+            "width": 50
+          },
+          {
+            "archiveCompressedBytes": 1149,
+            "cacheBytes": 1880,
+            "generationMs": 86,
+            "height": 67,
+            "imageBytes": 1256,
+            "sourceHeight": 67,
+            "sourceWidth": 112,
+            "width": 112
+          }
+        ],
+        "decodeAndCacheSmallMs": {
+          "mad": 5.5,
+          "max": 86,
+          "min": 75,
+          "p50": 80.5,
+          "p90": 84.9,
+          "samples": 2
+        },
+        "decodeSourceBytes": {
+          "mediumMax": 131072,
+          "smallMax": 16384
+        },
+        "htmlToImageMs": {
+          "mad": 3,
+          "max": 159,
+          "min": 108,
+          "p50": 111,
+          "p90": 146.6,
+          "samples": 5
+        },
+        "htmlToImageSamples": [
+          111,
+          108,
+          111,
+          128,
+          159
+        ],
+        "prepareLargeMs": {
+          "mad": 2.5,
+          "max": 1724,
+          "min": 1719,
+          "p50": 1721.5,
+          "p90": 1723.5,
+          "samples": 2
+        },
+        "prepareMediumMs": {
+          "mad": 0,
+          "max": 447,
+          "min": 447,
+          "p50": 447,
+          "p90": 447.0,
+          "samples": 1
+        },
+        "prepareSamples": [
+          {
+            "archiveCompressedBytes": 260206,
+            "generationMs": 1719,
+            "imageBytes": 290426,
+            "sourceHeight": 1498,
+            "sourceWidth": 994
+          },
+          {
+            "archiveCompressedBytes": 260206,
+            "generationMs": 1724,
+            "imageBytes": 290426,
+            "sourceHeight": 1498,
+            "sourceWidth": 994
+          },
+          {
+            "archiveCompressedBytes": 66465,
+            "generationMs": 447,
+            "imageBytes": 66507,
+            "sourceHeight": 722,
+            "sourceWidth": 485
+          },
+          {
+            "archiveCompressedBytes": 1025,
+            "generationMs": 162,
+            "imageBytes": 1073,
+            "sourceHeight": 70,
+            "sourceWidth": 50
+          },
+          {
+            "archiveCompressedBytes": 1149,
+            "generationMs": 165,
+            "imageBytes": 1256,
+            "sourceHeight": 67,
+            "sourceWidth": 112
+          }
+        ],
+        "prepareSmallMs": {
+          "mad": 1.5,
+          "max": 165,
+          "min": 162,
+          "p50": 163.5,
+          "p90": 164.7,
+          "samples": 2
+        },
+        "thumbnailConversionMs": {
+          "mad": 8.5,
+          "max": 1469,
+          "min": 1452,
+          "p50": 1460.5,
+          "p90": 1467.3,
+          "samples": 2
+        },
+        "thumbnailGenerationMs": {
+          "mad": 10.0,
+          "max": 3443,
+          "min": 3423,
+          "p50": 3433.0,
+          "p90": 3441.0,
+          "samples": 2
+        },
+        "thumbnailInput": {
+          "archiveCompressedBytes": {
+            "mad": 0.0,
+            "max": 260206,
+            "min": 260206,
+            "p50": 260206.0,
+            "p90": 260206.0,
+            "samples": 2
+          },
+          "format": "jpg",
+          "imageBytes": {
+            "mad": 0.0,
+            "max": 290426,
+            "min": 290426,
+            "p50": 290426.0,
+            "p90": 290426.0,
+            "samples": 2
+          },
+          "sourceHeight": {
+            "mad": 0.0,
+            "max": 1498,
+            "min": 1498,
+            "p50": 1498.0,
+            "p90": 1498.0,
+            "samples": 2
+          },
+          "sourceWidth": {
+            "mad": 0.0,
+            "max": 994,
+            "min": 994,
+            "p50": 994.0,
+            "p90": 994.0,
+            "samples": 2
+          },
+          "targetHeight": {
+            "mad": 0.0,
+            "max": 226,
+            "min": 226,
+            "p50": 226.0,
+            "p90": 226.0,
+            "samples": 2
+          },
+          "targetWidth": {
+            "mad": 0.0,
+            "max": 135,
+            "min": 135,
+            "p50": 135.0,
+            "p90": 135.0,
+            "samples": 2
+          }
+        },
+        "thumbnailPreparationMs": {
+          "mad": 1.5,
+          "max": 1974,
+          "min": 1971,
+          "p50": 1972.5,
+          "p90": 1973.7,
+          "samples": 2
+        }
+      },
+      "indexing": {
+        "bookBinMs": 14474,
+        "manifestItems": 1686,
+        "opfPassMs": 6241,
+        "postIndexLoadMs": 1108,
+        "spineItems": 844,
+        "tocItems": 776,
+        "tocPassMs": 2424,
+        "totalIndexingMs": 23139
+      },
+      "sectionStreamMs": {
+        "mad": 5.5,
+        "max": 351,
+        "min": 290,
+        "p50": 322.5,
+        "p90": 349.6,
+        "samples": 8
+      },
+      "sectionStreamSamples": [
+        351,
+        290,
+        316,
+        322,
+        327,
+        322,
+        323,
+        349
+      ],
+      "sourceRun": "x4-cache-population-v2-repeat"
+    },
+    "x4-corpus-index-repeats-normal-v1": {
+      "indexingRepeats": {
+        "groups": [
+          {
+            "epubPath": "/lotr.epub",
+            "samples": [
+              {
+                "bookBinMs": 4752,
+                "coldOpenToReadyMs": 10744,
+                "manifestItems": 454,
+                "opfPassMs": 1971,
+                "postIndexLoadMs": 483,
+                "spineItems": 334,
+                "tocItems": 147,
+                "tocPassMs": 2424,
+                "totalIndexingMs": 9147
+              },
+              {
+                "bookBinMs": 5069,
+                "coldOpenToReadyMs": 11222,
+                "manifestItems": 454,
+                "opfPassMs": 1972,
+                "postIndexLoadMs": 573,
+                "spineItems": 334,
+                "tocItems": 147,
+                "tocPassMs": 2442,
+                "totalIndexingMs": 9483
+              }
+            ]
+          },
+          {
+            "epubPath": "/mistborn.epub",
+            "samples": [
+              {
+                "bookBinMs": 5422,
+                "coldOpenToReadyMs": 14534,
+                "manifestItems": 624,
+                "opfPassMs": 2201,
+                "postIndexLoadMs": 512,
+                "spineItems": 370,
+                "tocItems": 205,
+                "tocPassMs": 5305,
+                "totalIndexingMs": 12929
+              },
+              {
+                "bookBinMs": 7143,
+                "coldOpenToReadyMs": 16415,
+                "manifestItems": 624,
+                "opfPassMs": 2213,
+                "postIndexLoadMs": 510,
+                "spineItems": 370,
+                "tocItems": 205,
+                "tocPassMs": 5455,
+                "totalIndexingMs": 14812
+              }
+            ]
+          },
+          {
+            "epubPath": "/sun-eater.epub",
+            "samples": [
+              {
+                "bookBinMs": 11832,
+                "coldOpenToReadyMs": 19961,
+                "manifestItems": 844,
+                "opfPassMs": 4921,
+                "postIndexLoadMs": 417,
+                "spineItems": 808,
+                "tocItems": 434,
+                "tocPassMs": 1693,
+                "totalIndexingMs": 18447
+              },
+              {
+                "bookBinMs": 12913,
+                "coldOpenToReadyMs": 20136,
+                "manifestItems": 844,
+                "opfPassMs": 4415,
+                "postIndexLoadMs": 418,
+                "spineItems": 808,
+                "tocItems": 434,
+                "tocPassMs": 1283,
+                "totalIndexingMs": 18611
+              }
+            ]
+          },
+          {
+            "epubPath": "/wot.epub",
+            "samples": [
+              {
+                "bookBinMs": 14047,
+                "coldOpenToReadyMs": 24607,
+                "manifestItems": 1506,
+                "opfPassMs": 4730,
+                "postIndexLoadMs": 1117,
+                "spineItems": 831,
+                "tocItems": 785,
+                "tocPassMs": 1659,
+                "totalIndexingMs": 20438
+              },
+              {
+                "bookBinMs": 14042,
+                "coldOpenToReadyMs": 25062,
+                "manifestItems": 1506,
+                "opfPassMs": 5474,
+                "postIndexLoadMs": 823,
+                "spineItems": 831,
+                "tocItems": 785,
+                "tocPassMs": 1663,
+                "totalIndexingMs": 21181
+              }
+            ]
+          }
+        ]
+      },
+      "sourceRun": "x4-corpus-index-repeats-normal-v1"
+    },
+    "x4-epub-corpus-v2": {
+      "corpus": {
+        "lotr": {
+          "cachedMetadataLoadMs": {
+            "mad": 0,
+            "max": 16,
+            "min": 16,
+            "p50": 16,
+            "p90": 16.0,
+            "samples": 1
+          },
+          "coldOpenToReadyMs": 10767,
+          "epubPath": "/lotr.epub",
+          "indexing": {
+            "bookBinMs": 4753,
+            "manifestItems": 454,
+            "opfPassMs": 2042,
+            "postIndexLoadMs": 450,
+            "spineItems": 334,
+            "tocItems": 147,
+            "tocPassMs": 2431,
+            "totalIndexingMs": 9227
+          },
+          "page": {
+            "images": {
+              "decodeAndCacheLargeMs": {
+                "mad": 0,
+                "max": 1606,
+                "min": 1606,
+                "p50": 1606,
+                "p90": 1606.0,
+                "samples": 1
+              },
+              "decodeAndCacheMs": {
+                "mad": 0,
+                "max": 1606,
+                "min": 1606,
+                "p50": 1606,
+                "p90": 1606.0,
+                "samples": 1
+              },
+              "decodeAndCacheSamples": [
+                {
+                  "archiveCompressedBytes": 197394,
+                  "cacheBytes": 82944,
+                  "generationMs": 1606,
+                  "height": 715,
+                  "imageBytes": 222713,
+                  "sourceHeight": 1371,
+                  "sourceWidth": 889,
+                  "width": 464
+                }
+              ],
+              "decodeSourceBytes": {
+                "mediumMax": 131072,
+                "smallMax": 16384
+              }
+            },
+            "inputToReadyMs": 2657
+          },
+          "thumbnailConversionMs": {
+            "mad": 0,
+            "max": 1154,
+            "min": 1154,
+            "p50": 1154,
+            "p90": 1154.0,
+            "samples": 1
+          },
+          "thumbnailGenerationMs": {
+            "mad": 0,
+            "max": 2649,
+            "min": 2649,
+            "p50": 2649,
+            "p90": 2649.0,
+            "samples": 1
+          },
+          "thumbnailInput": {
+            "archiveCompressedBytes": {
+              "mad": 0,
+              "max": 197394,
+              "min": 197394,
+              "p50": 197394,
+              "p90": 197394.0,
+              "samples": 1
+            },
+            "format": "jpg",
+            "imageBytes": {
+              "mad": 0,
+              "max": 222713,
+              "min": 222713,
+              "p50": 222713,
+              "p90": 222713.0,
+              "samples": 1
+            },
+            "sourceHeight": {
+              "mad": 0,
+              "max": 1371,
+              "min": 1371,
+              "p50": 1371,
+              "p90": 1371.0,
+              "samples": 1
+            },
+            "sourceWidth": {
+              "mad": 0,
+              "max": 889,
+              "min": 889,
+              "p50": 889,
+              "p90": 889.0,
+              "samples": 1
+            },
+            "targetHeight": {
+              "mad": 0,
+              "max": 226,
+              "min": 226,
+              "p50": 226,
+              "p90": 226.0,
+              "samples": 1
+            },
+            "targetWidth": {
+              "mad": 0,
+              "max": 135,
+              "min": 135,
+              "p50": 135,
+              "p90": 135.0,
+              "samples": 1
+            }
+          },
+          "thumbnailPreparationMs": {
+            "mad": 0,
+            "max": 1495,
+            "min": 1495,
+            "p50": 1495,
+            "p90": 1495.0,
+            "samples": 1
+          }
+        },
+        "mistborn": {
+          "cachedMetadataLoadMs": {
+            "mad": 0,
+            "max": 16,
+            "min": 16,
+            "p50": 16,
+            "p90": 16.0,
+            "samples": 1
+          },
+          "coldOpenToReadyMs": 15864,
+          "epubPath": "/mistborn.epub",
+          "indexing": {
+            "bookBinMs": 5396,
+            "manifestItems": 624,
+            "opfPassMs": 3091,
+            "postIndexLoadMs": 496,
+            "spineItems": 370,
+            "tocItems": 205,
+            "tocPassMs": 5704,
+            "totalIndexingMs": 14192
+          },
+          "page": {
+            "inputToReadyMs": 2659
+          },
+          "thumbnailConversionMs": {
+            "mad": 0,
+            "max": 1515,
+            "min": 1515,
+            "p50": 1515,
+            "p90": 1515.0,
+            "samples": 1
+          },
+          "thumbnailGenerationMs": {
+            "mad": 0,
+            "max": 3608,
+            "min": 3608,
+            "p50": 3608,
+            "p90": 3608.0,
+            "samples": 1
+          },
+          "thumbnailInput": {
+            "archiveCompressedBytes": {
+              "mad": 0,
+              "max": 289216,
+              "min": 289216,
+              "p50": 289216,
+              "p90": 289216.0,
+              "samples": 1
+            },
+            "format": "jpg",
+            "imageBytes": {
+              "mad": 0,
+              "max": 305810,
+              "min": 305810,
+              "p50": 305810,
+              "p90": 305810.0,
+              "samples": 1
+            },
+            "sourceHeight": {
+              "mad": 0,
+              "max": 1500,
+              "min": 1500,
+              "p50": 1500,
+              "p90": 1500.0,
+              "samples": 1
+            },
+            "sourceWidth": {
+              "mad": 0,
+              "max": 1000,
+              "min": 1000,
+              "p50": 1000,
+              "p90": 1000.0,
+              "samples": 1
+            },
+            "targetHeight": {
+              "mad": 0,
+              "max": 226,
+              "min": 226,
+              "p50": 226,
+              "p90": 226.0,
+              "samples": 1
+            },
+            "targetWidth": {
+              "mad": 0,
+              "max": 135,
+              "min": 135,
+              "p50": 135,
+              "p90": 135.0,
+              "samples": 1
+            }
+          },
+          "thumbnailPreparationMs": {
+            "mad": 0,
+            "max": 2093,
+            "min": 2093,
+            "p50": 2093,
+            "p90": 2093.0,
+            "samples": 1
+          }
+        },
+        "sun-eater": {
+          "cachedMetadataLoadMs": {
+            "mad": 0,
+            "max": 18,
+            "min": 18,
+            "p50": 18,
+            "p90": 18.0,
+            "samples": 1
+          },
+          "coldOpenToReadyMs": 18307,
+          "epubPath": "/sun-eater.epub",
+          "indexing": {
+            "bookBinMs": 11104,
+            "manifestItems": 844,
+            "opfPassMs": 4480,
+            "postIndexLoadMs": 415,
+            "spineItems": 808,
+            "tocItems": 434,
+            "tocPassMs": 1249,
+            "totalIndexingMs": 16835
+          },
+          "page": {
+            "images": {
+              "decodeAndCacheLargeMs": {
+                "mad": 0,
+                "max": 1882,
+                "min": 1882,
+                "p50": 1882,
+                "p90": 1882.0,
+                "samples": 1
+              },
+              "decodeAndCacheMs": {
+                "mad": 0,
+                "max": 1882,
+                "min": 1882,
+                "p50": 1882,
+                "p90": 1882.0,
+                "samples": 1
+              },
+              "decodeAndCacheSamples": [
+                {
+                  "archiveCompressedBytes": 234340,
+                  "cacheBytes": 86540,
+                  "generationMs": 1882,
+                  "height": 746,
+                  "imageBytes": 256811,
+                  "sourceHeight": 1505,
+                  "sourceWidth": 935,
+                  "width": 464
+                }
+              ],
+              "decodeSourceBytes": {
+                "mediumMax": 131072,
+                "smallMax": 16384
+              }
+            },
+            "inputToReadyMs": 3482
+          },
+          "thumbnailConversionMs": {
+            "mad": 0,
+            "max": 1560,
+            "min": 1560,
+            "p50": 1560,
+            "p90": 1560.0,
+            "samples": 1
+          },
+          "thumbnailGenerationMs": {
+            "mad": 0,
+            "max": 3482,
+            "min": 3482,
+            "p50": 3482,
+            "p90": 3482.0,
+            "samples": 1
+          },
+          "thumbnailInput": {
+            "archiveCompressedBytes": {
+              "mad": 0,
+              "max": 234340,
+              "min": 234340,
+              "p50": 234340,
+              "p90": 234340.0,
+              "samples": 1
+            },
+            "format": "jpg",
+            "imageBytes": {
+              "mad": 0,
+              "max": 256811,
+              "min": 256811,
+              "p50": 256811,
+              "p90": 256811.0,
+              "samples": 1
+            },
+            "sourceHeight": {
+              "mad": 0,
+              "max": 1505,
+              "min": 1505,
+              "p50": 1505,
+              "p90": 1505.0,
+              "samples": 1
+            },
+            "sourceWidth": {
+              "mad": 0,
+              "max": 935,
+              "min": 935,
+              "p50": 935,
+              "p90": 935.0,
+              "samples": 1
+            },
+            "targetHeight": {
+              "mad": 0,
+              "max": 226,
+              "min": 226,
+              "p50": 226,
+              "p90": 226.0,
+              "samples": 1
+            },
+            "targetWidth": {
+              "mad": 0,
+              "max": 135,
+              "min": 135,
+              "p50": 135,
+              "p90": 135.0,
+              "samples": 1
+            }
+          },
+          "thumbnailPreparationMs": {
+            "mad": 0,
+            "max": 1922,
+            "min": 1922,
+            "p50": 1922,
+            "p90": 1922.0,
+            "samples": 1
+          }
+        },
+        "wot": {
+          "cachedMetadataLoadMs": {
+            "mad": 0,
+            "max": 20,
+            "min": 20,
+            "p50": 20,
+            "p90": 20.0,
+            "samples": 1
+          },
+          "coldOpenToReadyMs": 25951,
+          "epubPath": "/wot.epub",
+          "indexing": {
+            "bookBinMs": 15708,
+            "manifestItems": 1506,
+            "opfPassMs": 4804,
+            "postIndexLoadMs": 862,
+            "spineItems": 831,
+            "tocItems": 785,
+            "tocPassMs": 1600,
+            "totalIndexingMs": 22114
+          },
+          "page": {
+            "images": {
+              "cachedRenderLargeMs": {
+                "mad": 0,
+                "max": 181,
+                "min": 181,
+                "p50": 181,
+                "p90": 181.0,
+                "samples": 1
+              },
+              "cachedRenderMs": {
+                "mad": 0,
+                "max": 181,
+                "min": 181,
+                "p50": 181,
+                "p90": 181.0,
+                "samples": 1
+              },
+              "cachedRenderSamples": [
+                {
+                  "cacheBytes": 68096,
+                  "height": 587,
+                  "renderMs": {
+                    "mad": 0,
+                    "max": 181,
+                    "min": 181,
+                    "p50": 181,
+                    "p90": 181.0,
+                    "samples": 1
+                  },
+                  "width": 464
+                }
+              ],
+              "decodeAndCacheMs": {
+                "mad": 0,
+                "max": 650,
+                "min": 650,
+                "p50": 650,
+                "p90": 650.0,
+                "samples": 1
+              },
+              "decodeAndCacheSamples": [
+                {
+                  "archiveCompressedBytes": 9663,
+                  "cacheBytes": 68096,
+                  "generationMs": 650,
+                  "height": 587,
+                  "imageBytes": 12502,
+                  "sourceHeight": 700,
+                  "sourceWidth": 553,
+                  "width": 464
+                }
+              ],
+              "decodeAndCacheSmallMs": {
+                "mad": 0,
+                "max": 650,
+                "min": 650,
+                "p50": 650,
+                "p90": 650.0,
+                "samples": 1
+              },
+              "decodeSourceBytes": {
+                "mediumMax": 131072,
+                "smallMax": 16384
+              },
+              "htmlToImageMs": {
+                "mad": 0,
+                "max": 234,
+                "min": 234,
+                "p50": 234,
+                "p90": 234.0,
+                "samples": 1
+              },
+              "htmlToImageSamples": [
+                234
+              ],
+              "prepareSamples": [
+                {
+                  "archiveCompressedBytes": 9663,
+                  "generationMs": 192,
+                  "imageBytes": 12502,
+                  "sourceHeight": 700,
+                  "sourceWidth": 553
+                }
+              ],
+              "prepareSmallMs": {
+                "mad": 0,
+                "max": 192,
+                "min": 192,
+                "p50": 192,
+                "p90": 192.0,
+                "samples": 1
+              }
+            },
+            "inputToReadyMs": 4575,
+            "render": {
+              "all": {
+                "bwRender": {
+                  "mad": 0,
+                  "max": 9,
+                  "min": 9,
+                  "p50": 9,
+                  "p90": 9.0,
+                  "samples": 1
+                },
+                "cleanup": {
+                  "mad": 0,
+                  "max": 79,
+                  "min": 79,
+                  "p50": 79,
+                  "p90": 79.0,
+                  "samples": 1
+                },
+                "display": {
+                  "mad": 0,
+                  "max": 2040,
+                  "min": 2040,
+                  "p50": 2040,
+                  "p90": 2040.0,
+                  "samples": 1
+                },
+                "grayDisplay": {
+                  "mad": 0,
+                  "max": 146,
+                  "min": 146,
+                  "p50": 146,
+                  "p90": 146.0,
+                  "samples": 1
+                },
+                "grayLsb": {
+                  "mad": 0,
+                  "max": 81,
+                  "min": 81,
+                  "p50": 81,
+                  "p90": 81.0,
+                  "samples": 1
+                },
+                "grayMsb": {
+                  "mad": 0,
+                  "max": 81,
+                  "min": 81,
+                  "p50": 81,
+                  "p90": 81.0,
+                  "samples": 1
+                },
+                "grayscaleBusy": {
+                  "mad": 0,
+                  "max": 144,
+                  "min": 144,
+                  "p50": 144,
+                  "p90": 144.0,
+                  "samples": 1
+                },
+                "prewarm": {
+                  "mad": 0,
+                  "max": 0,
+                  "min": 0,
+                  "p50": 0,
+                  "p90": 0.0,
+                  "samples": 1
+                },
+                "primaryBusy": {
+                  "mad": 0,
+                  "max": 1721,
+                  "min": 1721,
+                  "p50": 1721,
+                  "p90": 1721.0,
+                  "samples": 1
+                },
+                "total": {
+                  "mad": 0,
+                  "max": 2436,
+                  "min": 2436,
+                  "p50": 2436,
+                  "p90": 2436.0,
+                  "samples": 1
+                }
+              },
+              "halfPrimary": {
+                "bwRender": {
+                  "mad": 0,
+                  "max": 9,
+                  "min": 9,
+                  "p50": 9,
+                  "p90": 9.0,
+                  "samples": 1
+                },
+                "cleanup": {
+                  "mad": 0,
+                  "max": 79,
+                  "min": 79,
+                  "p50": 79,
+                  "p90": 79.0,
+                  "samples": 1
+                },
+                "display": {
+                  "mad": 0,
+                  "max": 2040,
+                  "min": 2040,
+                  "p50": 2040,
+                  "p90": 2040.0,
+                  "samples": 1
+                },
+                "grayDisplay": {
+                  "mad": 0,
+                  "max": 146,
+                  "min": 146,
+                  "p50": 146,
+                  "p90": 146.0,
+                  "samples": 1
+                },
+                "grayLsb": {
+                  "mad": 0,
+                  "max": 81,
+                  "min": 81,
+                  "p50": 81,
+                  "p90": 81.0,
+                  "samples": 1
+                },
+                "grayMsb": {
+                  "mad": 0,
+                  "max": 81,
+                  "min": 81,
+                  "p50": 81,
+                  "p90": 81.0,
+                  "samples": 1
+                },
+                "grayscaleBusy": {
+                  "mad": 0,
+                  "max": 144,
+                  "min": 144,
+                  "p50": 144,
+                  "p90": 144.0,
+                  "samples": 1
+                },
+                "prewarm": {
+                  "mad": 0,
+                  "max": 0,
+                  "min": 0,
+                  "p50": 0,
+                  "p90": 0.0,
+                  "samples": 1
+                },
+                "primaryBusy": {
+                  "mad": 0,
+                  "max": 1721,
+                  "min": 1721,
+                  "p50": 1721,
+                  "p90": 1721.0,
+                  "samples": 1
+                },
+                "total": {
+                  "mad": 0,
+                  "max": 2436,
+                  "min": 2436,
+                  "p50": 2436,
+                  "p90": 2436.0,
+                  "samples": 1
+                }
+              }
+            }
+          },
+          "thumbnailConversionMs": {
+            "mad": 0,
+            "max": 429,
+            "min": 429,
+            "p50": 429,
+            "p90": 429.0,
+            "samples": 1
+          },
+          "thumbnailGenerationMs": {
+            "mad": 0,
+            "max": 886,
+            "min": 886,
+            "p50": 886,
+            "p90": 886.0,
+            "samples": 1
+          },
+          "thumbnailInput": {
+            "archiveCompressedBytes": {
+              "mad": 0,
+              "max": 43297,
+              "min": 43297,
+              "p50": 43297,
+              "p90": 43297.0,
+              "samples": 1
+            },
+            "format": "jpg",
+            "imageBytes": {
+              "mad": 0,
+              "max": 43333,
+              "min": 43333,
+              "p50": 43333,
+              "p90": 43333.0,
+              "samples": 1
+            },
+            "sourceHeight": {
+              "mad": 0,
+              "max": 800,
+              "min": 800,
+              "p50": 800,
+              "p90": 800.0,
+              "samples": 1
+            },
+            "sourceWidth": {
+              "mad": 0,
+              "max": 526,
+              "min": 526,
+              "p50": 526,
+              "p90": 526.0,
+              "samples": 1
+            },
+            "targetHeight": {
+              "mad": 0,
+              "max": 226,
+              "min": 226,
+              "p50": 226,
+              "p90": 226.0,
+              "samples": 1
+            },
+            "targetWidth": {
+              "mad": 0,
+              "max": 135,
+              "min": 135,
+              "p50": 135,
+              "p90": 135.0,
+              "samples": 1
+            }
+          },
+          "thumbnailPreparationMs": {
+            "mad": 0,
+            "max": 457,
+            "min": 457,
+            "p50": 457,
+            "p90": 457.0,
+            "samples": 1
+          }
+        }
+      },
+      "corpusImages": {
+        "decodeAndCacheSamples": [
+          {
+            "archiveCompressedBytes": 9663,
+            "cacheBytes": 68096,
+            "generationMs": 650,
+            "height": 587,
+            "imageBytes": 12502,
+            "sourceHeight": 700,
+            "sourceWidth": 553,
+            "width": 464
+          },
+          {
+            "archiveCompressedBytes": 234340,
+            "cacheBytes": 86540,
+            "generationMs": 1882,
+            "height": 746,
+            "imageBytes": 256811,
+            "sourceHeight": 1505,
+            "sourceWidth": 935,
+            "width": 464
+          },
+          {
+            "archiveCompressedBytes": 289216,
+            "cacheBytes": 80740,
+            "generationMs": 1978,
+            "height": 696,
+            "imageBytes": 305810,
+            "sourceHeight": 1500,
+            "sourceWidth": 1000,
+            "width": 464
+          },
+          {
+            "archiveCompressedBytes": 197394,
+            "cacheBytes": 82944,
+            "generationMs": 1606,
+            "height": 715,
+            "imageBytes": 222713,
+            "sourceHeight": 1371,
+            "sourceWidth": 889,
+            "width": 464
+          }
+        ],
+        "prepareSamples": [
+          {
+            "archiveCompressedBytes": 9663,
+            "generationMs": 192,
+            "imageBytes": 12502,
+            "sourceHeight": 700,
+            "sourceWidth": 553
+          },
+          {
+            "archiveCompressedBytes": 234340,
+            "generationMs": 1532,
+            "imageBytes": 256811,
+            "sourceHeight": 1505,
+            "sourceWidth": 935
+          },
+          {
+            "archiveCompressedBytes": 289216,
+            "generationMs": 1845,
+            "imageBytes": 305810,
+            "sourceHeight": 1500,
+            "sourceWidth": 1000
+          },
+          {
+            "archiveCompressedBytes": 197394,
+            "generationMs": 1333,
+            "imageBytes": 222713,
+            "sourceHeight": 1371,
+            "sourceWidth": 889
+          }
+        ]
+      },
+      "sectionStreamMs": {
+        "mad": 20,
+        "max": 416,
+        "min": 261,
+        "p50": 337,
+        "p90": 392.0,
+        "samples": 5
+      },
+      "sectionStreamSamples": [
+        356,
+        261,
+        416,
+        317,
+        337
+      ],
+      "sourceRun": "x4-epub-corpus-v2"
+    },
+    "x4-file-browser-controls-normal-v1": {
+      "fileBrowserControlActivityToDisplayMs": {
+        "mad": 0,
+        "max": 38,
+        "min": 38,
+        "p50": 38,
+        "p90": 38.0,
+        "samples": 1
+      },
+      "fileBrowserControlActivityToDisplaySamples": [
+        38
+      ],
+      "fileBrowserControlRenderMs": {
+        "mad": 0,
+        "max": 26,
+        "min": 26,
+        "p50": 26,
+        "p90": 26.0,
+        "samples": 13
+      },
+      "fileBrowserControlRenderSamples": [
+        26,
+        26,
+        26,
+        26,
+        26,
+        26,
+        26,
+        26,
+        26,
+        26,
+        26,
+        26,
+        26
+      ],
+      "sourceRun": "x4-file-browser-controls-normal-v1"
+    },
+    "x4-file-browser-controls-normal-v2": {
+      "fileBrowserControlActivityToDisplayMs": {
+        "mad": 0,
+        "max": 38,
+        "min": 38,
+        "p50": 38,
+        "p90": 38.0,
+        "samples": 1
+      },
+      "fileBrowserControlActivityToDisplaySamples": [
+        38
+      ],
+      "fileBrowserControlRenderMs": {
+        "mad": 0,
+        "max": 26,
+        "min": 26,
+        "p50": 26,
+        "p90": 26.0,
+        "samples": 13
+      },
+      "fileBrowserControlRenderSamples": [
+        26,
+        26,
+        26,
+        26,
+        26,
+        26,
+        26,
+        26,
+        26,
+        26,
+        26,
+        26,
+        26
+      ],
+      "sourceRun": "x4-file-browser-controls-normal-v2"
+    },
+    "x4-library-navigation-v3": {
+      "fileBrowserActivityToDisplayMs": {
+        "mad": 0,
+        "max": 28,
+        "min": 28,
+        "p50": 28,
+        "p90": 28.0,
+        "samples": 5
+      },
+      "fileBrowserActivityToDisplaySamples": [
+        28,
+        28,
+        28,
+        28,
+        28
+      ],
+      "fileBrowserRenderMs": {
+        "mad": 0,
+        "max": 18,
+        "min": 18,
+        "p50": 18,
+        "p90": 18.0,
+        "samples": 5
+      },
+      "fileBrowserRenderSamples": [
+        18,
+        18,
+        18,
+        18,
+        18
+      ],
+      "homeFirstRenderMs": {
+        "mad": 0.0,
+        "max": 72,
+        "min": 71,
+        "p50": 72.0,
+        "p90": 72.0,
+        "samples": 6
+      },
+      "homeFirstRenderSamples": [
+        71,
+        72,
+        72,
+        72,
+        72,
+        72
+      ],
+      "homeSubsequentRenderMs": {
+        "mad": 0.0,
+        "max": 12,
+        "min": 12,
+        "p50": 12.0,
+        "p90": 12.0,
+        "samples": 6
+      },
+      "homeSubsequentRenderSamples": [
+        12,
+        12,
+        12,
+        12,
+        12,
+        12
+      ],
+      "sourceRun": "x4-library-navigation-v3"
+    },
+    "x4-png-thumbnail-normal-v9": {
+      "cacheClearSamples": [
+        {
+          "directoryCount": 0,
+          "durationUs": 6471,
+          "fileBytes": 0,
+          "fileCount": 0
+        }
+      ],
+      "cacheClearUs": {
+        "mad": 0,
+        "max": 6471,
+        "min": 6471,
+        "p50": 6471,
+        "p90": 6471.0,
+        "samples": 1
+      },
+      "epubPath": "/png-cover-calibration.epub",
+      "images": {
+        "thumbnailConversionMs": {
+          "mad": 0,
+          "max": 3182,
+          "min": 3182,
+          "p50": 3182,
+          "p90": 3182.0,
+          "samples": 1
+        },
+        "thumbnailGenerationMs": {
+          "mad": 0,
+          "max": 3592,
+          "min": 3592,
+          "p50": 3592,
+          "p90": 3592.0,
+          "samples": 1
+        },
+        "thumbnailInput": {
+          "archiveCompressedBytes": {
+            "mad": 0,
+            "max": 50315,
+            "min": 50315,
+            "p50": 50315,
+            "p90": 50315.0,
+            "samples": 1
+          },
+          "bitDepth": {
+            "mad": 0,
+            "max": 8,
+            "min": 8,
+            "p50": 8,
+            "p90": 8.0,
+            "samples": 1
+          },
+          "colorType": {
+            "mad": 0,
+            "max": 2,
+            "min": 2,
+            "p50": 2,
+            "p90": 2.0,
+            "samples": 1
+          },
+          "format": "png",
+          "imageBytes": {
+            "mad": 0,
+            "max": 51237,
+            "min": 51237,
+            "p50": 51237,
+            "p90": 51237.0,
+            "samples": 1
+          },
+          "sourceHeight": {
+            "mad": 0,
+            "max": 1445,
+            "min": 1445,
+            "p50": 1445,
+            "p90": 1445.0,
+            "samples": 1
+          },
+          "sourceWidth": {
+            "mad": 0,
+            "max": 963,
+            "min": 963,
+            "p50": 963,
+            "p90": 963.0,
+            "samples": 1
+          },
+          "targetHeight": {
+            "mad": 0,
+            "max": 226,
+            "min": 226,
+            "p50": 226,
+            "p90": 226.0,
+            "samples": 1
+          },
+          "targetWidth": {
+            "mad": 0,
+            "max": 135,
+            "min": 135,
+            "p50": 135,
+            "p90": 135.0,
+            "samples": 1
+          }
+        },
+        "thumbnailPreparationMs": {
+          "mad": 0,
+          "max": 410,
+          "min": 410,
+          "p50": 410,
+          "p90": 410.0,
+          "samples": 1
+        }
+      },
+      "indexing": {
+        "bookBinMs": 74,
+        "opfPassMs": 145,
+        "postIndexLoadMs": 98,
+        "spineItems": 1,
+        "tocItems": 1,
+        "tocPassMs": 98,
+        "totalIndexingMs": 317
+      },
+      "sectionStreamMs": {
+        "mad": 0,
+        "max": 236,
+        "min": 236,
+        "p50": 236,
+        "p90": 236.0,
+        "samples": 1
+      },
+      "sectionStreamSamples": [
+        236
+      ],
+      "sourceRun": "x4-png-thumbnail-normal-v9"
+    },
+    "x4-png-thumbnail-series-normal-v2": {
+      "pngSeries": {
+        "png-1284x1927": {
+          "cacheClearSamples": [
+            {
+              "directoryCount": 0,
+              "durationUs": 6436,
+              "fileBytes": 0,
+              "fileCount": 0
+            }
+          ],
+          "cacheClearUs": {
+            "mad": 0,
+            "max": 6436,
+            "min": 6436,
+            "p50": 6436,
+            "p90": 6436.0,
+            "samples": 1
+          },
+          "coldOpenToReadyMs": 1485,
+          "epubPath": "/png-cover-calibration-1284x1927.epub",
+          "images": {
+            "thumbnailConversionMs": {
+              "mad": 0,
+              "max": 5462,
+              "min": 5462,
+              "p50": 5462,
+              "p90": 5462.0,
+              "samples": 1
+            },
+            "thumbnailGenerationMs": {
+              "mad": 0,
+              "max": 5987,
+              "min": 5987,
+              "p50": 5987,
+              "p90": 5987.0,
+              "samples": 1
+            },
+            "thumbnailInput": {
+              "archiveCompressedBytes": {
+                "mad": 0,
+                "max": 66457,
+                "min": 66457,
+                "p50": 66457,
+                "p90": 66457.0,
+                "samples": 1
+              },
+              "bitDepth": {
+                "mad": 0,
+                "max": 8,
+                "min": 8,
+                "p50": 8,
+                "p90": 8.0,
+                "samples": 1
+              },
+              "colorType": {
+                "mad": 0,
+                "max": 2,
+                "min": 2,
+                "p50": 2,
+                "p90": 2.0,
+                "samples": 1
+              },
+              "format": "png",
+              "imageBytes": {
+                "mad": 0,
+                "max": 68617,
+                "min": 68617,
+                "p50": 68617,
+                "p90": 68617.0,
+                "samples": 1
+              },
+              "sourceHeight": {
+                "mad": 0,
+                "max": 1927,
+                "min": 1927,
+                "p50": 1927,
+                "p90": 1927.0,
+                "samples": 1
+              },
+              "sourceWidth": {
+                "mad": 0,
+                "max": 1284,
+                "min": 1284,
+                "p50": 1284,
+                "p90": 1284.0,
+                "samples": 1
+              },
+              "targetHeight": {
+                "mad": 0,
+                "max": 226,
+                "min": 226,
+                "p50": 226,
+                "p90": 226.0,
+                "samples": 1
+              },
+              "targetWidth": {
+                "mad": 0,
+                "max": 135,
+                "min": 135,
+                "p50": 135,
+                "p90": 135.0,
+                "samples": 1
+              }
+            },
+            "thumbnailPreparationMs": {
+              "mad": 0,
+              "max": 525,
+              "min": 525,
+              "p50": 525,
+              "p90": 525.0,
+              "samples": 1
+            }
+          }
+        },
+        "png-321x482": {
+          "cacheClearSamples": [
+            {
+              "directoryCount": 3,
+              "durationUs": 176252,
+              "fileBytes": 5393,
+              "fileCount": 6
+            }
+          ],
+          "cacheClearUs": {
+            "mad": 0,
+            "max": 176252,
+            "min": 176252,
+            "p50": 176252,
+            "p90": 176252.0,
+            "samples": 1
+          },
+          "coldOpenToReadyMs": 4451,
+          "epubPath": "/png-cover-calibration-321x482.epub",
+          "images": {
+            "thumbnailConversionMs": {
+              "mad": 0,
+              "max": 437,
+              "min": 437,
+              "p50": 437,
+              "p90": 437.0,
+              "samples": 1
+            },
+            "thumbnailGenerationMs": {
+              "mad": 0,
+              "max": 551,
+              "min": 551,
+              "p50": 551,
+              "p90": 551.0,
+              "samples": 1
+            },
+            "thumbnailInput": {
+              "archiveCompressedBytes": {
+                "mad": 0,
+                "max": 9136,
+                "min": 9136,
+                "p50": 9136,
+                "p90": 9136.0,
+                "samples": 1
+              },
+              "bitDepth": {
+                "mad": 0,
+                "max": 8,
+                "min": 8,
+                "p50": 8,
+                "p90": 8.0,
+                "samples": 1
+              },
+              "colorType": {
+                "mad": 0,
+                "max": 2,
+                "min": 2,
+                "p50": 2,
+                "p90": 2.0,
+                "samples": 1
+              },
+              "format": "png",
+              "imageBytes": {
+                "mad": 0,
+                "max": 9360,
+                "min": 9360,
+                "p50": 9360,
+                "p90": 9360.0,
+                "samples": 1
+              },
+              "sourceHeight": {
+                "mad": 0,
+                "max": 482,
+                "min": 482,
+                "p50": 482,
+                "p90": 482.0,
+                "samples": 1
+              },
+              "sourceWidth": {
+                "mad": 0,
+                "max": 321,
+                "min": 321,
+                "p50": 321,
+                "p90": 321.0,
+                "samples": 1
+              },
+              "targetHeight": {
+                "mad": 0,
+                "max": 226,
+                "min": 226,
+                "p50": 226,
+                "p90": 226.0,
+                "samples": 1
+              },
+              "targetWidth": {
+                "mad": 0,
+                "max": 135,
+                "min": 135,
+                "p50": 135,
+                "p90": 135.0,
+                "samples": 1
+              }
+            },
+            "thumbnailPreparationMs": {
+              "mad": 0,
+              "max": 114,
+              "min": 114,
+              "p50": 114,
+              "p90": 114.0,
+              "samples": 1
+            }
+          }
+        },
+        "png-642x963": {
+          "cacheClearSamples": [
+            {
+              "directoryCount": 3,
+              "durationUs": 167160,
+              "fileBytes": 5393,
+              "fileCount": 6
+            }
+          ],
+          "cacheClearUs": {
+            "mad": 0,
+            "max": 167160,
+            "min": 167160,
+            "p50": 167160,
+            "p90": 167160.0,
+            "samples": 1
+          },
+          "coldOpenToReadyMs": 1403,
+          "epubPath": "/png-cover-calibration-642x963.epub",
+          "images": {
+            "thumbnailConversionMs": {
+              "mad": 0,
+              "max": 1459,
+              "min": 1459,
+              "p50": 1459,
+              "p90": 1459.0,
+              "samples": 1
+            },
+            "thumbnailGenerationMs": {
+              "mad": 0,
+              "max": 1700,
+              "min": 1700,
+              "p50": 1700,
+              "p90": 1700.0,
+              "samples": 1
+            },
+            "thumbnailInput": {
+              "archiveCompressedBytes": {
+                "mad": 0,
+                "max": 27178,
+                "min": 27178,
+                "p50": 27178,
+                "p90": 27178.0,
+                "samples": 1
+              },
+              "bitDepth": {
+                "mad": 0,
+                "max": 8,
+                "min": 8,
+                "p50": 8,
+                "p90": 8.0,
+                "samples": 1
+              },
+              "colorType": {
+                "mad": 0,
+                "max": 2,
+                "min": 2,
+                "p50": 2,
+                "p90": 2.0,
+                "samples": 1
+              },
+              "format": "png",
+              "imageBytes": {
+                "mad": 0,
+                "max": 27844,
+                "min": 27844,
+                "p50": 27844,
+                "p90": 27844.0,
+                "samples": 1
+              },
+              "sourceHeight": {
+                "mad": 0,
+                "max": 963,
+                "min": 963,
+                "p50": 963,
+                "p90": 963.0,
+                "samples": 1
+              },
+              "sourceWidth": {
+                "mad": 0,
+                "max": 642,
+                "min": 642,
+                "p50": 642,
+                "p90": 642.0,
+                "samples": 1
+              },
+              "targetHeight": {
+                "mad": 0,
+                "max": 226,
+                "min": 226,
+                "p50": 226,
+                "p90": 226.0,
+                "samples": 1
+              },
+              "targetWidth": {
+                "mad": 0,
+                "max": 135,
+                "min": 135,
+                "p50": 135,
+                "p90": 135.0,
+                "samples": 1
+              }
+            },
+            "thumbnailPreparationMs": {
+              "mad": 0,
+              "max": 241,
+              "min": 241,
+              "p50": 241,
+              "p90": 241.0,
+              "samples": 1
+            }
+          }
+        }
+      },
+      "sectionStreamMs": {
+        "mad": 3,
+        "max": 248,
+        "min": 232,
+        "p50": 235,
+        "p90": 245.4,
+        "samples": 3
+      },
+      "sectionStreamSamples": [
+        235,
+        232,
+        248
+      ],
+      "sourceRun": "x4-png-thumbnail-series-normal-v2"
+    },
+    "x4-reader-navigation-controls-normal-v1": {
+      "readerChapterSelectionFirstRenderMs": {
+        "mad": 0,
+        "max": 75,
+        "min": 75,
+        "p50": 75,
+        "p90": 75.0,
+        "samples": 1
+      },
+      "readerChapterSelectionFirstRenderSamples": [
+        75
+      ],
+      "readerChapterSelectionSubsequentRenderMs": {
+        "mad": 0.0,
+        "max": 75,
+        "min": 75,
+        "p50": 75.0,
+        "p90": 75.0,
+        "samples": 6
+      },
+      "readerChapterSelectionSubsequentRenderSamples": [
+        75,
+        75,
+        75,
+        75,
+        75,
+        75
+      ],
+      "readerMenuFirstRenderMs": {
+        "mad": 0,
+        "max": 20,
+        "min": 20,
+        "p50": 20,
+        "p90": 20.0,
+        "samples": 1
+      },
+      "readerMenuFirstRenderSamples": [
+        20
+      ],
+      "readerMenuSubsequentRenderMs": {
+        "mad": 0.0,
+        "max": 19,
+        "min": 19,
+        "p50": 19.0,
+        "p90": 19.0,
+        "samples": 6
+      },
+      "readerMenuSubsequentRenderSamples": [
+        19,
+        19,
+        19,
+        19,
+        19,
+        19
+      ],
+      "sourceRun": "x4-reader-navigation-controls-normal-v1"
+    },
+    "x4-reader-navigation-controls-normal-v2": {
+      "readerChapterSelectionFirstRenderMs": {
+        "mad": 0,
+        "max": 75,
+        "min": 75,
+        "p50": 75,
+        "p90": 75.0,
+        "samples": 1
+      },
+      "readerChapterSelectionFirstRenderSamples": [
+        75
+      ],
+      "readerChapterSelectionSubsequentRenderMs": {
+        "mad": 0.5,
+        "max": 75,
+        "min": 74,
+        "p50": 74.5,
+        "p90": 75.0,
+        "samples": 6
+      },
+      "readerChapterSelectionSubsequentRenderSamples": [
+        74,
+        75,
+        74,
+        75,
+        74,
+        75
+      ],
+      "readerMenuFirstRenderMs": {
+        "mad": 0,
+        "max": 21,
+        "min": 21,
+        "p50": 21,
+        "p90": 21.0,
+        "samples": 1
+      },
+      "readerMenuFirstRenderSamples": [
+        21
+      ],
+      "readerMenuSubsequentRenderMs": {
+        "mad": 0.0,
+        "max": 19,
+        "min": 19,
+        "p50": 19.0,
+        "p90": 19.0,
+        "samples": 6
+      },
+      "readerMenuSubsequentRenderSamples": [
+        19,
+        19,
+        19,
+        19,
+        19,
+        19
+      ],
+      "sourceRun": "x4-reader-navigation-controls-normal-v2"
+    },
+    "x4-reader-percent-controls-normal-v3": {
+      "readerPercentFirstRenderMs": {
+        "mad": 0,
+        "max": 7,
+        "min": 7,
+        "p50": 7,
+        "p90": 7.0,
+        "samples": 1
+      },
+      "readerPercentFirstRenderSamples": [
+        7
+      ],
+      "readerPercentSubsequentRenderMs": {
+        "mad": 0.0,
+        "max": 7,
+        "min": 6,
+        "p50": 6.0,
+        "p90": 6.9,
+        "samples": 12
+      },
+      "readerPercentSubsequentRenderSamples": [
+        6,
+        6,
+        6,
+        7,
+        6,
+        6,
+        7,
+        6,
+        6,
+        6,
+        6,
+        6
+      ],
+      "sourceRun": "x4-reader-percent-controls-normal-v3"
+    },
+    "x4-reader-percent-controls-normal-v4": {
+      "readerPercentFirstRenderMs": {
+        "mad": 0,
+        "max": 7,
+        "min": 7,
+        "p50": 7,
+        "p90": 7.0,
+        "samples": 1
+      },
+      "readerPercentFirstRenderSamples": [
+        7
+      ],
+      "readerPercentSubsequentRenderMs": {
+        "mad": 0.0,
+        "max": 7,
+        "min": 6,
+        "p50": 6.0,
+        "p90": 6.9,
+        "samples": 12
+      },
+      "readerPercentSubsequentRenderSamples": [
+        6,
+        6,
+        6,
+        7,
+        7,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6
+      ],
+      "sourceRun": "x4-reader-percent-controls-normal-v4"
+    },
+    "x4-reader-popups-normal-v2": {
+      "readerMenuAutoTurnPopupRenderMs": {
+        "mad": 0,
+        "max": 7,
+        "min": 7,
+        "p50": 7,
+        "p90": 7.0,
+        "samples": 7
+      },
+      "readerMenuAutoTurnPopupRenderSamples": [
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7
+      ],
+      "readerMenuOrientationPopupRenderMs": {
+        "mad": 0,
+        "max": 9,
+        "min": 8,
+        "p50": 8,
+        "p90": 8.4,
+        "samples": 7
+      },
+      "readerMenuOrientationPopupRenderSamples": [
+        8,
+        8,
+        8,
+        9,
+        8,
+        8,
+        8
+      ],
+      "readerMenuPopupRenderSamples": [
+        8,
+        8,
+        8,
+        9,
+        8,
+        8,
+        8,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7
+      ],
+      "sourceRun": "x4-reader-popups-normal-v2"
+    },
+    "x4-reader-popups-normal-v3": {
+      "readerMenuAutoTurnPopupRenderMs": {
+        "mad": 0,
+        "max": 7,
+        "min": 7,
+        "p50": 7,
+        "p90": 7.0,
+        "samples": 7
+      },
+      "readerMenuAutoTurnPopupRenderSamples": [
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7
+      ],
+      "readerMenuOrientationPopupRenderMs": {
+        "mad": 0,
+        "max": 9,
+        "min": 8,
+        "p50": 8,
+        "p90": 9.0,
+        "samples": 7
+      },
+      "readerMenuOrientationPopupRenderSamples": [
+        8,
+        8,
+        8,
+        9,
+        8,
+        9,
+        8
+      ],
+      "readerMenuPopupRenderSamples": [
+        8,
+        8,
+        8,
+        9,
+        8,
+        9,
+        8,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7
+      ],
+      "sourceRun": "x4-reader-popups-normal-v3"
+    },
+    "x4-settings-controls-normal-v1": {
+      "settingsFirstRenderMs": {
+        "mad": 0,
+        "max": 27,
+        "min": 27,
+        "p50": 27,
+        "p90": 27.0,
+        "samples": 1
+      },
+      "settingsFirstRenderSamples": [
+        27
+      ],
+      "settingsSubsequentRenderMs": {
+        "mad": 0.5,
+        "max": 36,
+        "min": 35,
+        "p50": 35.5,
+        "p90": 36.0,
+        "samples": 6
+      },
+      "settingsSubsequentRenderSamples": [
+        35,
+        36,
+        35,
+        36,
+        36,
+        35
+      ],
+      "sourceRun": "x4-settings-controls-normal-v1"
+    },
+    "x4-settings-controls-normal-v2": {
+      "settingsFirstRenderMs": {
+        "mad": 0,
+        "max": 27,
+        "min": 27,
+        "p50": 27,
+        "p90": 27.0,
+        "samples": 1
+      },
+      "settingsFirstRenderSamples": [
+        27
+      ],
+      "settingsSubsequentRenderMs": {
+        "mad": 0.0,
+        "max": 36,
+        "min": 35,
+        "p50": 36.0,
+        "p90": 36.0,
+        "samples": 6
+      },
+      "settingsSubsequentRenderSamples": [
+        36,
+        36,
+        35,
+        36,
+        36,
+        35
+      ],
+      "sourceRun": "x4-settings-controls-normal-v2"
+    },
+    "x4-settings-popup-controls-normal-v1": {
+      "settingsPopupRenderMs": {
+        "mad": 0,
+        "max": 7,
+        "min": 6,
+        "p50": 7,
+        "p90": 7.0,
+        "samples": 7
+      },
+      "settingsPopupRenderSamples": [
+        7,
+        6,
+        6,
+        7,
+        7,
+        6,
+        7
+      ],
+      "sourceRun": "x4-settings-popup-controls-normal-v1"
+    },
+    "x4-settings-popup-controls-normal-v2": {
+      "settingsPopupRenderMs": {
+        "mad": 0,
+        "max": 7,
+        "min": 6,
+        "p50": 7,
+        "p90": 7.0,
+        "samples": 7
+      },
+      "settingsPopupRenderSamples": [
+        7,
+        6,
+        7,
+        7,
+        7,
+        7,
+        7
+      ],
+      "sourceRun": "x4-settings-popup-controls-normal-v2"
+    },
+    "x4-sleep-entry-v3": {
+      "sleep": {
+        "activityToDeepSleepMs": 4809,
+        "controllerBusyMs": {
+          "fast": 506,
+          "full": 3741
+        },
+        "powerInputToActivityMs": 562,
+        "powerInputToDeepSleepMs": 5371
+      },
+      "sourceRun": "x4-sleep-entry-v3"
+    },
+    "x4-stormlight-cold-normal-v3": {
+      "cacheClearUs": {
+        "mad": 0,
+        "max": 215696,
+        "min": 215696,
+        "p50": 215696,
+        "p90": 215696.0,
+        "samples": 1
+      },
+      "coldPages": {
+        "all": {
+          "bwRender": {
+            "mad": 35,
+            "max": 1930,
+            "min": 24,
+            "p50": 62,
+            "p90": 996.8,
+            "samples": 13
+          },
+          "cleanup": {
+            "mad": 0,
+            "max": 81,
+            "min": 79,
+            "p50": 80,
+            "p90": 80.0,
+            "samples": 13
+          },
+          "display": {
+            "mad": 506,
+            "max": 2044,
+            "min": 747,
+            "p50": 1538,
+            "p90": 2043.8,
+            "samples": 13
+          },
+          "grayDisplay": {
+            "mad": 1,
+            "max": 146,
+            "min": 63,
+            "p50": 64,
+            "p90": 146.0,
+            "samples": 13
+          },
+          "grayLsb": {
+            "mad": 35,
+            "max": 971,
+            "min": 93,
+            "p50": 142,
+            "p90": 967.2,
+            "samples": 13
+          },
+          "grayMsb": {
+            "mad": 39,
+            "max": 979,
+            "min": 93,
+            "p50": 146,
+            "p90": 974.6,
+            "samples": 13
+          },
+          "grayscaleBusy": {
+            "mad": 0,
+            "max": 144,
+            "min": 62,
+            "p50": 62,
+            "p90": 144.0,
+            "samples": 13
+          },
+          "prewarm": {
+            "mad": 6,
+            "max": 68,
+            "min": 0,
+            "p50": 19,
+            "p90": 28.6,
+            "samples": 13
+          },
+          "primaryBusy": {
+            "mad": 0,
+            "max": 1723,
+            "min": 506,
+            "p50": 506,
+            "p90": 1722.8,
+            "samples": 13
+          },
+          "total": {
+            "mad": 869,
+            "max": 5735,
+            "min": 1122,
+            "p50": 2137,
+            "p90": 4777.2,
+            "samples": 13
+          }
+        },
+        "fastPrimary": {
+          "bwRender": {
+            "mad": 47.0,
+            "max": 1930,
+            "min": 24,
+            "p50": 80.5,
+            "p90": 1261.3,
+            "samples": 10
+          },
+          "cleanup": {
+            "mad": 0.5,
+            "max": 80,
+            "min": 79,
+            "p50": 79.5,
+            "p90": 80.0,
+            "samples": 10
+          },
+          "display": {
+            "mad": 386.5,
+            "max": 1715,
+            "min": 747,
+            "p50": 1133.5,
+            "p90": 1714.1,
+            "samples": 10
+          },
+          "grayDisplay": {
+            "mad": 0.0,
+            "max": 64,
+            "min": 63,
+            "p50": 63.0,
+            "p90": 64.0,
+            "samples": 10
+          },
+          "grayLsb": {
+            "mad": 31.5,
+            "max": 971,
+            "min": 97,
+            "p50": 143.5,
+            "p90": 970.1,
+            "samples": 10
+          },
+          "grayMsb": {
+            "mad": 33.0,
+            "max": 979,
+            "min": 97,
+            "p50": 147.5,
+            "p90": 978.1,
+            "samples": 10
+          },
+          "grayscaleBusy": {
+            "mad": 0.0,
+            "max": 63,
+            "min": 62,
+            "p50": 62.0,
+            "p90": 62.1,
+            "samples": 10
+          },
+          "prewarm": {
+            "mad": 5.5,
+            "max": 68,
+            "min": 0,
+            "p50": 16.0,
+            "p90": 26.6,
+            "samples": 10
+          },
+          "primaryBusy": {
+            "mad": 0.0,
+            "max": 507,
+            "min": 506,
+            "p50": 506.0,
+            "p90": 506.1,
+            "samples": 10
+          },
+          "total": {
+            "mad": 501.0,
+            "max": 5735,
+            "min": 1122,
+            "p50": 1673.5,
+            "p90": 5038.4,
+            "samples": 10
+          }
+        },
+        "halfPrimary": {
+          "bwRender": {
+            "mad": 5,
+            "max": 60,
+            "min": 26,
+            "p50": 31,
+            "p90": 54.2,
+            "samples": 3
+          },
+          "cleanup": {
+            "mad": 0,
+            "max": 81,
+            "min": 80,
+            "p50": 80,
+            "p90": 80.8,
+            "samples": 3
+          },
+          "display": {
+            "mad": 0,
+            "max": 2044,
+            "min": 2043,
+            "p50": 2044,
+            "p90": 2044.0,
+            "samples": 3
+          },
+          "grayDisplay": {
+            "mad": 0,
+            "max": 146,
+            "min": 146,
+            "p50": 146,
+            "p90": 146.0,
+            "samples": 3
+          },
+          "grayLsb": {
+            "mad": 14,
+            "max": 137,
+            "min": 93,
+            "p50": 107,
+            "p90": 131.0,
+            "samples": 3
+          },
+          "grayMsb": {
+            "mad": 14,
+            "max": 139,
+            "min": 93,
+            "p50": 107,
+            "p90": 132.6,
+            "samples": 3
+          },
+          "grayscaleBusy": {
+            "mad": 0,
+            "max": 144,
+            "min": 144,
+            "p50": 144,
+            "p90": 144.0,
+            "samples": 3
+          },
+          "prewarm": {
+            "mad": 2,
+            "max": 29,
+            "min": 13,
+            "p50": 27,
+            "p90": 28.6,
+            "samples": 3
+          },
+          "primaryBusy": {
+            "mad": 0,
+            "max": 1723,
+            "min": 1722,
+            "p50": 1723,
+            "p90": 1723.0,
+            "samples": 3
+          },
+          "total": {
+            "mad": 48,
+            "max": 2636,
+            "min": 2494,
+            "p50": 2542,
+            "p90": 2617.2,
+            "samples": 3
+          }
+        }
+      },
+      "epubPath": "/stormlight.epub",
+      "images": {
+        "cachedRenderLargeMs": {
+          "mad": 1.5,
+          "max": 225,
+          "min": 144,
+          "p50": 148.0,
+          "p90": 157.3,
+          "samples": 40
+        },
+        "cachedRenderMs": {
+          "mad": 2.0,
+          "max": 225,
+          "min": 20,
+          "p50": 147.0,
+          "p90": 150.0,
+          "samples": 50
+        },
+        "cachedRenderSamples": [
+          {
+            "cacheBytes": 914,
+            "height": 70,
+            "renderMs": {
+              "mad": 0,
+              "max": 22,
+              "min": 20,
+              "p50": 21,
+              "p90": 21.6,
+              "samples": 5
+            },
+            "width": 50
+          },
+          {
+            "cacheBytes": 1880,
+            "height": 67,
+            "renderMs": {
+              "mad": 1,
+              "max": 26,
+              "min": 23,
+              "p50": 24,
+              "p90": 25.2,
+              "samples": 5
+            },
+            "width": 112
+          },
+          {
+            "cacheBytes": 80044,
+            "height": 690,
+            "renderMs": {
+              "mad": 1,
+              "max": 223,
+              "min": 144,
+              "p50": 146,
+              "p90": 147.0,
+              "samples": 13
+            },
+            "width": 464
+          },
+          {
+            "cacheBytes": 81088,
+            "height": 699,
+            "renderMs": {
+              "mad": 1,
+              "max": 225,
+              "min": 146,
+              "p50": 149,
+              "p90": 179.6,
+              "samples": 27
+            },
+            "width": 464
+          }
+        ],
+        "cachedRenderSmallMs": {
+          "mad": 1.5,
+          "max": 26,
+          "min": 20,
+          "p50": 22.5,
+          "p90": 24.2,
+          "samples": 10
+        },
+        "decodeAndCacheLargeMs": {
+          "mad": 0,
+          "max": 1917,
+          "min": 1917,
+          "p50": 1917,
+          "p90": 1917.0,
+          "samples": 1
+        },
+        "decodeAndCacheMediumMs": {
+          "mad": 0,
+          "max": 1171,
+          "min": 1171,
+          "p50": 1171,
+          "p90": 1171.0,
+          "samples": 1
+        },
+        "decodeAndCacheMs": {
+          "mad": 547.5,
+          "max": 1917,
+          "min": 76,
+          "p50": 628.5,
+          "p90": 1693.2,
+          "samples": 4
+        },
+        "decodeAndCacheSamples": [
+          {
+            "archiveCompressedBytes": 260206,
+            "cacheBytes": 81088,
+            "generationMs": 1917,
+            "height": 699,
+            "imageBytes": 290426,
+            "sourceHeight": 1498,
+            "sourceWidth": 994,
+            "width": 464
+          },
+          {
+            "archiveCompressedBytes": 66465,
+            "cacheBytes": 80044,
+            "generationMs": 1171,
+            "height": 690,
+            "imageBytes": 66507,
+            "sourceHeight": 722,
+            "sourceWidth": 485,
+            "width": 464
+          },
+          {
+            "archiveCompressedBytes": 1025,
+            "cacheBytes": 914,
+            "generationMs": 76,
+            "height": 70,
+            "imageBytes": 1073,
+            "sourceHeight": 70,
+            "sourceWidth": 50,
+            "width": 50
+          },
+          {
+            "archiveCompressedBytes": 1149,
+            "cacheBytes": 1880,
+            "generationMs": 86,
+            "height": 67,
+            "imageBytes": 1256,
+            "sourceHeight": 67,
+            "sourceWidth": 112,
+            "width": 112
+          }
+        ],
+        "decodeAndCacheSmallMs": {
+          "mad": 5.0,
+          "max": 86,
+          "min": 76,
+          "p50": 81.0,
+          "p90": 85.0,
+          "samples": 2
+        },
+        "decodeSourceBytes": {
+          "mediumMax": 131072,
+          "smallMax": 16384
+        },
+        "htmlToImageMs": {
+          "mad": 17.0,
+          "max": 161,
+          "min": 108,
+          "p50": 126.0,
+          "p90": 155.3,
+          "samples": 4
+        },
+        "htmlToImageSamples": [
+          110,
+          108,
+          142,
+          161
+        ],
+        "prepareLargeMs": {
+          "mad": 0,
+          "max": 1732,
+          "min": 1732,
+          "p50": 1732,
+          "p90": 1732.0,
+          "samples": 1
+        },
+        "prepareMediumMs": {
+          "mad": 0,
+          "max": 447,
+          "min": 447,
+          "p50": 447,
+          "p90": 447.0,
+          "samples": 1
+        },
+        "prepareSamples": [
+          {
+            "archiveCompressedBytes": 260206,
+            "generationMs": 1732,
+            "imageBytes": 290426,
+            "sourceHeight": 1498,
+            "sourceWidth": 994
+          },
+          {
+            "archiveCompressedBytes": 66465,
+            "generationMs": 447,
+            "imageBytes": 66507,
+            "sourceHeight": 722,
+            "sourceWidth": 485
+          },
+          {
+            "archiveCompressedBytes": 1025,
+            "generationMs": 161,
+            "imageBytes": 1073,
+            "sourceHeight": 70,
+            "sourceWidth": 50
+          },
+          {
+            "archiveCompressedBytes": 1149,
+            "generationMs": 178,
+            "imageBytes": 1256,
+            "sourceHeight": 67,
+            "sourceWidth": 112
+          }
+        ],
+        "prepareSmallMs": {
+          "mad": 8.5,
+          "max": 178,
+          "min": 161,
+          "p50": 169.5,
+          "p90": 176.3,
+          "samples": 2
+        },
+        "thumbnailConversionMs": {
+          "mad": 0,
+          "max": 1450,
+          "min": 1450,
+          "p50": 1450,
+          "p90": 1450.0,
+          "samples": 1
+        },
+        "thumbnailGenerationMs": {
+          "mad": 0,
+          "max": 3405,
+          "min": 3405,
+          "p50": 3405,
+          "p90": 3405.0,
+          "samples": 1
+        },
+        "thumbnailInput": {
+          "archiveCompressedBytes": {
+            "mad": 0,
+            "max": 260206,
+            "min": 260206,
+            "p50": 260206,
+            "p90": 260206.0,
+            "samples": 1
+          },
+          "format": "jpg",
+          "imageBytes": {
+            "mad": 0,
+            "max": 290426,
+            "min": 290426,
+            "p50": 290426,
+            "p90": 290426.0,
+            "samples": 1
+          },
+          "sourceHeight": {
+            "mad": 0,
+            "max": 1498,
+            "min": 1498,
+            "p50": 1498,
+            "p90": 1498.0,
+            "samples": 1
+          },
+          "sourceWidth": {
+            "mad": 0,
+            "max": 994,
+            "min": 994,
+            "p50": 994,
+            "p90": 994.0,
+            "samples": 1
+          },
+          "targetHeight": {
+            "mad": 0,
+            "max": 226,
+            "min": 226,
+            "p50": 226,
+            "p90": 226.0,
+            "samples": 1
+          },
+          "targetWidth": {
+            "mad": 0,
+            "max": 135,
+            "min": 135,
+            "p50": 135,
+            "p90": 135.0,
+            "samples": 1
+          }
+        },
+        "thumbnailPreparationMs": {
+          "mad": 0,
+          "max": 1955,
+          "min": 1955,
+          "p50": 1955,
+          "p90": 1955.0,
+          "samples": 1
+        }
+      },
+      "indexing": {
+        "bookBinMs": 15904,
+        "manifestItems": 1686,
+        "opfPassMs": 5118,
+        "postIndexLoadMs": 1108,
+        "spineItems": 844,
+        "tocItems": 776,
+        "tocPassMs": 2060,
+        "totalIndexingMs": 23082
+      },
+      "loads": {
+        "coldOpenToReadyMs": 25264,
+        "warmOpenToReadyMs": 4351
+      },
+      "sectionStreamMs": {
+        "mad": 15,
+        "max": 378,
+        "min": 318,
+        "p50": 338,
+        "p90": 361.2,
+        "samples": 7
+      },
+      "sectionStreamSamples": [
+        350,
+        318,
+        378,
+        338,
+        323,
+        320,
+        346
+      ],
+      "sourceRun": "x4-stormlight-cold-normal-v3"
+    },
+    "x4-stormlight-half-pages-v2": {
+      "halfPages": {
+        "all": {
+          "bwRender": {
+            "mad": 5,
+            "max": 1060,
+            "min": 22,
+            "p50": 57,
+            "p90": 440.0,
+            "samples": 11
+          },
+          "cleanup": {
+            "mad": 0,
+            "max": 80,
+            "min": 80,
+            "p50": 80,
+            "p90": 80.0,
+            "samples": 11
+          },
+          "display": {
+            "mad": 1,
+            "max": 2045,
+            "min": 1598,
+            "p50": 2043,
+            "p90": 2044.0,
+            "samples": 11
+          },
+          "grayDisplay": {
+            "mad": 0,
+            "max": 146,
+            "min": 63,
+            "p50": 146,
+            "p90": 146.0,
+            "samples": 11
+          },
+          "grayLsb": {
+            "mad": 6,
+            "max": 861,
+            "min": 91,
+            "p50": 137,
+            "p90": 490.0,
+            "samples": 11
+          },
+          "grayMsb": {
+            "mad": 6,
+            "max": 880,
+            "min": 91,
+            "p50": 139,
+            "p90": 503.0,
+            "samples": 11
+          },
+          "grayscaleBusy": {
+            "mad": 0,
+            "max": 145,
+            "min": 62,
+            "p50": 144,
+            "p90": 145.0,
+            "samples": 11
+          },
+          "prewarm": {
+            "mad": 4,
+            "max": 47,
+            "min": 14,
+            "p50": 23,
+            "p90": 46.0,
+            "samples": 11
+          },
+          "primaryBusy": {
+            "mad": 1,
+            "max": 1723,
+            "min": 506,
+            "p50": 1722,
+            "p90": 1723.0,
+            "samples": 11
+          },
+          "total": {
+            "mad": 27,
+            "max": 4646,
+            "min": 2489,
+            "p50": 2631,
+            "p90": 3197.0,
+            "samples": 11
+          }
+        },
+        "fastPrimary": {
+          "bwRender": {
+            "mad": 310.0,
+            "max": 1060,
+            "min": 440,
+            "p50": 750.0,
+            "p90": 998.0,
+            "samples": 2
+          },
+          "cleanup": {
+            "mad": 0.0,
+            "max": 80,
+            "min": 80,
+            "p50": 80.0,
+            "p90": 80.0,
+            "samples": 2
+          },
+          "display": {
+            "mad": 44.5,
+            "max": 1687,
+            "min": 1598,
+            "p50": 1642.5,
+            "p90": 1678.1,
+            "samples": 2
+          },
+          "grayDisplay": {
+            "mad": 0.5,
+            "max": 64,
+            "min": 63,
+            "p50": 63.5,
+            "p90": 63.9,
+            "samples": 2
+          },
+          "grayLsb": {
+            "mad": 185.5,
+            "max": 861,
+            "min": 490,
+            "p50": 675.5,
+            "p90": 823.9,
+            "samples": 2
+          },
+          "grayMsb": {
+            "mad": 188.5,
+            "max": 880,
+            "min": 503,
+            "p50": 691.5,
+            "p90": 842.3,
+            "samples": 2
+          },
+          "grayscaleBusy": {
+            "mad": 0.5,
+            "max": 63,
+            "min": 62,
+            "p50": 62.5,
+            "p90": 62.9,
+            "samples": 2
+          },
+          "prewarm": {
+            "mad": 4.5,
+            "max": 23,
+            "min": 14,
+            "p50": 18.5,
+            "p90": 22.1,
+            "samples": 2
+          },
+          "primaryBusy": {
+            "mad": 0.0,
+            "max": 506,
+            "min": 506,
+            "p50": 506.0,
+            "p90": 506.0,
+            "samples": 2
+          },
+          "total": {
+            "mad": 724.5,
+            "max": 4646,
+            "min": 3197,
+            "p50": 3921.5,
+            "p90": 4501.1,
+            "samples": 2
+          }
+        },
+        "halfPrimary": {
+          "bwRender": {
+            "mad": 4,
+            "max": 61,
+            "min": 22,
+            "p50": 56,
+            "p90": 60.2,
+            "samples": 9
+          },
+          "cleanup": {
+            "mad": 0,
+            "max": 80,
+            "min": 80,
+            "p50": 80,
+            "p90": 80.0,
+            "samples": 9
+          },
+          "display": {
+            "mad": 0,
+            "max": 2045,
+            "min": 2043,
+            "p50": 2043,
+            "p90": 2044.2,
+            "samples": 9
+          },
+          "grayDisplay": {
+            "mad": 0,
+            "max": 146,
+            "min": 145,
+            "p50": 146,
+            "p90": 146.0,
+            "samples": 9
+          },
+          "grayLsb": {
+            "mad": 4,
+            "max": 140,
+            "min": 91,
+            "p50": 135,
+            "p90": 139.2,
+            "samples": 9
+          },
+          "grayMsb": {
+            "mad": 5,
+            "max": 145,
+            "min": 91,
+            "p50": 138,
+            "p90": 143.4,
+            "samples": 9
+          },
+          "grayscaleBusy": {
+            "mad": 0,
+            "max": 145,
+            "min": 144,
+            "p50": 144,
+            "p90": 145.0,
+            "samples": 9
+          },
+          "prewarm": {
+            "mad": 4,
+            "max": 47,
+            "min": 14,
+            "p50": 23,
+            "p90": 46.2,
+            "samples": 9
+          },
+          "primaryBusy": {
+            "mad": 0,
+            "max": 1723,
+            "min": 1722,
+            "p50": 1723,
+            "p90": 1723.0,
+            "samples": 9
+          },
+          "total": {
+            "mad": 27,
+            "max": 2658,
+            "min": 2489,
+            "p50": 2622,
+            "p90": 2650.8,
+            "samples": 9
+          }
+        }
+      },
+      "images": {
+        "cachedRenderLargeMs": {
+          "mad": 3,
+          "max": 190,
+          "min": 126,
+          "p50": 130,
+          "p90": 133.8,
+          "samples": 13
+        },
+        "cachedRenderMs": {
+          "mad": 34.0,
+          "max": 190,
+          "min": 64,
+          "p50": 107.5,
+          "p90": 133.0,
+          "samples": 26
+        },
+        "cachedRenderSamples": [
+          {
+            "cacheBytes": 28540,
+            "height": 246,
+            "renderMs": {
+              "mad": 1,
+              "max": 89,
+              "min": 64,
+              "p50": 65,
+              "p90": 66.0,
+              "samples": 13
+            },
+            "width": 464
+          },
+          {
+            "cacheBytes": 67526,
+            "height": 637,
+            "renderMs": {
+              "mad": 3,
+              "max": 190,
+              "min": 126,
+              "p50": 130,
+              "p90": 133.8,
+              "samples": 13
+            },
+            "width": 424
+          }
+        ],
+        "cachedRenderSmallMs": {
+          "mad": 1,
+          "max": 89,
+          "min": 64,
+          "p50": 65,
+          "p90": 66.0,
+          "samples": 13
+        },
+        "decodeAndCacheMediumMs": {
+          "mad": 316.5,
+          "max": 1042,
+          "min": 409,
+          "p50": 725.5,
+          "p90": 978.7,
+          "samples": 2
+        },
+        "decodeAndCacheMs": {
+          "mad": 316.5,
+          "max": 1042,
+          "min": 409,
+          "p50": 725.5,
+          "p90": 978.7,
+          "samples": 2
+        },
+        "decodeAndCacheSamples": [
+          {
+            "archiveCompressedBytes": 62706,
+            "cacheBytes": 67526,
+            "generationMs": 1042,
+            "height": 637,
+            "imageBytes": 62757,
+            "sourceHeight": 637,
+            "sourceWidth": 424,
+            "width": 424
+          },
+          {
+            "archiveCompressedBytes": 22392,
+            "cacheBytes": 28540,
+            "generationMs": 409,
+            "height": 246,
+            "imageBytes": 22788,
+            "sourceHeight": 264,
+            "sourceWidth": 497,
+            "width": 464
+          }
+        ],
+        "decodeSourceBytes": {
+          "mediumMax": 131072,
+          "smallMax": 16384
+        },
+        "htmlToImageMs": {
+          "mad": 9.0,
+          "max": 130,
+          "min": 112,
+          "p50": 121.0,
+          "p90": 128.2,
+          "samples": 2
+        },
+        "htmlToImageSamples": [
+          130,
+          112
+        ],
+        "prepareMediumMs": {
+          "mad": 71.0,
+          "max": 429,
+          "min": 287,
+          "p50": 358.0,
+          "p90": 414.8,
+          "samples": 2
+        },
+        "prepareSamples": [
+          {
+            "archiveCompressedBytes": 62706,
+            "generationMs": 429,
+            "imageBytes": 62757,
+            "sourceHeight": 637,
+            "sourceWidth": 424
+          },
+          {
+            "archiveCompressedBytes": 22392,
+            "generationMs": 287,
+            "imageBytes": 22788,
+            "sourceHeight": 264,
+            "sourceWidth": 497
+          }
+        ]
+      },
+      "sectionStreamMs": {
+        "mad": 68.5,
+        "max": 458,
+        "min": 321,
+        "p50": 389.5,
+        "p90": 444.3,
+        "samples": 2
+      },
+      "sectionStreamSamples": [
+        321,
+        458
+      ],
+      "sourceRun": "x4-stormlight-half-pages-v2"
+    },
+    "x4-stormlight-index-repeats-normal-v1": {
+      "indexingRepeats": {
+        "groups": [
+          {
+            "epubPath": "/stormlight.epub",
+            "samples": [
+              {
+                "bookBinMs": 16028,
+                "coldOpenToReadyMs": 25261,
+                "manifestItems": 1686,
+                "opfPassMs": 5105,
+                "postIndexLoadMs": 1111,
+                "spineItems": 844,
+                "tocItems": 776,
+                "tocPassMs": 1946,
+                "totalIndexingMs": 23080
+              },
+              {
+                "bookBinMs": 16064,
+                "coldOpenToReadyMs": 25473,
+                "manifestItems": 1686,
+                "opfPassMs": 5125,
+                "postIndexLoadMs": 1110,
+                "spineItems": 844,
+                "tocItems": 776,
+                "tocPassMs": 2066,
+                "totalIndexingMs": 23256
+              },
+              {
+                "bookBinMs": 15729,
+                "coldOpenToReadyMs": 25143,
+                "manifestItems": 1686,
+                "opfPassMs": 5091,
+                "postIndexLoadMs": 1218,
+                "spineItems": 844,
+                "tocItems": 776,
+                "tocPassMs": 1958,
+                "totalIndexingMs": 22778
+              }
+            ]
+          }
+        ]
+      },
+      "sourceRun": "x4-stormlight-index-repeats-normal-v1"
+    },
+    "x4-stormlight-warm-quiescent-normal-v2": {
+      "cachedMetadataLoadMs": {
+        "mad": 0.5,
+        "max": 59,
+        "min": 58,
+        "p50": 58.5,
+        "p90": 58.9,
+        "samples": 2
+      },
+      "loads": {
+        "warmMetadataStartToReadyMs": 211,
+        "warmQuiescentOpenToReadyMs": 323
+      },
+      "sourceRun": "x4-stormlight-warm-quiescent-normal-v2"
+    },
+    "x4-stormlight-xl-font-normal-v5": {
+      "images": {
+        "cachedRenderMs": {
+          "mad": 0,
+          "max": 122,
+          "min": 84,
+          "p50": 85,
+          "p90": 85.0,
+          "samples": 13
+        },
+        "cachedRenderSamples": [
+          {
+            "cacheBytes": 40952,
+            "height": 353,
+            "renderMs": {
+              "mad": 0,
+              "max": 122,
+              "min": 84,
+              "p50": 85,
+              "p90": 85.0,
+              "samples": 13
+            },
+            "width": 464
+          }
+        ],
+        "cachedRenderSmallMs": {
+          "mad": 0,
+          "max": 122,
+          "min": 84,
+          "p50": 85,
+          "p90": 85.0,
+          "samples": 13
+        },
+        "decodeAndCacheMediumMs": {
+          "mad": 0,
+          "max": 886,
+          "min": 886,
+          "p50": 886,
+          "p90": 886.0,
+          "samples": 1
+        },
+        "decodeAndCacheMs": {
+          "mad": 0,
+          "max": 886,
+          "min": 886,
+          "p50": 886,
+          "p90": 886.0,
+          "samples": 1
+        },
+        "decodeAndCacheSamples": [
+          {
+            "archiveCompressedBytes": 96713,
+            "cacheBytes": 40952,
+            "generationMs": 886,
+            "height": 353,
+            "imageBytes": 96769,
+            "sourceHeight": 609,
+            "sourceWidth": 800,
+            "width": 464
+          }
+        ],
+        "decodeSourceBytes": {
+          "mediumMax": 131072,
+          "smallMax": 16384
+        },
+        "htmlToImageMs": {
+          "mad": 0,
+          "max": 118,
+          "min": 118,
+          "p50": 118,
+          "p90": 118.0,
+          "samples": 1
+        },
+        "htmlToImageSamples": [
+          118
+        ],
+        "prepareMediumMs": {
+          "mad": 0,
+          "max": 591,
+          "min": 591,
+          "p50": 591,
+          "p90": 591.0,
+          "samples": 1
+        },
+        "prepareSamples": [
+          {
+            "archiveCompressedBytes": 96713,
+            "generationMs": 591,
+            "imageBytes": 96769,
+            "sourceHeight": 609,
+            "sourceWidth": 800
+          }
+        ]
+      },
+      "loads": {
+        "xlOpenToReadyMs": 239
+      },
+      "sectionStreamMs": {
+        "mad": 14.5,
+        "max": 351,
+        "min": 322,
+        "p50": 336.5,
+        "p90": 348.1,
+        "samples": 2
+      },
+      "sectionStreamSamples": [
+        322,
+        351
+      ],
+      "sourceRun": "x4-stormlight-xl-font-normal-v5",
+      "xlPages": {
+        "all": {
+          "bwRender": {
+            "mad": 3,
+            "max": 901,
+            "min": 45,
+            "p50": 54,
+            "p90": 227.4,
+            "samples": 9
+          },
+          "cleanup": {
+            "mad": 0,
+            "max": 80,
+            "min": 79,
+            "p50": 80,
+            "p90": 80.0,
+            "samples": 9
+          },
+          "display": {
+            "mad": 1,
+            "max": 2045,
+            "min": 747,
+            "p50": 748,
+            "p90": 2040.2,
+            "samples": 9
+          },
+          "grayDisplay": {
+            "mad": 0,
+            "max": 146,
+            "min": 63,
+            "p50": 64,
+            "p90": 146.0,
+            "samples": 9
+          },
+          "grayLsb": {
+            "mad": 3,
+            "max": 588,
+            "min": 119,
+            "p50": 125,
+            "p90": 221.6,
+            "samples": 9
+          },
+          "grayMsb": {
+            "mad": 3,
+            "max": 590,
+            "min": 121,
+            "p50": 129,
+            "p90": 224.4,
+            "samples": 9
+          },
+          "grayscaleBusy": {
+            "mad": 0,
+            "max": 145,
+            "min": 62,
+            "p50": 62,
+            "p90": 144.2,
+            "samples": 9
+          },
+          "prewarm": {
+            "mad": 8,
+            "max": 40,
+            "min": 0,
+            "p50": 26,
+            "p90": 39.2,
+            "samples": 9
+          },
+          "primaryBusy": {
+            "mad": 0,
+            "max": 1723,
+            "min": 506,
+            "p50": 506,
+            "p90": 1722.2,
+            "samples": 9
+          },
+          "total": {
+            "mad": 10,
+            "max": 3834,
+            "min": 1217,
+            "p50": 1231,
+            "p90": 2847.6,
+            "samples": 9
+          }
+        },
+        "fastPrimary": {
+          "bwRender": {
+            "mad": 1,
+            "max": 901,
+            "min": 53,
+            "p50": 54,
+            "p90": 395.8,
+            "samples": 7
+          },
+          "cleanup": {
+            "mad": 0,
+            "max": 80,
+            "min": 79,
+            "p50": 80,
+            "p90": 80.0,
+            "samples": 7
+          },
+          "display": {
+            "mad": 0,
+            "max": 1612,
+            "min": 747,
+            "p50": 748,
+            "p90": 1094.2,
+            "samples": 7
+          },
+          "grayDisplay": {
+            "mad": 0,
+            "max": 64,
+            "min": 63,
+            "p50": 64,
+            "p90": 64.0,
+            "samples": 7
+          },
+          "grayLsb": {
+            "mad": 3,
+            "max": 588,
+            "min": 122,
+            "p50": 125,
+            "p90": 313.2,
+            "samples": 7
+          },
+          "grayMsb": {
+            "mad": 3,
+            "max": 590,
+            "min": 126,
+            "p50": 129,
+            "p90": 315.8,
+            "samples": 7
+          },
+          "grayscaleBusy": {
+            "mad": 0,
+            "max": 63,
+            "min": 62,
+            "p50": 62,
+            "p90": 63.0,
+            "samples": 7
+          },
+          "prewarm": {
+            "mad": 9,
+            "max": 40,
+            "min": 0,
+            "p50": 19,
+            "p90": 32.8,
+            "samples": 7
+          },
+          "primaryBusy": {
+            "mad": 0,
+            "max": 507,
+            "min": 506,
+            "p50": 506,
+            "p90": 506.4,
+            "samples": 7
+          },
+          "total": {
+            "mad": 8,
+            "max": 3834,
+            "min": 1217,
+            "p50": 1230,
+            "p90": 2276.4,
+            "samples": 7
+          }
+        },
+        "halfPrimary": {
+          "bwRender": {
+            "mad": 6.0,
+            "max": 57,
+            "min": 45,
+            "p50": 51.0,
+            "p90": 55.8,
+            "samples": 2
+          },
+          "cleanup": {
+            "mad": 0.5,
+            "max": 80,
+            "min": 79,
+            "p50": 79.5,
+            "p90": 79.9,
+            "samples": 2
+          },
+          "display": {
+            "mad": 3.0,
+            "max": 2045,
+            "min": 2039,
+            "p50": 2042.0,
+            "p90": 2044.4,
+            "samples": 2
+          },
+          "grayDisplay": {
+            "mad": 0.0,
+            "max": 146,
+            "min": 146,
+            "p50": 146.0,
+            "p90": 146.0,
+            "samples": 2
+          },
+          "grayLsb": {
+            "mad": 3.0,
+            "max": 125,
+            "min": 119,
+            "p50": 122.0,
+            "p90": 124.4,
+            "samples": 2
+          },
+          "grayMsb": {
+            "mad": 4.0,
+            "max": 129,
+            "min": 121,
+            "p50": 125.0,
+            "p90": 128.2,
+            "samples": 2
+          },
+          "grayscaleBusy": {
+            "mad": 0.5,
+            "max": 145,
+            "min": 144,
+            "p50": 144.5,
+            "p90": 144.9,
+            "samples": 2
+          },
+          "prewarm": {
+            "mad": 6.5,
+            "max": 39,
+            "min": 26,
+            "p50": 32.5,
+            "p90": 37.7,
+            "samples": 2
+          },
+          "primaryBusy": {
+            "mad": 0.5,
+            "max": 1723,
+            "min": 1722,
+            "p50": 1722.5,
+            "p90": 1722.9,
+            "samples": 2
+          },
+          "total": {
+            "mad": 3.0,
+            "max": 2601,
+            "min": 2595,
+            "p50": 2598.0,
+            "p90": 2600.4,
+            "samples": 2
+          }
+        }
+      }
+    }
+  }
+}

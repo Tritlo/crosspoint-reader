@@ -24,6 +24,7 @@ struct NativePanelState {
   uint16_t widthBytes = 0;
   std::string controller;
   std::string refreshMode = "initial";
+  std::string previousPrimaryMode = "fast";
   std::vector<uint8_t> oldPlane;
   std::vector<uint8_t> newPlane;
   std::vector<uint8_t> visible;
@@ -43,6 +44,7 @@ struct NativePanelState {
   uint16_t windowYStart = 0;
   uint16_t windowYEnd = 0;
   uint64_t busyUntilUs = 0;
+  uint64_t postBusyTransferUs = 0;
   uint64_t generation = 0;
 };
 
@@ -236,6 +238,16 @@ std::string pendingMode(const NativePanelState& state) {
 }
 
 uint64_t refreshDurationUs(const NativePanelState& state, const std::string& mode) {
+  const auto& timing = emulator::runtimeStorage().config().timing;
+  if (timing.calibrated && state.controller == "ssd1677") {
+    if (mode == "full") return timing.panel.fullBusyUs;
+    if (mode == "half") return timing.panel.halfBusyUs;
+    if (mode == "grayscale") {
+      return state.previousPrimaryMode == "half" ? timing.panel.grayscaleAfterHalfBusyUs
+                                                 : timing.panel.grayscaleAfterFastBusyUs;
+    }
+    return timing.panel.fastBusyUs;
+  }
   if (state.controller == "ssd1677") {
     if (mode == "full") return 1800000;
     if (mode == "half") return 900000;
@@ -246,6 +258,39 @@ uint64_t refreshDurationUs(const NativePanelState& state, const std::string& mod
   if (mode == "half") return 600000;
   if (mode == "grayscale") return 700000;
   return 350000;
+}
+
+struct RefreshTransferTiming {
+  uint64_t beforeBusyUs = 0;
+  uint64_t afterBusyUs = 0;
+};
+
+RefreshTransferTiming refreshTransferTiming(const NativePanelState& state, const std::string& mode) {
+  const auto& timing = emulator::runtimeStorage().config().timing;
+  if (!timing.calibrated || state.controller != "ssd1677") return {};
+
+  uint64_t totalUs = 0;
+  uint64_t planesBeforeBusy = 0;
+  // The X4 single-buffer path writes BW before FAST, BW+RED before HALF/FULL,
+  // then re-seeds both planes after every blocking primary refresh.
+  constexpr uint64_t planesAfterBusy = 2;
+  if (mode == "fast") {
+    totalUs = timing.render.fast.primaryTransferUs;
+    planesBeforeBusy = 1;
+  } else if (mode == "half") {
+    totalUs = timing.render.half.primaryTransferUs;
+    planesBeforeBusy = 2;
+  } else if (mode == "full") {
+    totalUs = timing.panel.fullOperationUs - timing.panel.fullBusyUs;
+    planesBeforeBusy = 2;
+  } else if (mode == "grayscale") {
+    totalUs = state.previousPrimaryMode == "half" ? timing.render.half.grayscaleTransferUs
+                                                  : timing.render.fast.grayscaleTransferUs;
+    return {totalUs, 0};
+  }
+
+  const uint64_t beforeBusyUs = totalUs * planesBeforeBusy / (planesBeforeBusy + planesAfterBusy);
+  return {beforeBusyUs, totalUs - beforeBusyUs};
 }
 
 std::vector<uint8_t> targetPixels(const NativePanelState& state, const std::string& mode) {
@@ -273,33 +318,148 @@ std::vector<uint8_t> targetPixels(const NativePanelState& state, const std::stri
   return target;
 }
 
-void finishRefresh(NativePanelState& state) {
-  if (!state.pendingRefresh) return;
-  const std::string mode = pendingMode(state);
+std::vector<uint8_t> settledPixels(const NativePanelState& state, const std::string& mode) {
   auto target = targetPixels(state, mode);
   if (mode == "fast" && state.visible.size() == target.size()) {
     for (size_t index = 0; index < target.size(); ++index) {
       target[index] = static_cast<uint8_t>((static_cast<uint16_t>(target[index]) * 15U + state.visible[index]) / 16U);
     }
   }
-  state.visible = std::move(target);
+  return target;
+}
+
+bool isLightTarget(const std::vector<uint8_t>& pixels) {
+  uint64_t sum = 0;
+  for (uint8_t pixel : pixels) sum += pixel;
+  return !pixels.empty() && sum >= pixels.size() * 128ULL;
+}
+
+bool hasDarkPixelPercent(const std::vector<uint8_t>& pixels, uint8_t minimumPercent) {
+  const size_t dark = std::count_if(pixels.begin(), pixels.end(), [](uint8_t pixel) { return pixel < 128; });
+  return !pixels.empty() && dark * 100ULL >= pixels.size() * minimumPercent;
+}
+
+void addTransition(NativePanelState& state, uint64_t timeUs, uint64_t generation, std::string phase,
+                   std::vector<uint8_t> pixels) {
+  emulator::runtimeTracePanel("phase", phase, timeUs);
+  state.transitions.push_back({timeUs, generation, std::move(phase), std::move(pixels)});
+}
+
+void advanceVisiblePanel(NativePanelState& state, uint64_t timeUs) {
+  const emulator::PanelTransition* latest = nullptr;
+  for (const auto& transition : state.transitions) {
+    if (transition.simulatedTimeUs <= timeUs &&
+        (latest == nullptr || transition.simulatedTimeUs >= latest->simulatedTimeUs)) {
+      latest = &transition;
+    }
+  }
+  if (latest != nullptr) state.visible = latest->pixels;
+}
+
+bool hasPendingOpticalTransition(const NativePanelState& state, uint64_t timeUs) {
+  return std::any_of(
+      state.transitions.begin(), state.transitions.end(),
+      [timeUs](const emulator::PanelTransition& transition) { return transition.simulatedTimeUs > timeUs; });
+}
+
+void addMeasuredTransitions(NativePanelState& state, const std::string& mode, uint64_t operationStartUs,
+                            uint64_t generation) {
+  const auto& optical = emulator::runtimeStorage().config().timing.optical;
+  auto target = settledPixels(state, mode);
+  const bool light = isLightTarget(target);
+  if (mode == "grayscale") {
+    const auto& grayscaleTiming =
+        state.previousPrimaryMode == "half" ? optical.grayscaleAfterHalf : optical.grayscaleAfterFast;
+    if (!grayscaleTiming.visibleChangeDetected) {
+      addTransition(state, state.busyUntilUs, generation, "no-visible-change", state.visible);
+      return;
+    }
+    const auto& timing = light ? grayscaleTiming.light : grayscaleTiming.dark;
+    auto drive = target;
+    for (size_t index = 0; index < drive.size(); ++index) {
+      drive[index] = static_cast<uint8_t>((static_cast<uint16_t>(drive[index]) + state.visible[index]) / 2U);
+    }
+    addTransition(state, operationStartUs + timing.onsetUs, generation, "optical-drive", std::move(drive));
+    addTransition(state, operationStartUs + timing.endUs, generation, "optical-settled", std::move(target));
+    return;
+  }
+
+  if (mode == "half") {
+    auto inverted = target;
+    for (uint8_t& pixel : inverted) pixel = static_cast<uint8_t>(0xFFU - pixel);
+    addTransition(state, operationStartUs + optical.readerHalf.invertedTargetUs, generation, "inverted-target",
+                  std::move(inverted));
+    addTransition(state, operationStartUs + optical.readerHalf.settledTargetUs, generation, "optical-settled",
+                  std::move(target));
+    return;
+  }
+
+  if (mode == "fast") {
+    const bool imageHeavy = hasDarkPixelPercent(target, optical.readerImageFast.darkPixelPercentMin);
+    const auto& fastTiming = imageHeavy ? optical.readerImageFast.timing : optical.readerFast;
+    auto drive = target;
+    for (size_t index = 0; index < drive.size(); ++index) {
+      const uint8_t base = imageHeavy ? 0xFF : state.visible[index];
+      drive[index] = static_cast<uint8_t>((static_cast<uint16_t>(drive[index]) + base) / 2U);
+    }
+    addTransition(state, operationStartUs + fastTiming.transitionStartUs, generation,
+                  imageHeavy ? "optical-image-drive" : "optical-drive", std::move(drive));
+    addTransition(state, operationStartUs + fastTiming.transitionEndUs, generation, "optical-settled",
+                  std::move(target));
+    return;
+  }
+
+  const auto& timing = light ? optical.full.white : optical.full.black;
+  const uint8_t firstDrive = light ? 0xFF : 0x00;
+  uint64_t timeUs = timing.onsetUs;
+  size_t pulse = 0;
+  while (timeUs < timing.endUs) {
+    const uint8_t value = pulse % 2 == 0 ? firstDrive : static_cast<uint8_t>(~firstDrive);
+    addTransition(state, operationStartUs + timeUs, generation, value == 0 ? "charge-black" : "charge-white",
+                  std::vector<uint8_t>(state.visible.size(), value));
+    timeUs += optical.fullPulseIntervalUs;
+    ++pulse;
+  }
+  addTransition(state, operationStartUs + timing.endUs, generation, "optical-settled", std::move(target));
+}
+
+void finishRefresh(NativePanelState& state) {
+  if (!state.pendingRefresh) return;
+  const std::string mode = pendingMode(state);
+  const auto& timing = emulator::runtimeStorage().config().timing;
+  if (timing.optical.measured && state.controller == "ssd1677") {
+    advanceVisiblePanel(state, emulator::runtimeMicroseconds());
+  } else {
+    state.visible = settledPixels(state, mode);
+  }
   state.refreshMode = mode;
   state.pendingRefresh = false;
   state.x3WhiteBaseline = false;
   ++state.generation;
-  state.transitions.push_back({state.busyUntilUs, state.generation, "settled", state.visible});
+  if (!timing.optical.measured || state.controller != "ssd1677") {
+    state.transitions.push_back({state.busyUntilUs, state.generation, "settled", state.visible});
+  }
   emulator::runtimeTracePanel("phase", "settled", state.busyUntilUs);
   emulator::runtimeTracePanel("refresh", mode, state.generation);
 }
 
 void startRefresh(NativePanelState& state) {
   const std::string mode = pendingMode(state);
+  const auto& timing = emulator::runtimeStorage().config().timing;
+  const RefreshTransferTiming transfer = refreshTransferTiming(state, mode);
+  if (transfer.beforeBusyUs > 0) emulator::runtimeDelay(transfer.beforeBusyUs);
+  state.postBusyTransferUs = transfer.afterBusyUs;
   const uint64_t start = emulator::runtimeMicroseconds();
+  const uint64_t operationStart = start - transfer.beforeBusyUs;
+  advanceVisiblePanel(state, start);
   const uint64_t duration = refreshDurationUs(state, mode);
   state.pendingRefresh = true;
   state.busyUntilUs = start + duration;
+  if (mode == "fast" || mode == "half" || mode == "full") state.previousPrimaryMode = mode;
   const uint64_t nextGeneration = state.generation + 1;
-  if (mode == "full") {
+  if (timing.optical.measured && state.controller == "ssd1677") {
+    addMeasuredTransitions(state, mode, operationStart, nextGeneration);
+  } else if (mode == "full") {
     state.transitions.push_back(
         {start + duration / 4, nextGeneration, "black-flash", std::vector<uint8_t>(state.visible.size(), 0x00)});
     state.transitions.push_back(
@@ -337,6 +497,7 @@ void EpdBus::begin(const EpdPins& pins, uint32_t spiHz, BusyPolarity busy, int8_
   state.newPlane.assign(bytes, 0xFF);
   const auto previous = panels.find(this);
   if (previous != panels.end() && previous->second.width == state.width && previous->second.height == state.height) {
+    advanceVisiblePanel(previous->second, emulator::runtimeMicroseconds());
     state.visible = previous->second.visible;
     state.generation = previous->second.generation;
     state.transitions = previous->second.transitions;
@@ -398,14 +559,22 @@ void EpdBus::rawCmd(uint8_t command) { setCommand(stateFor(this), command); }
 void EpdBus::rawData(uint8_t value) { consumeData(stateFor(this), &value, 1); }
 void EpdBus::rawWriteBytes(const uint8_t* bytes, uint16_t size) { consumeData(stateFor(this), bytes, size); }
 
-void EpdBus::waitBusy(const char*) { waitBusy(_busy, nullptr); }
+void EpdBus::waitBusy(const char* tag) { waitBusy(_busy, tag); }
 
-void EpdBus::waitBusy(BusyPolarity, const char*) {
+void EpdBus::waitBusy(BusyPolarity, const char* tag) {
   auto& state = stateFor(this);
   if (state.pendingRefresh) {
     const uint64_t now = emulator::runtimeMicroseconds();
     if (state.busyUntilUs > now) emulator::runtimeDelay(state.busyUntilUs - now);
     finishRefresh(state);
+    const uint64_t postBusyTransferUs = state.postBusyTransferUs;
+    state.postBusyTransferUs = 0;
+    if (postBusyTransferUs > 0 && (tag == nullptr || std::strcmp(tag, "async refresh") != 0)) {
+      // The blocking single-buffer SSD1677 path re-seeds BW and RED after BUSY.
+      // Keep the measured whole operation unchanged while leaving BUSY at the
+      // controller boundary. Async refreshes have no post-refresh re-seed.
+      emulator::runtimeDelay(postBusyTransferUs);
+    }
   } else {
     emulator::runtimeDelay(5000);
   }
@@ -462,8 +631,12 @@ namespace emulator {
 PanelSnapshot panelSnapshot() {
   if (activeBus == nullptr) return {};
   auto& state = stateFor(activeBus);
-  if (state.pendingRefresh && runtimeMicroseconds() >= state.busyUntilUs) finishRefresh(state);
-  return {state.width, state.height, state.generation, state.pendingRefresh, state.controller, state.visible};
+  const uint64_t now = runtimeMicroseconds();
+  if (state.pendingRefresh && now >= state.busyUntilUs) finishRefresh(state);
+  advanceVisiblePanel(state, now);
+  return {
+      state.width,      state.height, state.generation, state.pendingRefresh, hasPendingOpticalTransition(state, now),
+      state.controller, state.visible};
 }
 
 const std::vector<PanelTransition>& panelTransitions() {

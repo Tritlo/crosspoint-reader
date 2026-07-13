@@ -11,6 +11,10 @@
 
 #include "FontCacheManager.h"
 
+#if CROSSPOINT_EMULATED == 1
+#include "emulator/FreeRtosCompat.h"
+#endif
+
 namespace {
 
 /**
@@ -1313,9 +1317,21 @@ void GfxRenderer::fillPolygon(const int* xPoints, const int* yPoints, int numPoi
 
 // For performance measurement (using static to allow "const" methods)
 static unsigned long start_ms = 0;
+#if defined(CROSSPOINT_CALIBRATION)
+static unsigned long activity_render_start_ms = 0;
+static const char* activity_render_name = nullptr;
+
+void GfxRenderer::beginActivityRenderTiming(const char* activityName) const {
+  activity_render_start_ms = millis();
+  activity_render_name = activityName;
+}
+#endif
 
 void GfxRenderer::clearScreen(const uint8_t color) const {
   start_ms = millis();
+#if CROSSPOINT_EMULATED == 1
+  emulator::runtimeMarkActivityRenderCleared();
+#endif
   if (_stripActive) {
     // Clear only the active band's scratch, not the shared framebuffer.
     memset(_stripBuf, color, static_cast<size_t>(panelWidthBytes) * _stripRows);
@@ -1364,8 +1380,17 @@ void GfxRenderer::invertScreen() const {
 }
 
 void GfxRenderer::displayBuffer(const HalDisplay::RefreshMode refreshMode) const {
+#if CROSSPOINT_EMULATED == 1
+  emulator::runtimeFinishActivityRender();
+#endif
   auto elapsed = millis() - start_ms;
   LOG_DBG("GFX", "Time = %lu ms from clearScreen to displayBuffer", elapsed);
+#if defined(CROSSPOINT_CALIBRATION)
+  if (activity_render_name) {
+    LOG_DBG("CAL", "CAL:RENDER:%s:%lu", activity_render_name, millis() - activity_render_start_ms);
+    activity_render_name = nullptr;
+  }
+#endif
   display.displayBuffer(refreshMode, fadingFix);
 }
 

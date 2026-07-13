@@ -108,6 +108,8 @@ class ActivityManager {
   ScreenshotInfo getScreenshotInfo() const;
   ActivityId getActivityId() const;
 #if CROSSPOINT_EMULATED == 1
+  std::string_view getProtocolActivityId() const;
+  bool hasPendingRender() const { return requestedUpdate.load(); }
   uint64_t getRenderGeneration() const { return completedRenderGeneration.load(); }
 #endif
 

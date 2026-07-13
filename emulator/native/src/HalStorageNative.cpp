@@ -7,10 +7,68 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <limits>
 #include <utility>
 
 #include "emulator/DirectoryStorage.h"
 #include "emulator/FreeRtosCompat.h"
+
+namespace {
+
+uint64_t scaledTransferUs(uint64_t bytes, uint64_t measuredUs, uint64_t basisBytes) {
+  if (bytes == 0 || measuredUs == 0 || basisBytes == 0) return 0;
+  const uint64_t whole = bytes / basisBytes;
+  const uint64_t remainder = bytes % basisBytes;
+  return whole * measuredUs + (remainder * measuredUs + basisBytes - 1) / basisBytes;
+}
+
+bool isDerivedImage(std::string_view path) {
+  if (!path.starts_with("/.crosspoint/")) return false;
+  return path.ends_with(".jpg") || path.ends_with(".jpeg") || path.ends_with(".png") || path.ends_with(".pxc");
+}
+
+void delayStorageOpen(bool writable, std::string_view path, bool directory = false) {
+  const auto& timing = emulator::runtimeStorage().config().timing;
+  if (!timing.calibrated || isDerivedImage(path) || emulator::runtimeColdPostIndexTimingActive() ||
+      emulator::runtimeWarmOpenTimingActive() || emulator::runtimeImagePreparationActive() ||
+      emulator::runtimeSectionTimingActive()) {
+    return;
+  }
+  emulator::runtimeDelay(directory  ? timing.storage.directoryRootOpenUs
+                         : writable ? timing.storage.writeOpenUs
+                                    : timing.storage.readOpenUs);
+}
+
+void delayDirectoryNext() {
+  const auto& timing = emulator::runtimeStorage().config().timing;
+  if (timing.calibrated) emulator::runtimeDelay(timing.storage.directoryNextUs);
+}
+
+void delayStorageTransfer(bool writable, std::string_view path, uint64_t bytes, bool firstTransfer = false) {
+  const auto& timing = emulator::runtimeStorage().config().timing;
+  if (!timing.calibrated || isDerivedImage(path) || emulator::runtimeThumbnailTimingActive() ||
+      emulator::runtimeColdTocTimingActive() || emulator::runtimeColdPostIndexTimingActive() ||
+      emulator::runtimeWarmOpenTimingActive() || emulator::runtimeImagePreparationActive() ||
+      emulator::runtimeSectionTimingActive()) {
+    return;
+  }
+  const uint64_t measuredUs = writable ? timing.storage.writeTransferUs : timing.storage.readTransferUs;
+  const uint64_t setupUs = writable && firstTransfer ? timing.storage.writeTransferSetupUs : 0;
+  emulator::runtimeDelay(setupUs + scaledTransferUs(bytes, measuredUs, timing.storage.transferBasisBytes));
+}
+
+void delayStorageClose(std::string_view path) {
+  const auto& timing = emulator::runtimeStorage().config().timing;
+  if (timing.calibrated && !isDerivedImage(path) && !emulator::runtimeColdPostIndexTimingActive() &&
+      !emulator::runtimeWarmOpenTimingActive() && !emulator::runtimeImagePreparationActive() &&
+      !emulator::runtimeSectionTimingActive()) {
+    emulator::runtimeDelay(timing.storage.closeUs);
+  }
+}
+
+bool flagsWritable(oflag_t flags) { return (flags & O_WRONLY) != 0 || (flags & O_RDWR) != 0; }
+
+}  // namespace
 
 HalStorage HalStorage::instance;
 
@@ -82,6 +140,7 @@ class HalFile::Impl {
   std::fstream stream;
   bool directory = false;
   bool opened = false;
+  bool transferStarted = false;
   uint64_t cursor = 0;
   std::vector<std::filesystem::path> entries;
   size_t directoryIndex = 0;
@@ -117,6 +176,9 @@ String HalStorage::readFile(const char* path) {
   }
   constexpr size_t maxSize = 50000;
   const size_t size = std::min(contents.size(), maxSize);
+  delayStorageOpen(false, path);
+  delayStorageTransfer(false, path, size);
+  delayStorageClose(path);
   emulator::runtimeTraceStorage("read", path, size, true);
   return String(contents.data(), static_cast<unsigned int>(size));
 }
@@ -154,6 +216,11 @@ bool HalStorage::writeFile(const char* path, const String& content) {
   std::string error;
   const bool success = emulator::runtimeStorage().writeFile(path, reinterpret_cast<const uint8_t*>(content.data()),
                                                             content.size(), error);
+  if (success) {
+    delayStorageOpen(true, path);
+    delayStorageTransfer(true, path, content.size(), true);
+    delayStorageClose(path);
+  }
   emulator::runtimeTraceStorage("write", path, content.size(), success);
   return success;
 }
@@ -179,6 +246,7 @@ HalFile HalStorage::open(const char* path, oflag_t flags) {
     emulator::runtimeTraceStorage("open", path, 0, false);
     return {};
   }
+  delayStorageOpen(flagsWritable(flags), impl->devicePath, impl->directory);
   emulator::runtimeTraceStorage("open", path, 0, true);
   return HalFile(std::move(impl));
 }
@@ -289,7 +357,12 @@ bool HalFile::seekCur(int64_t offset) {
 }
 bool HalFile::seekSet(size_t offset) { return seek64(offset); }
 
-int HalFile::available() const { return impl && !impl->directory && impl->cursor < impl->size(); }
+int HalFile::available() const {
+  if (!impl || impl->directory) return 0;
+  const uint64_t size = impl->size();
+  if (impl->cursor >= size) return 0;
+  return static_cast<int>(std::min<uint64_t>(size - impl->cursor, std::numeric_limits<int>::max()));
+}
 size_t HalFile::position() const { return impl ? static_cast<size_t>(impl->cursor) : 0; }
 
 int HalFile::read(void* buffer, size_t count) {
@@ -300,6 +373,7 @@ int HalFile::read(void* buffer, size_t count) {
   impl->stream.read(static_cast<char*>(buffer), static_cast<std::streamsize>(count));
   const int result = static_cast<int>(impl->stream.gcount());
   impl->cursor += static_cast<uint64_t>(result);
+  delayStorageTransfer(false, impl->devicePath, static_cast<uint64_t>(std::max(0, result)));
   emulator::runtimeTraceStorage("read", impl->devicePath, static_cast<uint64_t>(std::max(0, result)), result >= 0);
   return result;
 }
@@ -320,6 +394,9 @@ size_t HalFile::write(const void* buffer, size_t count) {
     return 0;
   }
   impl->cursor += count;
+  const bool firstTransfer = !impl->transferStarted && count != 0;
+  impl->transferStarted = impl->transferStarted || count != 0;
+  delayStorageTransfer(true, impl->devicePath, count, firstTransfer);
   emulator::runtimeTraceStorage("write", impl->devicePath, count, true);
   return count;
 }
@@ -347,13 +424,16 @@ bool HalFile::close() {
   if (!impl) return false;
   impl->stream.close();
   impl->opened = false;
+  delayStorageClose(impl->devicePath);
   emulator::runtimeTraceStorage("close", impl->devicePath, 0, true);
   return true;
 }
 
 HalFile HalFile::openNextFile() {
   HalStorage::StorageLock lock;
-  if (!impl || !impl->directory || impl->directoryIndex >= impl->entries.size()) return {};
+  if (!impl || !impl->directory) return {};
+  delayDirectoryNext();
+  if (impl->directoryIndex >= impl->entries.size()) return {};
   const auto child = impl->entries[impl->directoryIndex++];
   std::error_code error;
   const auto relative = std::filesystem::relative(child, emulator::runtimeStorage().root(), error);
@@ -361,6 +441,7 @@ HalFile HalFile::openNextFile() {
   const std::string devicePath = "/" + relative.generic_string();
   auto childImpl = std::make_unique<Impl>(devicePath, child, O_RDONLY);
   if (!childImpl->opened) return {};
+  emulator::runtimeTraceStorage("open-entry", devicePath, 0, true);
   return HalFile(std::move(childImpl));
 }
 

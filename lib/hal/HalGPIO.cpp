@@ -117,6 +117,23 @@ X3ProbeResult runX3ProbePass() {
 }  // namespace X3GPIO
 
 namespace {
+#if defined(CROSSPOINT_CALIBRATION)
+uint8_t calibrationButtonState = 0;
+uint32_t calibrationButtonReleaseAt[7] = {};
+
+uint8_t readCalibrationButtons() {
+  const uint32_t now = millis();
+  for (uint8_t button = 0; button < 7; ++button) {
+    const uint32_t releaseAt = calibrationButtonReleaseAt[button];
+    if (releaseAt != 0 && static_cast<int32_t>(now - releaseAt) >= 0) {
+      calibrationButtonState &= static_cast<uint8_t>(~(1U << button));
+      calibrationButtonReleaseAt[button] = 0;
+    }
+  }
+  return calibrationButtonState;
+}
+#endif
+
 constexpr char HW_NAMESPACE[] = "cphw";
 constexpr char NVS_KEY_DEV_OVERRIDE[] = "dev_ovr";  // 0=auto, 1=x4, 2=x3
 constexpr char NVS_KEY_DEV_CACHED[] = "dev_det";    // 0=unknown, 1=x4, 2=x3
@@ -193,6 +210,9 @@ HalGPIO::DeviceType detectDeviceTypeWithFingerprint() {
 }  // namespace
 
 void HalGPIO::begin() {
+#if defined(CROSSPOINT_CALIBRATION)
+  InputManager::setButtonHook(readCalibrationButtons);
+#endif
   inputMgr.begin();
   SPI.begin(EPD_SCLK, SPI_MISO, EPD_MOSI, EPD_CS);
 
@@ -226,6 +246,19 @@ bool HalGPIO::wasAnyReleased() const { return inputMgr.wasAnyReleased(); }
 unsigned long HalGPIO::getHeldTime() const { return inputMgr.getHeldTime(); }
 
 unsigned long HalGPIO::getPowerButtonHeldTime() const { return inputMgr.getPowerButtonHeldTime(); }
+
+#if defined(CROSSPOINT_CALIBRATION)
+void HalGPIO::setCalibrationButtonState(uint8_t state) {
+  calibrationButtonState = state;
+  for (auto& releaseAt : calibrationButtonReleaseAt) releaseAt = 0;
+}
+
+void HalGPIO::setCalibrationButtonAutoRelease(uint8_t buttonIndex, uint32_t delayMs) {
+  if (buttonIndex < 7) calibrationButtonReleaseAt[buttonIndex] = millis() + delayMs;
+}
+
+uint8_t HalGPIO::getCalibrationButtonState() const { return calibrationButtonState; }
+#endif
 
 void HalGPIO::startDeepSleep() {
   // Ensure that the power button has been released to avoid immediately turning back on if you're holding it

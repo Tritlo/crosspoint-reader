@@ -8,6 +8,10 @@
 #include "Epub/converters/DirectPixelWriter.h"
 #include "Epub/converters/ImageDecoderFactory.h"
 
+#if CROSSPOINT_EMULATED == 1
+#include "emulator/FreeRtosCompat.h"
+#endif
+
 // Cache file format:
 // - uint16_t width
 // - uint16_t height
@@ -152,7 +156,14 @@ void ImageBlock::render(GfxRenderer& renderer, const int x, const int y) {
 
   // Try to render from cache first
   std::string cachePath = getCachePath(imagePath);
+#if CROSSPOINT_EMULATED == 1
+  // Match the physical render-entry-to-completion boundary, including cache miss and source open.
+  uint64_t timingStartedUs = emulator::runtimeMicroseconds();
+#endif
   if (renderFromCache(renderer, cachePath, x, y, width, height)) {
+#if CROSSPOINT_EMULATED == 1
+    emulator::runtimeFinishImageRender(true, width, height, 0, timingStartedUs);
+#endif
     return;  // Successfully rendered from cache
   }
 
@@ -197,6 +208,10 @@ void ImageBlock::render(GfxRenderer& renderer, const int x, const int y) {
     LOG_ERR("IMG", "Failed to decode image: %s", imagePath.c_str());
     return;
   }
+
+#if CROSSPOINT_EMULATED == 1
+  emulator::runtimeFinishImageRender(false, width, height, fileSize, timingStartedUs);
+#endif
 
   LOG_DBG("IMG", "Decode successful");
 }

@@ -16,7 +16,12 @@
 #include <WiFi.h>
 #include <builtinFonts/all.h>
 
+#include <algorithm>
+#include <array>
+#include <cctype>
 #include <cstring>
+#include <memory>
+#include <new>
 
 #include "CrossPointSettings.h"
 #include "CrossPointState.h"
@@ -134,6 +139,611 @@ enum class BootResume : uint8_t {
 // device back up against the user's sleep gesture. Never cleared:
 // startDeepSleep() does not return, so a set latch only ends at the wakeup reset.
 static bool deepSleepInProgress = false;
+
+#if defined(CROSSPOINT_CALIBRATION)
+namespace {
+constexpr uint8_t CALIBRATION_PROTOCOL_VERSION = 1;
+constexpr uint64_t CALIBRATION_FNV_OFFSET_BASIS = 14695981039346656037ULL;
+constexpr uint64_t CALIBRATION_FNV_PRIME = 1099511628211ULL;
+bool calibrationActivity = false;
+
+void beginCalibrationActivity() {
+  calibrationActivity = true;
+  powerManager.setPowerSaving(false);
+}
+
+int calibrationButtonIndex(const String& name) {
+  if (name == "back") return HalGPIO::BTN_BACK;
+  if (name == "confirm") return HalGPIO::BTN_CONFIRM;
+  if (name == "left") return HalGPIO::BTN_LEFT;
+  if (name == "right") return HalGPIO::BTN_RIGHT;
+  if (name == "up") return HalGPIO::BTN_UP;
+  if (name == "down") return HalGPIO::BTN_DOWN;
+  if (name == "power") return HalGPIO::BTN_POWER;
+  return -1;
+}
+
+bool validCalibrationMarker(const String& marker) {
+  if (marker.length() == 0 || marker.length() > 64) return false;
+  for (size_t index = 0; index < marker.length(); ++index) {
+    const char value = marker[index];
+    if (!(std::isalnum(static_cast<unsigned char>(value)) || value == '-' || value == '_' || value == '.'))
+      return false;
+  }
+  return true;
+}
+
+void calibrationReply(const char* kind, const String& value) {
+  logSerial.printf("CAL:%s:%s:%lu\n", kind, value.c_str(), millis());
+}
+
+struct CalibrationIoResult {
+  uint32_t openUs = 0;
+  uint32_t ioUs = 0;
+  uint32_t closeUs = 0;
+  uint32_t bytes = 0;
+  bool ok = false;
+};
+
+bool parseCalibrationCount(const String& value, uint32_t minimum, uint32_t maximum, uint32_t& parsed) {
+  if (value.length() == 0) return false;
+  for (size_t index = 0; index < value.length(); ++index) {
+    if (!std::isdigit(static_cast<unsigned char>(value[index]))) return false;
+  }
+  const unsigned long result = value.toInt();
+  if (result < minimum || result > maximum) return false;
+  parsed = static_cast<uint32_t>(result);
+  return true;
+}
+
+bool validCalibrationEpubPath(const String& path) {
+  if (!path.startsWith("/") || path.indexOf("..") >= 0 || path.length() > 240) return false;
+  String lowercase = path;
+  lowercase.toLowerCase();
+  return lowercase.endsWith(".epub") && Storage.exists(path.c_str());
+}
+
+bool validCalibrationUploadPath(const String& path) {
+  if (!path.startsWith("/") || path.indexOf("..") >= 0 || path.indexOf(':') >= 0 || path.length() > 240) return false;
+  String lowercase = path;
+  lowercase.toLowerCase();
+  return lowercase.endsWith(".epub");
+}
+
+int calibrationHexNibble(char digit) {
+  if (digit >= '0' && digit <= '9') return digit - '0';
+  if (digit >= 'a' && digit <= 'f') return digit - 'a' + 10;
+  return -1;
+}
+
+bool parseCalibrationHash(const String& value, uint64_t& parsed) {
+  if (value.length() != 16) return false;
+  parsed = 0;
+  for (size_t index = 0; index < value.length(); ++index) {
+    const int nibble = calibrationHexNibble(value[index]);
+    if (nibble < 0) return false;
+    parsed = (parsed << 4) | static_cast<uint8_t>(nibble);
+  }
+  return true;
+}
+
+constexpr char CALIBRATION_UPLOAD_TEMP_PATH[] = "/.crosspoint/calibration-upload.tmp";
+
+struct CalibrationUploadState {
+  bool active = false;
+  String path;
+  uint32_t expectedBytes = 0;
+  uint32_t receivedBytes = 0;
+  uint64_t expectedHash = 0;
+  uint64_t actualHash = CALIBRATION_FNV_OFFSET_BASIS;
+  HalFile file;
+};
+
+CalibrationUploadState calibrationUpload;
+
+void resetCalibrationUpload(bool removeTemporaryFile) {
+  if (calibrationUpload.file) calibrationUpload.file.close();
+  calibrationUpload = CalibrationUploadState{};
+  if (removeTemporaryFile) Storage.remove(CALIBRATION_UPLOAD_TEMP_PATH);
+}
+
+void startCalibrationUpload(const String& path, uint32_t byteCount, uint64_t expectedHash) {
+  resetCalibrationUpload(true);
+  if (!Storage.ensureDirectoryExists("/.crosspoint")) {
+    calibrationReply("ERROR", "upload-directory-failed");
+    return;
+  }
+  if (!Storage.openFileForWrite("CAL", CALIBRATION_UPLOAD_TEMP_PATH, calibrationUpload.file)) {
+    calibrationReply("ERROR", "upload-open-failed");
+    return;
+  }
+  calibrationUpload.active = true;
+  calibrationUpload.path = path;
+  calibrationUpload.expectedBytes = byteCount;
+  calibrationUpload.expectedHash = expectedHash;
+  beginCalibrationActivity();
+  logSerial.printf("CAL:UPLOAD:READY:%s:%lu:%016llx:%lu\n", path.c_str(), byteCount,
+                   static_cast<unsigned long long>(expectedHash), millis());
+}
+
+void receiveCalibrationUploadChunk(uint32_t offset, const String& encoded) {
+  constexpr size_t CHUNK_SIZE = 512;
+  const size_t byteCount = encoded.length() / 2;
+  if (!calibrationUpload.active || offset != calibrationUpload.receivedBytes || encoded.length() == 0 ||
+      encoded.length() % 2 != 0 || byteCount > CHUNK_SIZE ||
+      byteCount > calibrationUpload.expectedBytes - calibrationUpload.receivedBytes) {
+    calibrationReply("ERROR", "invalid-upload-chunk");
+    return;
+  }
+  beginCalibrationActivity();
+  std::array<uint8_t, CHUNK_SIZE> buffer;
+  for (size_t index = 0; index < byteCount; ++index) {
+    const int high = calibrationHexNibble(encoded[index * 2]);
+    const int low = calibrationHexNibble(encoded[index * 2 + 1]);
+    if (high < 0 || low < 0) {
+      calibrationReply("ERROR", "invalid-upload-chunk");
+      return;
+    }
+    buffer[index] = static_cast<uint8_t>((high << 4) | low);
+  }
+  if (calibrationUpload.file.write(buffer.data(), byteCount) != byteCount) {
+    resetCalibrationUpload(true);
+    calibrationReply("ERROR", "upload-write-failed");
+    return;
+  }
+  for (size_t index = 0; index < byteCount; ++index) {
+    calibrationUpload.actualHash ^= buffer[index];
+    calibrationUpload.actualHash *= CALIBRATION_FNV_PRIME;
+  }
+  calibrationUpload.receivedBytes += byteCount;
+  if (calibrationUpload.receivedBytes < calibrationUpload.expectedBytes) {
+    logSerial.printf("CAL:UPLOAD:CHUNK:ACK:%lu:%lu\n", calibrationUpload.receivedBytes, millis());
+    return;
+  }
+
+  calibrationUpload.file.flush();
+  const String path = calibrationUpload.path;
+  const uint32_t expectedBytes = calibrationUpload.expectedBytes;
+  const uint64_t actualHash = calibrationUpload.actualHash;
+  const bool valid = calibrationUpload.file.close() && actualHash == calibrationUpload.expectedHash;
+  calibrationUpload.active = false;
+  if (!valid) {
+    resetCalibrationUpload(true);
+    calibrationReply("ERROR", "upload-validation-failed");
+    return;
+  }
+  if ((Storage.exists(path.c_str()) && !Storage.remove(path.c_str())) ||
+      !Storage.rename(CALIBRATION_UPLOAD_TEMP_PATH, path.c_str())) {
+    resetCalibrationUpload(true);
+    calibrationReply("ERROR", "upload-commit-failed");
+    return;
+  }
+  resetCalibrationUpload(false);
+  logSerial.printf("CAL:UPLOADED:%s:%lu:%016llx:%lu\n", path.c_str(), expectedBytes,
+                   static_cast<unsigned long long>(actualHash), millis());
+}
+
+struct CalibrationCachePopulation {
+  uint32_t files = 0;
+  uint32_t directories = 0;
+  uint64_t bytes = 0;
+};
+
+bool measureCalibrationCacheDirectory(const String& path, CalibrationCachePopulation& population, uint8_t depth = 0) {
+  if (depth > 16) return false;
+  HalFile directory = Storage.open(path.c_str());
+  if (!directory || !directory.isDirectory()) {
+    if (directory) directory.close();
+    return false;
+  }
+  ++population.directories;
+  char name[128];
+  for (HalFile entry = directory.openNextFile(); entry; entry = directory.openNextFile()) {
+    const size_t nameLength = entry.getName(name, sizeof(name));
+    const bool isDirectory = entry.isDirectory();
+    const uint64_t fileBytes = isDirectory ? 0 : entry.fileSize64();
+    entry.close();
+    if (nameLength == 0 || nameLength >= sizeof(name)) {
+      directory.close();
+      return false;
+    }
+    if (isDirectory) {
+      String child = path;
+      if (!child.endsWith("/")) child += "/";
+      child += name;
+      if (!measureCalibrationCacheDirectory(child, population, static_cast<uint8_t>(depth + 1))) {
+        directory.close();
+        return false;
+      }
+    } else {
+      ++population.files;
+      population.bytes += fileBytes;
+    }
+  }
+  return directory.close();
+}
+
+void runCalibrationSdBenchmark(uint32_t byteCount, uint32_t iterations) {
+  constexpr size_t CHUNK_SIZE = 4096;
+  constexpr char DIRECTORY[] = "/.crosspoint";
+  constexpr char PATH[] = "/.crosspoint/calibration-timing.bin";
+  std::array<uint8_t, CHUNK_SIZE> buffer{};
+  std::array<CalibrationIoResult, 32> writes{};
+  std::array<CalibrationIoResult, 32> reads{};
+  for (size_t index = 0; index < buffer.size(); ++index) buffer[index] = static_cast<uint8_t>(index * 37U + 11U);
+
+  Storage.ensureDirectoryExists(DIRECTORY);
+  for (uint32_t iteration = 0; iteration < iterations; ++iteration) {
+    CalibrationIoResult& writeResult = writes[iteration];
+    HalFile writeFile;
+    uint32_t startUs = micros();
+    const bool openedForWrite = Storage.openFileForWrite("CAL", PATH, writeFile);
+    writeResult.openUs = micros() - startUs;
+    startUs = micros();
+    size_t written = 0;
+    while (openedForWrite && written < byteCount) {
+      const size_t chunk = std::min(CHUNK_SIZE, static_cast<size_t>(byteCount - written));
+      const size_t count = writeFile.write(buffer.data(), chunk);
+      written += count;
+      if (count != chunk) break;
+    }
+    if (openedForWrite) writeFile.flush();
+    writeResult.ioUs = micros() - startUs;
+    startUs = micros();
+    const bool writeClosed = openedForWrite && writeFile.close();
+    writeResult.closeUs = micros() - startUs;
+    writeResult.bytes = written;
+    writeResult.ok = openedForWrite && writeClosed && written == byteCount;
+
+    CalibrationIoResult& readResult = reads[iteration];
+    HalFile readFile;
+    startUs = micros();
+    const bool openedForRead = Storage.openFileForRead("CAL", PATH, readFile);
+    readResult.openUs = micros() - startUs;
+    startUs = micros();
+    size_t read = 0;
+    while (openedForRead && read < byteCount) {
+      const size_t chunk = std::min(CHUNK_SIZE, static_cast<size_t>(byteCount - read));
+      const int count = readFile.read(buffer.data(), chunk);
+      if (count <= 0) break;
+      read += static_cast<size_t>(count);
+    }
+    readResult.ioUs = micros() - startUs;
+    startUs = micros();
+    const bool readClosed = openedForRead && readFile.close();
+    readResult.closeUs = micros() - startUs;
+    readResult.bytes = read;
+    readResult.ok = openedForRead && readClosed && read == byteCount;
+  }
+  Storage.remove(PATH);
+
+  for (uint32_t iteration = 0; iteration < iterations; ++iteration) {
+    const CalibrationIoResult& writeResult = writes[iteration];
+    logSerial.printf("CAL:BENCH:SD:WRITE:%lu:%lu:%lu:%lu:%lu:%d\n", iteration, writeResult.bytes, writeResult.openUs,
+                     writeResult.ioUs, writeResult.closeUs, writeResult.ok);
+    const CalibrationIoResult& readResult = reads[iteration];
+    logSerial.printf("CAL:BENCH:SD:READ:%lu:%lu:%lu:%lu:%lu:%d\n", iteration, readResult.bytes, readResult.openUs,
+                     readResult.ioUs, readResult.closeUs, readResult.ok);
+  }
+  logSerial.printf("CAL:BENCH-END:SD:%lu:%lu:%lu\n", byteCount, iterations, millis());
+}
+
+void runCalibrationDirectoryBenchmark(uint32_t iterations) {
+  std::array<uint32_t, 10> entryCounts{};
+  std::array<uint32_t, 10> rootOpenUs{};
+  std::array<uint32_t, 10> enumerationUs{};
+  std::array<uint32_t, 10> entryCloseUs{};
+  std::array<uint32_t, 10> rootCloseUs{};
+  std::array<uint32_t, 10> durationsUs{};
+  std::array<bool, 10> successes{};
+  for (uint32_t iteration = 0; iteration < iterations; ++iteration) {
+    const uint32_t totalStartUs = micros();
+    uint32_t startUs = micros();
+    HalFile root = Storage.open("/");
+    rootOpenUs[iteration] = micros() - startUs;
+    bool success = root && root.isDirectory();
+    uint32_t entryCount = 0;
+    if (success) {
+      root.rewindDirectory();
+      while (true) {
+        startUs = micros();
+        HalFile entry = root.openNextFile();
+        enumerationUs[iteration] += micros() - startUs;
+        if (!entry) break;
+        ++entryCount;
+        startUs = micros();
+        success = entry.close() && success;
+        entryCloseUs[iteration] += micros() - startUs;
+      }
+      startUs = micros();
+      success = root.close() && success;
+      rootCloseUs[iteration] = micros() - startUs;
+    }
+    entryCounts[iteration] = entryCount;
+    durationsUs[iteration] = micros() - totalStartUs;
+    successes[iteration] = success;
+  }
+  for (uint32_t iteration = 0; iteration < iterations; ++iteration) {
+    logSerial.printf("CAL:BENCH:DIR:%lu:%lu:%lu:%lu:%lu:%lu:%lu:%d\n", iteration, entryCounts[iteration],
+                     rootOpenUs[iteration], enumerationUs[iteration], entryCloseUs[iteration], rootCloseUs[iteration],
+                     durationsUs[iteration], successes[iteration]);
+  }
+  logSerial.printf("CAL:BENCH-END:DIR:%lu:%lu\n", iterations, millis());
+}
+
+void runCalibrationPanelBenchmark(const String& modeName, HalDisplay::RefreshMode mode, uint32_t iterations) {
+  std::unique_ptr<uint8_t[]> savedBuffer(new (std::nothrow) uint8_t[display.getBufferSize()]);
+  if (!savedBuffer) {
+    calibrationReply("ERROR", "panel-buffer-allocation");
+    return;
+  }
+  memcpy(savedBuffer.get(), display.getFrameBuffer(), display.getBufferSize());
+  std::array<uint32_t, 10> durationsUs{};
+  {
+    RenderLock lock;
+    for (uint32_t iteration = 0; iteration < iterations; ++iteration) {
+      display.clearScreen(iteration % 2 == 0 ? 0x00 : 0xFF);
+      const uint32_t startUs = micros();
+      display.refreshDisplay(mode);
+      durationsUs[iteration] = micros() - startUs;
+    }
+    memcpy(display.getFrameBuffer(), savedBuffer.get(), display.getBufferSize());
+    display.refreshDisplay(HalDisplay::HALF_REFRESH);
+  }
+  for (uint32_t iteration = 0; iteration < iterations; ++iteration) {
+    logSerial.printf("CAL:BENCH:PANEL:%s:%lu:%s:%lu\n", modeName.c_str(), iteration,
+                     iteration % 2 == 0 ? "black" : "white", durationsUs[iteration]);
+  }
+  logSerial.printf("CAL:BENCH-END:PANEL:%s:%lu:%lu\n", modeName.c_str(), iterations, millis());
+}
+
+void runCalibrationGrayscaleBenchmark(const String& primaryName, HalDisplay::RefreshMode primaryMode,
+                                      uint32_t iterations) {
+  const size_t bufferSize = display.getBufferSize();
+  std::unique_ptr<uint8_t[]> savedBuffer(new (std::nothrow) uint8_t[bufferSize]);
+  std::unique_ptr<uint8_t[]> plane(new (std::nothrow) uint8_t[bufferSize]);
+  if (!savedBuffer || !plane) {
+    calibrationReply("ERROR", "grayscale-buffer-allocation");
+    return;
+  }
+  memcpy(savedBuffer.get(), display.getFrameBuffer(), bufferSize);
+  std::array<uint32_t, 10> startsUs{};
+  std::array<uint32_t, 10> durationsUs{};
+  {
+    RenderLock lock;
+    const uint32_t batchStartUs = micros();
+    logSerial.printf("CAL:BENCH-START:GRAY:%s:%lu\n", primaryName.c_str(), millis());
+    for (uint32_t iteration = 0; iteration < iterations; ++iteration) {
+      const bool dark = iteration % 2 != 0;
+      // The production renderer paints gray candidates black in the BW base;
+      // the custom LUT then lightens those pixels according to the two planes.
+      display.clearScreen(0x00);
+      display.refreshDisplay(primaryMode);
+      memset(plane.get(), dark ? 0xFF : 0x00, bufferSize);
+      display.copyGrayscaleLsbBuffers(plane.get());
+      memset(plane.get(), 0xFF, bufferSize);
+      display.copyGrayscaleMsbBuffers(plane.get());
+      const uint32_t startUs = micros();
+      startsUs[iteration] = startUs - batchStartUs;
+      display.displayGrayBuffer();
+      durationsUs[iteration] = micros() - startUs;
+      display.cleanupGrayscaleBuffers(display.getFrameBuffer());
+    }
+    memcpy(display.getFrameBuffer(), savedBuffer.get(), bufferSize);
+    display.refreshDisplay(HalDisplay::HALF_REFRESH);
+  }
+  for (uint32_t iteration = 0; iteration < iterations; ++iteration) {
+    logSerial.printf("CAL:BENCH:GRAY:%s:%lu:%s:%lu:%lu\n", primaryName.c_str(), iteration,
+                     iteration % 2 == 0 ? "light" : "dark", startsUs[iteration], durationsUs[iteration]);
+  }
+  logSerial.printf("CAL:BENCH-END:GRAY:%s:%lu:%lu\n", primaryName.c_str(), iterations, millis());
+}
+
+void handleCalibrationCommand(const String& command) {
+  if (command == "HELLO") {
+    logSerial.printf("CAL:HELLO:%u:%s:%s:%lu\n", CALIBRATION_PROTOCOL_VERSION, gpio.deviceIsX3() ? "x3" : "x4",
+                     CROSSPOINT_VERSION, millis());
+    return;
+  }
+  if (command == "STATE") {
+    String state = String(gpio.getCalibrationButtonState());
+    calibrationReply("STATE", state);
+    return;
+  }
+  if (command.startsWith("MARK:")) {
+    const String marker = command.substring(5);
+    if (!validCalibrationMarker(marker)) {
+      calibrationReply("ERROR", "invalid-marker");
+      return;
+    }
+    calibrationReply("MARK", marker);
+    return;
+  }
+  if (command.startsWith("BUTTON:")) {
+    const int separator = command.indexOf(':', 7);
+    if (separator < 0) {
+      calibrationReply("ERROR", "invalid-button-command");
+      return;
+    }
+    String name = command.substring(7, separator);
+    name.toLowerCase();
+    String action = command.substring(separator + 1);
+    action.toUpperCase();
+    const int button = calibrationButtonIndex(name);
+    const bool pulse = action.startsWith("PULSE:");
+    const uint32_t pulseMs = pulse ? action.substring(6).toInt() : 0;
+    if (button < 0 || (action != "DOWN" && action != "UP" && (!pulse || pulseMs < 10 || pulseMs > 10000))) {
+      calibrationReply("ERROR", "invalid-button-command");
+      return;
+    }
+    uint8_t state = gpio.getCalibrationButtonState();
+    if (action == "DOWN" || pulse) {
+      state |= static_cast<uint8_t>(1U << button);
+    } else {
+      state &= static_cast<uint8_t>(~(1U << button));
+    }
+    gpio.setCalibrationButtonState(state);
+    if (pulse) gpio.setCalibrationButtonAutoRelease(static_cast<uint8_t>(button), pulseMs);
+    calibrationReply("BUTTON", name + ":" + action);
+    return;
+  }
+  if (command.startsWith("UPLOAD:BEGIN:")) {
+    const int hashSeparator = command.lastIndexOf(':');
+    const int sizeSeparator = hashSeparator > 0 ? command.lastIndexOf(':', hashSeparator - 1) : -1;
+    const String path = sizeSeparator > 13 ? command.substring(13, sizeSeparator) : String();
+    uint32_t byteCount = 0;
+    uint64_t expectedHash = 0;
+    if (!validCalibrationUploadPath(path) || sizeSeparator < 0 || hashSeparator < 0 ||
+        !parseCalibrationCount(command.substring(sizeSeparator + 1, hashSeparator), 1, 64 * 1024 * 1024, byteCount) ||
+        !parseCalibrationHash(command.substring(hashSeparator + 1), expectedHash)) {
+      calibrationReply("ERROR", "invalid-upload");
+      return;
+    }
+    startCalibrationUpload(path, byteCount, expectedHash);
+    return;
+  }
+  if (command.startsWith("UPLOAD:CHUNK:")) {
+    const int separator = command.indexOf(':', 13);
+    uint32_t offset = 0;
+    const String encoded = separator >= 0 ? command.substring(separator + 1) : String();
+    if (separator < 0 || !parseCalibrationCount(command.substring(13, separator), 0, 64 * 1024 * 1024, offset)) {
+      calibrationReply("ERROR", "invalid-upload-chunk");
+      return;
+    }
+    receiveCalibrationUploadChunk(offset, encoded);
+    return;
+  }
+  if (command.startsWith("CACHE:CLEAR:")) {
+    const String path = command.substring(12);
+    if (!validCalibrationEpubPath(path)) {
+      calibrationReply("ERROR", "invalid-epub-path");
+      return;
+    }
+    Epub epub(std::string(path.c_str()), "/.crosspoint");
+    CalibrationCachePopulation population;
+    const bool cacheExists = Storage.exists(epub.getCachePath().c_str());
+    if (cacheExists && !measureCalibrationCacheDirectory(epub.getCachePath().c_str(), population)) {
+      calibrationReply("ERROR", "cache-population-failed");
+      return;
+    }
+    beginCalibrationActivity();
+    const uint32_t startedUs = micros();
+    if (!epub.clearCache()) {
+      calibrationReply("ERROR", "cache-clear-failed");
+      return;
+    }
+    const uint32_t durationUs = micros() - startedUs;
+    logSerial.printf("CAL:CACHE:CLEARED:%s:%lu:%lu:%lu:%llu:%lu\n", path.c_str(), durationUs, population.files,
+                     population.directories, static_cast<unsigned long long>(population.bytes), millis());
+    return;
+  }
+  if (command.startsWith("OPEN:")) {
+    const String path = command.substring(5);
+    if (!validCalibrationEpubPath(path)) {
+      calibrationReply("ERROR", "invalid-epub-path");
+      return;
+    }
+    beginCalibrationActivity();
+    activityManager.goToReader(std::string(path.c_str()));
+    calibrationReply("OPEN", path);
+    return;
+  }
+  if (command == "HOME:SETTINGS") {
+    beginCalibrationActivity();
+    activityManager.goHome(HomeMenuItem::SETTINGS_MENU);
+    calibrationReply("HOME", "SETTINGS");
+    return;
+  }
+  if (command == "HOME:FILES") {
+    beginCalibrationActivity();
+    activityManager.goHome(HomeMenuItem::FILE_BROWSER);
+    calibrationReply("HOME", "FILES");
+    return;
+  }
+  if (command.startsWith("BENCH:SD:")) {
+    const int separator = command.indexOf(':', 9);
+    uint32_t byteCount = 0;
+    uint32_t iterations = 0;
+    if (separator < 0 || !parseCalibrationCount(command.substring(9, separator), 4096, 4 * 1024 * 1024, byteCount) ||
+        !parseCalibrationCount(command.substring(separator + 1), 1, 32, iterations)) {
+      calibrationReply("ERROR", "invalid-sd-benchmark");
+      return;
+    }
+    beginCalibrationActivity();
+    runCalibrationSdBenchmark(byteCount, iterations);
+    return;
+  }
+  if (command.startsWith("BENCH:DIR:")) {
+    uint32_t iterations = 0;
+    if (!parseCalibrationCount(command.substring(10), 1, 10, iterations)) {
+      calibrationReply("ERROR", "invalid-directory-benchmark");
+      return;
+    }
+    beginCalibrationActivity();
+    runCalibrationDirectoryBenchmark(iterations);
+    return;
+  }
+  if (command.startsWith("BENCH:PANEL:")) {
+    const int separator = command.indexOf(':', 12);
+    if (separator < 0) {
+      calibrationReply("ERROR", "invalid-panel-benchmark");
+      return;
+    }
+    String modeName = command.substring(12, separator);
+    modeName.toLowerCase();
+    uint32_t iterations = 0;
+    if (!parseCalibrationCount(command.substring(separator + 1), 1, 10, iterations)) {
+      calibrationReply("ERROR", "invalid-panel-benchmark");
+      return;
+    }
+    if (modeName == "fast") {
+      beginCalibrationActivity();
+      runCalibrationPanelBenchmark(modeName, HalDisplay::FAST_REFRESH, iterations);
+      return;
+    }
+    if (modeName == "half") {
+      beginCalibrationActivity();
+      runCalibrationPanelBenchmark(modeName, HalDisplay::HALF_REFRESH, iterations);
+      return;
+    }
+    if (modeName == "full") {
+      beginCalibrationActivity();
+      runCalibrationPanelBenchmark(modeName, HalDisplay::FULL_REFRESH, iterations);
+      return;
+    }
+    calibrationReply("ERROR", "invalid-panel-benchmark");
+    return;
+  }
+  if (command.startsWith("BENCH:GRAY:")) {
+    const int separator = command.indexOf(':', 11);
+    if (separator < 0) {
+      calibrationReply("ERROR", "invalid-grayscale-benchmark");
+      return;
+    }
+    String primaryName = command.substring(11, separator);
+    primaryName.toLowerCase();
+    uint32_t iterations = 0;
+    if (!parseCalibrationCount(command.substring(separator + 1), 1, 10, iterations)) {
+      calibrationReply("ERROR", "invalid-grayscale-benchmark");
+      return;
+    }
+    if (primaryName == "fast") {
+      beginCalibrationActivity();
+      runCalibrationGrayscaleBenchmark(primaryName, HalDisplay::FAST_REFRESH, iterations);
+      return;
+    }
+    if (primaryName == "half") {
+      beginCalibrationActivity();
+      runCalibrationGrayscaleBenchmark(primaryName, HalDisplay::HALF_REFRESH, iterations);
+      return;
+    }
+    calibrationReply("ERROR", "invalid-grayscale-benchmark");
+    return;
+  }
+  calibrationReply("ERROR", "unknown-command");
+}
+}  // namespace
+#endif
 
 void silentRestart() {
   if (deepSleepInProgress) return;  // sleeping supersedes the heap-defrag reboot
@@ -510,15 +1120,26 @@ void loop() {
         logSerial.write(buf, bufferSize);
         logSerial.printf("SCREENSHOT_END\n");
       }
+#if defined(CROSSPOINT_CALIBRATION)
+      else if (cmd.startsWith("CAL:")) {
+        handleCalibrationCommand(cmd.substring(4));
+      }
+#endif
     }
   }
 
   // Check for any user activity (button press or release) or active background work
   static unsigned long lastActivityTime = millis();
   if (gpio.wasAnyPressed() || gpio.wasAnyReleased() || halTiltSensor.hadActivity() ||
+#if defined(CROSSPOINT_CALIBRATION)
+      calibrationActivity ||
+#endif
       activityManager.preventAutoSleep()) {
     lastActivityTime = millis();         // Reset inactivity timer
     powerManager.setPowerSaving(false);  // Restore normal CPU frequency on user activity
+#if defined(CROSSPOINT_CALIBRATION)
+    calibrationActivity = false;
+#endif
   }
 
   static bool screenshotButtonsReleased = true;

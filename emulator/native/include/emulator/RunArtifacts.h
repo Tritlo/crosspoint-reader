@@ -13,8 +13,7 @@
 namespace emulator {
 
 inline constexpr uint32_t TRACE_VERSION = 1;
-inline constexpr uint32_t PANEL_MODEL_VERSION = 1;
-inline constexpr std::string_view TIMING_PROFILE = "development-uncalibrated-v0";
+inline constexpr uint32_t PANEL_MODEL_VERSION = 3;
 
 class RunArtifacts {
  public:

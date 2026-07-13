@@ -7,6 +7,7 @@ Release environments are unaffected; they set CROSSPOINT_VERSION in the ini.
 """
 
 import configparser
+import hashlib
 import os
 import subprocess
 import sys
@@ -63,6 +64,18 @@ def get_git_short_sha(project_dir):
     )
 
 
+def get_git_dirty_hash(project_dir):
+    try:
+        diff = subprocess.check_output(
+            ['git', 'diff', '--binary', 'HEAD', '--'],
+            stderr=subprocess.PIPE, cwd=project_dir
+        )
+        return hashlib.sha256(diff).hexdigest()[:8] if diff else None
+    except (FileNotFoundError, OSError, subprocess.CalledProcessError) as e:
+        warn(f'could not fingerprint dirty sources: {e}')
+        return 'unknown'
+
+
 def get_base_version(project_dir):
     ini_path = os.path.join(project_dir, 'platformio.ini')
     if not os.path.isfile(ini_path):
@@ -77,9 +90,9 @@ def get_base_version(project_dir):
 
 
 def inject_version(env):
-    # Only applies to the dev (default) environment; release envs set the
-    # version via build_flags in platformio.ini and are unaffected.
-    if env['PIOENV'] != 'default':
+    # Applies to development and calibration firmware; release environments
+    # set the version via build_flags in platformio.ini and are unaffected.
+    if env['PIOENV'] not in ('default', 'calibration'):
         return
 
     project_dir = env['PROJECT_DIR']
@@ -87,6 +100,11 @@ def inject_version(env):
     branch = get_git_branch(project_dir)
     short_sha = get_git_short_sha(project_dir)
     version_string = f'{base_version}-dev-{branch}-{short_sha}'
+    if env['PIOENV'] == 'calibration':
+        version_string += '-calibration'
+        dirty_hash = get_git_dirty_hash(project_dir)
+        if dirty_hash:
+            version_string += f'-dirty{dirty_hash}'
 
     env.Append(CPPDEFINES=[('CROSSPOINT_VERSION', f'\\"{version_string}\\"')])
     print(f'CrossPoint build version: {version_string}')

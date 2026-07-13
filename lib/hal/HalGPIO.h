@@ -85,6 +85,14 @@ class HalGPIO {
   unsigned long getHeldTime() const;
   unsigned long getPowerButtonHeldTime() const;
 
+#if defined(CROSSPOINT_CALIBRATION)
+  // Calibration firmware only: merge a host-controlled button bitmask into
+  // InputManager's normal sampling/debounce path.
+  void setCalibrationButtonState(uint8_t state);
+  void setCalibrationButtonAutoRelease(uint8_t buttonIndex, uint32_t delayMs);
+  uint8_t getCalibrationButtonState() const;
+#endif
+
   // Setup wake up GPIO and enter deep sleep
   void startDeepSleep();
 

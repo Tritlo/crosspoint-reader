@@ -18,6 +18,10 @@
 #include "Epub/converters/ImageToFramebufferDecoder.h"
 #include "Epub/htmlEntities.h"
 
+#if CROSSPOINT_EMULATED == 1
+#include "emulator/FreeRtosCompat.h"
+#endif
+
 // Minimum file size (in bytes) to show indexing popup - smaller chapters don't benefit from it
 constexpr size_t MIN_SIZE_FOR_POPUP = 10 * 1024;  // 10KB
 constexpr size_t PARSE_BUFFER_SIZE = 1024;
@@ -521,6 +525,9 @@ void XMLCALL ChapterHtmlSlimParser::startElement(void* userData, const XML_Char*
       }
 
       if (!src.empty() && self->imageRendering != 1) {
+#if CROSSPOINT_EMULATED == 1
+        emulator::runtimeFinishSectionImageDiscovery();
+#endif
         LOG_DBG("EHP", "Found image: src=%s", src.c_str());
 
         {
@@ -528,6 +535,15 @@ void XMLCALL ChapterHtmlSlimParser::startElement(void* userData, const XML_Char*
           std::string resolvedPath = FsHelpers::normalisePath(FsHelpers::decodeUriEscapes(self->contentBase + src));
 
           if (ImageDecoderFactory::isFormatSupported(resolvedPath)) {
+#if CROSSPOINT_EMULATED == 1
+            const uint64_t imagePreparationStartedUs = emulator::runtimeMicroseconds();
+            emulator::runtimeBeginImagePreparation();
+            struct ImagePreparationTimingScope {
+              ~ImagePreparationTimingScope() { emulator::runtimeCancelImagePreparation(); }
+            } imagePreparationTimingScope;
+            size_t sourceImageBytes = 0;
+            self->epub->getItemSize(resolvedPath, &sourceImageBytes);
+#endif
             // Create a unique filename for the cached image
             std::string ext;
             size_t extPos = resolvedPath.rfind('.');
@@ -551,6 +567,9 @@ void XMLCALL ChapterHtmlSlimParser::startElement(void* userData, const XML_Char*
               ImageDimensions dims = {0, 0};
               ImageToFramebufferDecoder* decoder = ImageDecoderFactory::getDecoder(cachedImagePath);
               if (decoder && decoder->getDimensions(cachedImagePath, dims)) {
+#if CROSSPOINT_EMULATED == 1
+                emulator::runtimeFinishImagePreparation(sourceImageBytes, imagePreparationStartedUs);
+#endif
                 LOG_DBG("EHP", "Image dimensions: %dx%d", dims.width, dims.height);
 
                 int displayWidth = 0;

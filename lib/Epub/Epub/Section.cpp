@@ -9,6 +9,9 @@
 #include "Page.h"
 #include "hyphenation/Hyphenator.h"
 #include "parsers/ChapterHtmlSlimParser.h"
+#if CROSSPOINT_EMULATED == 1
+#include "emulator/FreeRtosCompat.h"
+#endif
 
 namespace {
 // v29: TextBlock word data stored as one flat arena (offset table + NUL-terminated
@@ -270,8 +273,14 @@ bool Section::startBuild(const int fontId, const float lineCompression, const bo
   const bool reusedHtml = Storage.exists(htmlPath.c_str());
   bool htmlCached = reusedHtml;
   if (reusedHtml) {
+#if CROSSPOINT_EMULATED == 1
+    emulator::runtimeCancelSectionStreaming();
+#endif
     LOG_DBG("SCT", "Reusing cached HTML %s", htmlPath.c_str());
   } else {
+#if CROSSPOINT_EMULATED == 1
+    emulator::runtimeActivateSectionStreaming();
+#endif
     Storage.mkdir(htmlDir.c_str());
 
     // Retry logic for SD card timing issues
@@ -308,11 +317,20 @@ bool Section::startBuild(const int fontId, const float lineCompression, const bo
     }
 
     if (!streamed) {
+#if CROSSPOINT_EMULATED == 1
+      emulator::runtimeCancelSectionStreaming();
+#endif
       LOG_ERR("SCT", "Failed to stream item contents to temp file after retries");
       return false;
     }
 
+#if CROSSPOINT_EMULATED == 1
+    emulator::runtimeFinishSectionStreaming();
+#endif
     LOG_DBG("SCT", "Streamed temp HTML to %s (%d bytes)", tmpHtmlPath.c_str(), fileSize);
+#if CROSSPOINT_EMULATED == 1
+    emulator::runtimeBeginSectionImageDiscovery();
+#endif
 
     // Promote to the persistent HTML cache immediately -- the inflate is complete and the bytes are
     // valid regardless of whether the layout build finishes, so reopening (even a window-only spine
@@ -325,6 +343,9 @@ bool Section::startBuild(const int fontId, const float lineCompression, const bo
   }
 
   if (!Storage.openFileForWrite("SCT", binTmpPath(), file)) {
+#if CROSSPOINT_EMULATED == 1
+    emulator::runtimeCancelSectionImageDiscovery();
+#endif
     if (!reusedHtml) Storage.remove(tmpHtmlPath.c_str());
     return false;
   }
@@ -338,6 +359,9 @@ bool Section::startBuild(const int fontId, const float lineCompression, const bo
     file.close();
     Storage.remove(binTmpPath().c_str());
     if (!reusedHtml) Storage.remove(tmpHtmlPath.c_str());
+#if CROSSPOINT_EMULATED == 1
+    emulator::runtimeCancelSectionImageDiscovery();
+#endif
     return false;
   }
   // htmlCached == "htmlPath is the live cache" (reused, or just promoted). finalizeBuild/abandonBuild
@@ -391,6 +415,9 @@ bool Section::startBuild(const int fontId, const float lineCompression, const bo
     file.close();
     Storage.remove(binTmpPath().c_str());
     if (!reusedHtml) Storage.remove(tmpHtmlPath.c_str());
+#if CROSSPOINT_EMULATED == 1
+    emulator::runtimeCancelSectionImageDiscovery();
+#endif
     return false;
   }
 
@@ -582,6 +609,9 @@ bool Section::commitBuildFile(const uint8_t version, const uint32_t bytesConsume
 }
 
 bool Section::finalizeBuild() {
+#if CROSSPOINT_EMULATED == 1
+  emulator::runtimeCancelSectionImageDiscovery();
+#endif
   // Flush the trailing page (emits the last page via the completePageFn into the LUT).
   build_->parser->finishParse();
 
@@ -614,6 +644,9 @@ bool Section::finalizeBuild() {
 
 void Section::suspendBuild() {
   if (!build_) return;
+#if CROSSPOINT_EMULATED == 1
+  emulator::runtimeCancelSectionImageDiscovery();
+#endif
 
   // Only worth persisting if this build produced pages a pre-existing partial doesn't
   // already cover; otherwise keep the older (bigger) partial and just drop the tmp.
@@ -653,6 +686,9 @@ void Section::suspendBuild() {
 
 void Section::abandonBuild() {
   if (!build_) return;
+#if CROSSPOINT_EMULATED == 1
+  emulator::runtimeCancelSectionImageDiscovery();
+#endif
   if (build_->parser) build_->parser->abortParse();
   if (build_->cssParser) build_->cssParser->clear();
   if (file) {

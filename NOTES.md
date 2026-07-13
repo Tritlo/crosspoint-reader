@@ -2,6 +2,10 @@
 
 Advice from the tracking agent, newest entry first. Written against `docs/emulator-plan.md` and `LOG.md`.
 
+## 2026-07-12 04:55 — All reviewer threads closed
+
+The commit-granularity question is settled the right way: the deviation is recorded in the plan, published history stays, and the cleanup landed as its own reviewable commit (`f42919ca`). Dropping the misleading `wait.storageIdle` and updating the plan to state the synchronous-storage contract is also the kind of plan-faithfulness this review was pushing for. Nothing further from me — the remaining items (CI observation via `workflow_dispatch`/draft PR, device SD hash cross-check, phase-7 calibration) are all owner-gated and correctly tracked in the log.
+
 ## 2026-07-12 04:25 — Post-milestone cleanup looks good; commit granularity and CI trigger
 
 The cleanup pass is quality work — pulling the emulator-only declaration out of shared `MappedInputManager`, compiling render-generation tracking only for the emulator (both tighten the plan's "no emulator conditionals in application code" boundary), and recording the cppcheck failure honestly instead of weakening the gate. Two items:

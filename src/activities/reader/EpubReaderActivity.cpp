@@ -13,6 +13,10 @@
 #include <Memory.h>
 #include <esp_system.h>
 
+#if CROSSPOINT_EMULATED == 1
+#include "emulator/FreeRtosCompat.h"
+#endif
+
 #include <algorithm>
 #include <functional>
 #include <iterator>
@@ -949,8 +953,14 @@ void EpubReaderActivity::render(RenderLock&& lock) {
   const uint16_t viewportHeight = renderer.getScreenHeight() - orientedMarginTop - orientedMarginBottom;
 
   if (!section) {
+#if CROSSPOINT_EMULATED == 1
+    emulator::runtimeFinishWarmOpen();
+#endif
     const auto filepath = epub->getSpineItem(currentSpineIndex).href;
     LOG_DBG("ERS", "Loading file: %s, index: %d", filepath.c_str(), currentSpineIndex);
+#if CROSSPOINT_EMULATED == 1
+    emulator::runtimeBeginSectionStreaming();
+#endif
     section = std::unique_ptr<Section>(new Section(epub, currentSpineIndex, renderer));
 
     // A finalized cache serves every page as-is. A partial cache (suspended build from a
@@ -962,6 +972,9 @@ void EpubReaderActivity::render(RenderLock&& lock) {
         SETTINGS.paragraphAlignment, viewportWidth, viewportHeight, SETTINGS.hyphenationEnabled, SETTINGS.embeddedStyle,
         SETTINGS.imageRendering, SETTINGS.focusReadingEnabled);
     if (cacheLoaded) {
+#if CROSSPOINT_EMULATED == 1
+      emulator::runtimeCancelSectionStreaming();
+#endif
       // Matching render params means identical pagination, so the saved page number is valid
       // as-is: consume any pending settings-change reposition. Without this, a chapter total
       // saved while the section was still building (i.e. a watermark, not the real count)
@@ -1286,6 +1299,13 @@ void EpubReaderActivity::renderContents(std::unique_ptr<Page> page, const int or
   page->render(renderer, fontId, orientedMarginLeft, orientedMarginTop);
   renderStatusBar();
   const auto tBwRender = millis();
+
+#if CROSSPOINT_EMULATED == 1
+  // This profile phase comes from EPUB font prewarm and page layout. Keeping it
+  // here avoids charging ordinary UI screens the reader's content-specific cost.
+  emulator::runtimeSetRenderTimingMode(!pageHasImages && pagesUntilFullRefresh <= 1);
+  emulator::runtimeDelayRenderPhase(emulator::RenderTimingPhase::BeforePrimary);
+#endif
 
   if (pageHasImages) {
     // Double FAST_REFRESH with selective image blanking (pablohc's technique):

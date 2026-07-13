@@ -57,10 +57,18 @@ void ActivityManager::renderTaskLoop() {
     RenderLock lock;
     if (currentActivity) {
       HalPowerManager::Lock powerLock;  // Ensure we don't go into low-power mode while rendering
+#if defined(CROSSPOINT_CALIBRATION)
+      renderer.beginActivityRenderTiming(currentActivity->name.c_str());
+#endif
+#if CROSSPOINT_EMULATED == 1
+      const auto activityId = getProtocolActivityId();
+      emulator::runtimeFinishActivityTiming(activityId);
+      emulator::runtimeBeginActivityRender(activityId);
+#endif
       currentActivity->render(std::move(lock));
 #if CROSSPOINT_EMULATED == 1
       const uint64_t generation = completedRenderGeneration.fetch_add(1) + 1;
-      emulator::runtimeTraceApplication("render", activityIdName(currentActivity->id), generation);
+      emulator::runtimeTraceApplication("render", getProtocolActivityId(), generation);
 #endif
     }
     // Notify any task blocked in requestUpdateAndWait() that the render is done.
@@ -150,6 +158,9 @@ void ActivityManager::loop() {
       currentActivity = std::move(pendingActivity);
 
       lock.unlock();  // onEnter may acquire its own lock
+#if CROSSPOINT_EMULATED == 1
+      emulator::runtimeBeginActivityTiming();
+#endif
       currentActivity->onEnter();
       observeActivityChange();
 
@@ -185,6 +196,9 @@ void ActivityManager::replaceActivity(std::unique_ptr<Activity>&& newActivity) {
   } else {
     // No current activity, safe to launch immediately
     currentActivity = std::move(newActivity);
+#if CROSSPOINT_EMULATED == 1
+    emulator::runtimeBeginActivityTiming();
+#endif
     currentActivity->onEnter();
     observeActivityChange();
   }
@@ -288,10 +302,23 @@ ActivityId ActivityManager::getActivityId() const {
   return currentActivity ? currentActivity->id : ActivityId::Unknown;
 }
 
+#if CROSSPOINT_EMULATED == 1
+std::string_view ActivityManager::getProtocolActivityId() const {
+  if (!currentActivity) return {};
+  if (currentActivity->id != ActivityId::Unknown) return activityIdName(currentActivity->id);
+  if (currentActivity->name == "Settings") return "settings";
+  if (currentActivity->name == "Sleep") return "sleep";
+  if (currentActivity->name == "EpubReaderMenu") return "reader.epub.menu";
+  if (currentActivity->name == "EpubReaderChapterSelection") return "reader.epub.chapters";
+  if (currentActivity->name == "EpubReaderPercentSelection") return "reader.epub.percent";
+  return {};
+}
+#endif
+
 void ActivityManager::observeActivityChange() const {
 #if CROSSPOINT_EMULATED == 1
-  const ActivityId id = getActivityId();
-  if (id != ActivityId::Unknown) emulator::runtimeTraceApplication("activity", activityIdName(id), 0);
+  const std::string_view id = getProtocolActivityId();
+  if (!id.empty()) emulator::runtimeTraceApplication("activity", id, 0);
 #endif
 }
 

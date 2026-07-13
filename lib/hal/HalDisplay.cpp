@@ -1,6 +1,10 @@
 #include <HalDisplay.h>
 #include <HalGPIO.h>
 
+#if CROSSPOINT_EMULATED == 1
+#include "emulator/FreeRtosCompat.h"
+#endif
+
 // Global HalDisplay instance
 HalDisplay display;
 
@@ -62,6 +66,9 @@ void HalDisplay::displayBuffer(HalDisplay::RefreshMode mode, bool turnOffScreen)
     einkDisplay.requestResync(1);
   }
 
+#if CROSSPOINT_EMULATED == 1
+  emulator::runtimeSetRenderTimingMode(mode == HALF_REFRESH);
+#endif
   einkDisplay.displayBuffer(convertRefreshMode(mode), turnOffScreen);
 }
 
@@ -70,7 +77,15 @@ void HalDisplay::refreshDisplay(HalDisplay::RefreshMode mode, bool turnOffScreen
     einkDisplay.requestResync(1);
   }
 
+#if CROSSPOINT_EMULATED == 1
+  emulator::runtimeSetRenderTimingMode(mode == HALF_REFRESH);
+  const uint64_t startedUs = emulator::runtimeMicroseconds();
+#endif
   einkDisplay.refreshDisplay(convertRefreshMode(mode), turnOffScreen);
+#if CROSSPOINT_EMULATED == 1
+  const char* modeName = mode == FULL_REFRESH ? "full" : (mode == HALF_REFRESH ? "half" : "fast");
+  emulator::runtimeFinishPanelOperation(modeName, startedUs);
+#endif
 }
 
 void HalDisplay::deepSleep() { einkDisplay.deepSleep(); }
@@ -106,11 +121,22 @@ void HalDisplay::copyGrayscaleLsbBuffers(const uint8_t* lsbBuffer) { einkDisplay
 
 void HalDisplay::copyGrayscaleMsbBuffers(const uint8_t* msbBuffer) { einkDisplay.copyGrayscaleMsbBuffers(msbBuffer); }
 
-void HalDisplay::cleanupGrayscaleBuffers(const uint8_t* bwBuffer) { einkDisplay.cleanupGrayscaleBuffers(bwBuffer); }
+void HalDisplay::cleanupGrayscaleBuffers(const uint8_t* bwBuffer) {
+  einkDisplay.cleanupGrayscaleBuffers(bwBuffer);
+#if CROSSPOINT_EMULATED == 1
+  emulator::runtimeDelayRenderPhase(emulator::RenderTimingPhase::Cleanup);
+#endif
+}
 
 void HalDisplay::displayGrayBuffer(bool turnOffScreen) { einkDisplay.displayGrayBuffer(turnOffScreen); }
 
 void HalDisplay::writeGrayscalePlaneStrip(bool lsbPlane, const uint8_t* rows, uint16_t yStart, uint16_t numRows) {
+#if CROSSPOINT_EMULATED == 1
+  if (yStart == 0) {
+    emulator::runtimeDelayRenderPhase(lsbPlane ? emulator::RenderTimingPhase::GrayscaleLsb
+                                               : emulator::RenderTimingPhase::GrayscaleMsb);
+  }
+#endif
   einkDisplay.writeGrayscalePlaneStrip(lsbPlane ? EInkDisplay::GRAY_PLANE_LSB : EInkDisplay::GRAY_PLANE_MSB, rows,
                                        yStart, numRows);
 }

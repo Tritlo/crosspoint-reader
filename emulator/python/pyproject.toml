@@ -3,7 +3,10 @@ name = "crosspoint-emulator"
 version = "0.1.0"
 description = "Synchronous Python automation client for the CrossPoint X3/X4 emulator"
 requires-python = ">=3.11"
-dependencies = []
+dependencies = ["pyserial>=3.5"]
+
+[project.scripts]
+crosspoint-calibrate = "crosspoint_emulator.calibrate:main"
 
 [project.optional-dependencies]
 test = ["pytest>=8.0"]
@@ -16,6 +19,8 @@ build-backend = "hatchling.build"
 [tool.pyright]
 typeCheckingMode = "strict"
 pythonVersion = "3.11"
+venvPath = "."
+venv = ".venv"
 include = ["src", "tests"]
 
 [tool.pytest.ini_options]

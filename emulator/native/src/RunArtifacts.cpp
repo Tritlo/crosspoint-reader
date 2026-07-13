@@ -39,7 +39,9 @@ bool RunArtifacts::begin(const StorageMetadata& storage, std::string& error) {
   manifest["panelHeight"] = configuration.profile.panelHeight;
   manifest["controller"] = configuration.profile.controller;
   manifest["reviewRotationDegrees"] = configuration.profile.reviewRotationDegrees;
-  manifest["timingProfile"] = TIMING_PROFILE;
+  manifest["timingProfile"] = configuration.timing.id;
+  manifest["timingCalibrated"] = configuration.timing.calibrated;
+  if (configuration.timing.source) manifest["timingProfileSource"] = configuration.timing.source->string();
   manifest["rtcStart"] = configuration.rtcStart;
   manifest["randomSeed"] = configuration.randomSeed;
   manifest["initialPanel"] = configuration.initialPanel;

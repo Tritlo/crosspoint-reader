@@ -1,8 +1,11 @@
 #include <ArduinoJson.h>
 #include <EmulatorNative.h>
+#include <Epub.h>
 #include <HalDisplay.h>
 #include <HalGPIO.h>
+#include <HalStorage.h>
 
+#include <atomic>
 #include <chrono>
 #include <cstdint>
 #include <cstdlib>
@@ -11,6 +14,7 @@
 #include <iomanip>
 #include <iostream>
 #include <iterator>
+#include <limits>
 #include <locale>
 #include <optional>
 #include <sstream>
@@ -68,12 +72,30 @@ std::optional<MappedInputManager::Button> protocolAction(std::string_view name) 
   return std::nullopt;
 }
 
-ActivityId protocolActivityId(std::string_view name) {
-  if (name == "boot") return ActivityId::Boot;
-  if (name == "home") return ActivityId::Home;
-  if (name == "file_browser") return ActivityId::FileBrowser;
-  if (name == "reader.epub") return ActivityId::ReaderEpub;
-  return ActivityId::Unknown;
+enum class ProtocolActivityId {
+  Unknown,
+  Boot,
+  Home,
+  FileBrowser,
+  Settings,
+  Sleep,
+  ReaderEpub,
+  ReaderEpubMenu,
+  ReaderEpubChapters,
+  ReaderEpubPercent
+};
+
+ProtocolActivityId protocolActivityId(std::string_view name) {
+  if (name == "boot") return ProtocolActivityId::Boot;
+  if (name == "home") return ProtocolActivityId::Home;
+  if (name == "file_browser") return ProtocolActivityId::FileBrowser;
+  if (name == "settings") return ProtocolActivityId::Settings;
+  if (name == "sleep") return ProtocolActivityId::Sleep;
+  if (name == "reader.epub") return ProtocolActivityId::ReaderEpub;
+  if (name == "reader.epub.menu") return ProtocolActivityId::ReaderEpubMenu;
+  if (name == "reader.epub.chapters") return ProtocolActivityId::ReaderEpubChapters;
+  if (name == "reader.epub.percent") return ProtocolActivityId::ReaderEpubPercent;
+  return ProtocolActivityId::Unknown;
 }
 
 uint64_t panelFrameHash(uint16_t width, uint16_t height, const std::vector<uint8_t>& pixels) {
@@ -123,6 +145,7 @@ class Session {
               record(std::string("panel.") + std::string(event), fields);
             },
             [this](std::string_view event, std::string_view detail, uint64_t value) {
+              if (event == "activity") observedActivity.store(protocolActivityId(detail));
               JsonDocument document;
               JsonObject fields = document.to<JsonObject>();
               if (event.starts_with("input-")) {
@@ -208,6 +231,8 @@ class Session {
       handleWaitRender(id, params);
     else if (method == "wait.panelIdle")
       handleWaitPanelIdle(id, params);
+    else if (method == "storage.clearEpubCache")
+      handleClearEpubCache(id, params);
     else if (method == "capture.panel")
       handleCapture(id, params, true, false);
     else if (method == "capture.framebuffer")
@@ -251,7 +276,8 @@ class Session {
     result["panelHeight"] = configuration.profile.panelHeight;
     result["controller"] = configuration.profile.controller;
     result["reviewRotationDegrees"] = configuration.profile.reviewRotationDegrees;
-    result["timingProfile"] = TIMING_PROFILE;
+    result["timingProfile"] = configuration.timing.id;
+    result["timingCalibrated"] = configuration.timing.calibrated;
     result["schedulerModel"] = SCHEDULER_MODEL;
     result["artifactDirectory"] = std::filesystem::absolute(configuration.artifactDirectory).string();
     result["rtcStart"] = configuration.rtcStart;
@@ -322,11 +348,12 @@ class Session {
     result["debouncedControls"] = debouncedControls;
     result["heldTimeMs"] = gpio.getHeldTime();
     result["powerHeldTimeMs"] = gpio.getPowerButtonHeldTime();
-    result["activityId"] = activityIdName(activityManager.getActivityId());
+    result["activityId"] = activityManager.getProtocolActivityId();
     result["renderGeneration"] = activityManager.getRenderGeneration();
     const PanelSnapshot panel = panelSnapshot();
     result["panelGeneration"] = panel.generation;
     result["panelBusy"] = panel.busy;
+    result["panelOpticalBusy"] = panel.opticalBusy;
     JsonArray tasks = result["tasks"].to<JsonArray>();
     for (const auto& status : scheduler.taskStatuses()) {
       JsonObject task = tasks.add<JsonObject>();
@@ -425,23 +452,26 @@ class Session {
     JsonObject result = resultDocument.to<JsonObject>();
     result["simulatedTimeUs"] = clock.nowMicroseconds();
     result["schedulerDispatches"] = dispatches;
-    result["activityId"] = activityIdName(activityManager.getActivityId());
+    result["activityId"] = activityManager.getProtocolActivityId();
     result["renderGeneration"] = activityManager.getRenderGeneration();
     const PanelSnapshot panel = panelSnapshot();
     result["panelGeneration"] = panel.generation;
     result["panelBusy"] = panel.busy;
+    result["panelOpticalBusy"] = panel.opticalBusy;
     sendResult(id, result);
     return true;
   }
 
   void handleWaitActivity(uint64_t id, const JsonObjectConst& params) {
     const char* requested = params["activityId"] | "";
-    const ActivityId expected = protocolActivityId(requested);
-    if (expected == ActivityId::Unknown) {
-      sendError(id, -32602, "activityId must be boot, home, file_browser, or reader.epub");
+    const ProtocolActivityId expected = protocolActivityId(requested);
+    if (expected == ProtocolActivityId::Unknown) {
+      sendError(id, -32602,
+                "activityId must be boot, home, file_browser, settings, sleep, reader.epub, reader.epub.menu, "
+                "reader.epub.chapters, or reader.epub.percent");
       return;
     }
-    completeWait(id, params, [expected] { return activityManager.getActivityId() == expected; });
+    completeWait(id, params, [this, expected] { return observedActivity.load() == expected; });
   }
 
   void handleWaitRender(uint64_t id, const JsonObjectConst& params) {
@@ -453,8 +483,103 @@ class Session {
     completeWait(id, params, [after] { return activityManager.getRenderGeneration() > after; });
   }
 
+  bool panelIsIdle() const {
+    const PanelSnapshot panel = panelSnapshot();
+    if (panel.busy || panel.opticalBusy || activityManager.hasPendingRender()) return false;
+    for (const auto& task : scheduler.taskStatuses()) {
+      if (task.name == "ActivityManagerRender" && (task.state != "waiting-notification" || task.notifications != 0)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   void handleWaitPanelIdle(uint64_t id, const JsonObjectConst& params) {
-    completeWait(id, params, [] { return !panelSnapshot().busy; });
+    completeWait(id, params, [this] { return panelIsIdle(); });
+  }
+
+  void handleClearEpubCache(uint64_t id, const JsonObjectConst& params) {
+    if (observedActivity.load() != ProtocolActivityId::FileBrowser || !panelIsIdle()) {
+      sendError(id, -32012, "EPUB cache can only be cleared from an idle File Browser");
+      return;
+    }
+    const char* pathValue = params["path"] | "";
+    const std::string path(pathValue);
+    if (path.empty() || path.front() != '/' || path.find("..") != std::string::npos || !path.ends_with(".epub")) {
+      sendError(id, -32602, "path must be an absolute .epub device path without '..'");
+      return;
+    }
+
+    Epub epub(path, "/.crosspoint");
+    std::string hostPathError;
+    const auto hostCachePath = storage.hostPath(epub.getCachePath(), hostPathError);
+    if (!hostCachePath) {
+      sendError(id, -32013, hostPathError.c_str());
+      return;
+    }
+    const bool existed = storage.exists(epub.getCachePath());
+    std::error_code filesystemError;
+    uint64_t fileCount = 0;
+    if (existed) {
+      if (!std::filesystem::is_directory(*hostCachePath, filesystemError) || filesystemError) {
+        sendError(id, -32013, "EPUB cache is not a readable directory");
+        return;
+      }
+      std::filesystem::recursive_directory_iterator iterator(*hostCachePath, filesystemError);
+      const std::filesystem::recursive_directory_iterator end;
+      while (!filesystemError && iterator != end) {
+        if (iterator->is_regular_file(filesystemError)) {
+          if (fileCount == std::numeric_limits<uint64_t>::max()) {
+            sendError(id, -32013, "EPUB cache contains too many files");
+            return;
+          }
+          ++fileCount;
+        }
+        iterator.increment(filesystemError);
+      }
+      if (filesystemError) {
+        sendError(id, -32013, "failed to enumerate EPUB cache");
+        return;
+      }
+    }
+    const auto& workload = configuration.timing.workload;
+    uint64_t targetDurationUs = configuration.timing.calibrated ? workload.cacheClearNoCacheUs : 0;
+    if (configuration.timing.calibrated && existed) {
+      if (fileCount >
+          (std::numeric_limits<uint64_t>::max() - workload.cacheClearInterceptUs) / workload.cacheClearPerFileUs) {
+        sendError(id, -32013, "EPUB cache-clear timing overflow");
+        return;
+      }
+      targetDurationUs = workload.cacheClearInterceptUs + fileCount * workload.cacheClearPerFileUs;
+    }
+
+    bool cleared = false;
+    const uint64_t startedUs = clock.nowMicroseconds();
+    scheduler.createTask("emulator-cache-clear", [&] { cleared = epub.clearCache(); }, UINT32_MAX);
+    scheduler.runReady(1);
+    if (!cleared) {
+      sendError(id, -32013, "failed to clear EPUB cache");
+      return;
+    }
+
+    uint64_t durationUs = clock.nowMicroseconds() - startedUs;
+    if (durationUs < targetDurationUs) {
+      if (!clock.advance(targetDurationUs - durationUs)) {
+        sendError(id, -32013, "EPUB cache-clear time overflow");
+        return;
+      }
+      durationUs = targetDurationUs;
+    }
+
+    JsonDocument fieldsDocument;
+    JsonObject fields = fieldsDocument.to<JsonObject>();
+    fields["path"] = path;
+    fields["existed"] = existed;
+    fields["fileCount"] = fileCount;
+    fields["targetDurationUs"] = targetDurationUs;
+    fields["durationUs"] = durationUs;
+    record("storage.epubCacheCleared", fields);
+    sendResult(id, fields);
   }
 
   void handleReset(uint64_t id) {
@@ -652,6 +777,7 @@ class Session {
   size_t nextPanelTransition = 0;
   std::vector<StoredPanelFrame> storedPanelFrames;
   bool framePersistenceFailed = false;
+  std::atomic<ProtocolActivityId> observedActivity{ProtocolActivityId::Unknown};
   bool initialized = false;
   bool shutdownRequested = false;
 };
@@ -663,7 +789,8 @@ int run(int argc, char** argv) {
   auto configuration = parseConfiguration(argc, argv, error);
   if (!configuration) {
     std::cerr << "usage: crosspoint-emulator --device x3|x4 --artifacts DIR [--sd FIXTURE] "
-                 "[--rtc-start ISO8601] [--seed N] [--panel-initial white|black] [--panel-initial-png PNG]\n";
+                 "[--rtc-start ISO8601] [--seed N] [--panel-initial white|black] [--panel-initial-png PNG] "
+                 "[--timing-profile JSON]\n";
     std::cerr << "emulator: " << error << '\n';
     return 2;
   }

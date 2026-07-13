@@ -1,5 +1,11 @@
 #include "Epub.h"
 
+#if CROSSPOINT_EMULATED == 1
+#include <array>
+
+#include "emulator/FreeRtosCompat.h"
+#endif
+
 #include <FsHelpers.h>
 #include <HalStorage.h>
 #include <JpegToBmpConverter.h>
@@ -364,6 +370,10 @@ void Epub::parseCssFiles() const {
 // load in the meta data for the epub file
 bool Epub::load(const bool buildIfMissing, const bool skipLoadingCss) {
   LOG_DBG("EBP", "Loading ePub: %s", filepath.c_str());
+#if CROSSPOINT_EMULATED == 1
+  const uint64_t loadStartedUs = emulator::runtimeMicroseconds();
+  emulator::runtimeBeginWarmOpen(filepath);
+#endif
 
   // Initialize spine/TOC cache
   bookMetadataCache.reset(new BookMetadataCache(cachePath));
@@ -390,15 +400,25 @@ bool Epub::load(const bool buildIfMissing, const bool skipLoadingCss) {
         bookMetadataCache.reset(new BookMetadataCache(cachePath));
         if (!bookMetadataCache->load()) {
           LOG_ERR("EBP", "Failed to reload cache after CSS rebuild");
+#if CROSSPOINT_EMULATED == 1
+          emulator::runtimeCancelWarmOpen();
+#endif
           return false;
         }
         // Invalidate section caches so they are rebuilt with the new CSS
         Storage.removeDir((cachePath + "/sections").c_str());
       }
     }
+#if CROSSPOINT_EMULATED == 1
+    emulator::runtimeFinishCachedMetadataLoad(filepath, bookMetadataCache->getSpineCount() >= 400, loadStartedUs);
+#endif
     LOG_DBG("EBP", "Loaded ePub: %s", filepath.c_str());
     return true;
   }
+
+#if CROSSPOINT_EMULATED == 1
+  emulator::runtimeCancelWarmOpen();
+#endif
 
   // If we didn't load from cache above and we aren't allowed to build, fail now
   if (!buildIfMissing) {
@@ -433,10 +453,21 @@ bool Epub::load(const bool buildIfMissing, const bool skipLoadingCss) {
     LOG_ERR("EBP", "Could not end writing content.opf pass");
     return false;
   }
+#if CROSSPOINT_EMULATED == 1
+  const bool largeSpine = bookMetadataCache->getSpineCount() >= 400;
+  emulator::runtimeFinishColdIndexingPhase(filepath, largeSpine, emulator::IndexingTimingPhase::Opf,
+                                           static_cast<uint64_t>(opfStart) * 1000);
+#endif
   LOG_DBG("EBP", "OPF pass completed in %lu ms", millis() - opfStart);
 
   // TOC Pass - try EPUB 3 nav first, fall back to NCX
   const uint32_t tocStart = millis();
+#if CROSSPOINT_EMULATED == 1
+  emulator::runtimeBeginColdTocTiming(filepath, largeSpine);
+  struct ColdTocTimingScope {
+    ~ColdTocTimingScope() { emulator::runtimeCancelColdTocTiming(); }
+  } coldTocTimingScope;
+#endif
   if (!bookMetadataCache->beginTocPass()) {
     LOG_ERR("EBP", "Could not begin writing toc pass");
     return false;
@@ -465,6 +496,10 @@ bool Epub::load(const bool buildIfMissing, const bool skipLoadingCss) {
     LOG_ERR("EBP", "Could not end writing toc pass");
     return false;
   }
+#if CROSSPOINT_EMULATED == 1
+  emulator::runtimeFinishColdIndexingPhase(filepath, largeSpine, emulator::IndexingTimingPhase::Toc,
+                                           static_cast<uint64_t>(tocStart) * 1000);
+#endif
   LOG_DBG("EBP", "TOC pass completed in %lu ms", millis() - tocStart);
 
   // Close the cache files
@@ -479,8 +514,23 @@ bool Epub::load(const bool buildIfMissing, const bool skipLoadingCss) {
     LOG_ERR("EBP", "Could not update mappings and sizes");
     return false;
   }
+#if CROSSPOINT_EMULATED == 1
+  emulator::runtimeFinishColdIndexingPhase(filepath, largeSpine, emulator::IndexingTimingPhase::BookBin,
+                                           static_cast<uint64_t>(buildStart) * 1000);
+#endif
   LOG_DBG("EBP", "buildBookBin completed in %lu ms", millis() - buildStart);
+#if CROSSPOINT_EMULATED == 1
+  emulator::runtimeFinishColdIndexing(filepath, largeSpine, static_cast<uint64_t>(indexingStart) * 1000);
+#endif
   LOG_DBG("EBP", "Total indexing completed in %lu ms", millis() - indexingStart);
+
+#if CROSSPOINT_EMULATED == 1
+  const uint64_t postIndexStartedUs = emulator::runtimeMicroseconds();
+  emulator::runtimeBeginColdPostIndexTiming(filepath, largeSpine);
+  struct ColdPostIndexTimingScope {
+    ~ColdPostIndexTimingScope() { emulator::runtimeCancelColdPostIndexTiming(); }
+  } coldPostIndexTimingScope;
+#endif
 
   if (!bookMetadataCache->cleanupTmpFiles()) {
     LOG_DBG("EBP", "Could not cleanup tmp files - ignoring");
@@ -499,6 +549,10 @@ bool Epub::load(const bool buildIfMissing, const bool skipLoadingCss) {
     LOG_ERR("EBP", "Failed to reload cache after writing");
     return false;
   }
+
+#if CROSSPOINT_EMULATED == 1
+  emulator::runtimeFinishColdPostIndexLoad(filepath, largeSpine, postIndexStartedUs);
+#endif
 
   LOG_DBG("EBP", "Loaded ePub: %s", filepath.c_str());
   return true;
@@ -667,10 +721,46 @@ bool Epub::generateThumbBmp(int height) const {
   }
 
   const auto coverImageHref = bookMetadataCache->coreMetadata.coverItemHref;
+#if CROSSPOINT_EMULATED == 1
+  struct ThumbnailTimingScope {
+    emulator::ThumbnailFormat format;
+    emulator::ThumbnailTimingPhase phase;
+    uint64_t startedUs;
+    uint64_t sourceBytes = 0;
+    uint32_t sourceWidth = 0;
+    uint32_t sourceHeight = 0;
+    uint8_t bitDepth = 0;
+    uint8_t colorType = 0;
+    uint16_t targetWidth = 0;
+    uint16_t targetHeight = 0;
+    bool active = true;
+    void configure() const {
+      emulator::runtimeConfigureThumbnailGeneration(format, phase, sourceBytes, sourceWidth, sourceHeight, bitDepth,
+                                                    colorType, targetWidth, targetHeight);
+    }
+    void finish() {
+      if (!active) return;
+      emulator::runtimeFinishThumbnailGeneration(format, phase, sourceBytes, sourceWidth, sourceHeight, bitDepth,
+                                                 colorType, targetWidth, targetHeight, startedUs);
+      active = false;
+    }
+    ~ThumbnailTimingScope() { finish(); }
+  };
+#endif
   if (coverImageHref.empty()) {
     LOG_DBG("EBP", "No known cover image for thumbnail");
   } else if (FsHelpers::hasJpgExtension(coverImageHref)) {
     LOG_DBG("EBP", "Generating thumb BMP from JPG cover image");
+    const int THUMB_TARGET_WIDTH = height * 0.6;
+    const int THUMB_TARGET_HEIGHT = height;
+#if CROSSPOINT_EMULATED == 1
+    ThumbnailTimingScope thumbnailTimingScope{emulator::ThumbnailFormat::Jpeg, emulator::ThumbnailTimingPhase::Whole,
+                                              emulator::runtimeBeginThumbnailGeneration()};
+    thumbnailTimingScope.targetWidth = THUMB_TARGET_WIDTH;
+    thumbnailTimingScope.targetHeight = THUMB_TARGET_HEIGHT;
+    thumbnailTimingScope.configure();
+    getItemSize(coverImageHref, &thumbnailTimingScope.sourceBytes);
+#endif
     const auto coverJpgTempPath = getCachePath() + "/.cover.jpg";
 
     HalFile coverJpg;
@@ -691,8 +781,6 @@ bool Epub::generateThumbBmp(int height) const {
     }
     // Use smaller target size for Continue Reading card (half of screen: 240x400)
     // Generate 1-bit BMP for fast home screen rendering (no gray passes needed)
-    int THUMB_TARGET_WIDTH = height * 0.6;
-    int THUMB_TARGET_HEIGHT = height;
     const bool success = JpegToBmpConverter::jpegFileTo1BitBmpStreamWithSize(coverJpg, thumbBmp, THUMB_TARGET_WIDTH,
                                                                              THUMB_TARGET_HEIGHT);
     // Explicitly close() files before calling Storage.remove()
@@ -704,10 +792,24 @@ bool Epub::generateThumbBmp(int height) const {
       LOG_ERR("EBP", "Failed to generate thumb BMP from JPG cover image");
       Storage.remove(getThumbBmpPath(height).c_str());
     }
+#if CROSSPOINT_EMULATED == 1
+    thumbnailTimingScope.finish();
+#endif
     LOG_DBG("EBP", "Generated thumb BMP from JPG cover image, success: %s", success ? "yes" : "no");
     return success;
   } else if (FsHelpers::hasPngExtension(coverImageHref)) {
     LOG_DBG("EBP", "Generating thumb BMP from PNG cover image");
+    const int THUMB_TARGET_WIDTH = height * 0.6;
+    const int THUMB_TARGET_HEIGHT = height;
+#if CROSSPOINT_EMULATED == 1
+    ThumbnailTimingScope thumbnailPreparationTimingScope{emulator::ThumbnailFormat::Png,
+                                                         emulator::ThumbnailTimingPhase::Preparation,
+                                                         emulator::runtimeBeginThumbnailGeneration()};
+    thumbnailPreparationTimingScope.targetWidth = THUMB_TARGET_WIDTH;
+    thumbnailPreparationTimingScope.targetHeight = THUMB_TARGET_HEIGHT;
+    getItemSize(coverImageHref, &thumbnailPreparationTimingScope.sourceBytes);
+    thumbnailPreparationTimingScope.configure();
+#endif
     const auto coverPngTempPath = getCachePath() + "/.cover.png";
 
     HalFile coverPng;
@@ -726,8 +828,38 @@ bool Epub::generateThumbBmp(int height) const {
     if (!Storage.openFileForWrite("EBP", getThumbBmpPath(height), thumbBmp)) {
       return false;
     }
-    int THUMB_TARGET_WIDTH = height * 0.6;
-    int THUMB_TARGET_HEIGHT = height;
+#if CROSSPOINT_EMULATED == 1
+    uint32_t sourceWidth = 0;
+    uint32_t sourceHeight = 0;
+    uint8_t bitDepth = 0;
+    uint8_t colorType = 0;
+    std::array<uint8_t, 26> header{};
+    if (coverPng.read(header.data(), header.size()) == static_cast<int>(header.size()) && header[0] == 0x89 &&
+        header[1] == 'P' && header[2] == 'N' && header[3] == 'G' && header[12] == 'I' && header[13] == 'H' &&
+        header[14] == 'D' && header[15] == 'R') {
+      const auto bigEndian32 = [&header](size_t offset) {
+        return static_cast<uint32_t>(header[offset]) << 24 | static_cast<uint32_t>(header[offset + 1]) << 16 |
+               static_cast<uint32_t>(header[offset + 2]) << 8 | header[offset + 3];
+      };
+      sourceWidth = bigEndian32(16);
+      sourceHeight = bigEndian32(20);
+      bitDepth = header[24];
+      colorType = header[25];
+    }
+    coverPng.seek(0);
+    thumbnailPreparationTimingScope.finish();
+    ThumbnailTimingScope thumbnailConversionTimingScope{emulator::ThumbnailFormat::Png,
+                                                        emulator::ThumbnailTimingPhase::Conversion,
+                                                        emulator::runtimeBeginThumbnailGeneration()};
+    thumbnailConversionTimingScope.sourceBytes = coverPng.fileSize64();
+    thumbnailConversionTimingScope.sourceWidth = sourceWidth;
+    thumbnailConversionTimingScope.sourceHeight = sourceHeight;
+    thumbnailConversionTimingScope.bitDepth = bitDepth;
+    thumbnailConversionTimingScope.colorType = colorType;
+    thumbnailConversionTimingScope.targetWidth = THUMB_TARGET_WIDTH;
+    thumbnailConversionTimingScope.targetHeight = THUMB_TARGET_HEIGHT;
+    thumbnailConversionTimingScope.configure();
+#endif
     const bool success =
         PngToBmpConverter::pngFileTo1BitBmpStreamWithSize(coverPng, thumbBmp, THUMB_TARGET_WIDTH, THUMB_TARGET_HEIGHT);
     // Explicitly close() files before calling Storage.remove()
@@ -739,6 +871,9 @@ bool Epub::generateThumbBmp(int height) const {
       LOG_ERR("EBP", "Failed to generate thumb BMP from PNG cover image");
       Storage.remove(getThumbBmpPath(height).c_str());
     }
+#if CROSSPOINT_EMULATED == 1
+    thumbnailConversionTimingScope.finish();
+#endif
     LOG_DBG("EBP", "Generated thumb BMP from PNG cover image, success: %s", success ? "yes" : "no");
     return success;
   } else {

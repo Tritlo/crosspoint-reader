@@ -38,6 +38,7 @@ class Emulator:
         self._request_id = 0
         self._device: DeviceProfile = "x3"
         self._executable = Path()
+        self._timing_profile: Path | None = None
         self._rtc_start = "2000-01-01T00:00:00Z"
         self._seed = 0
         self._keep_artifacts = False
@@ -60,6 +61,7 @@ class Emulator:
         seed: int = 0,
         initial_panel: Literal["white", "black"] = "white",
         initial_panel_png: str | Path | None = None,
+        timing_profile: str | Path | None = None,
         keep_artifacts: bool = False,
     ) -> Self:
         emulator = cls()
@@ -68,6 +70,14 @@ class Emulator:
         emulator._rtc_start = rtc_start
         emulator._seed = seed
         emulator._keep_artifacts = keep_artifacts
+        if timing_profile is not None:
+            emulator._timing_profile = Path(timing_profile)
+        elif device == "x4":
+            emulator._timing_profile = (
+                Path(__file__).resolve().parents[4] / "emulator" / "profiles" / "x4-hardware-2026-07-12-v1.json"
+            )
+        else:
+            emulator._timing_profile = None
         if artifacts is None:
             emulator._artifact_root = Path(tempfile.mkdtemp(prefix=f"crosspoint-{device}-"))
             emulator._temporary_artifacts = True
@@ -114,6 +124,8 @@ class Emulator:
         ]
         if sd is not None:
             arguments.extend(("--sd", str(sd)))
+        if self._timing_profile is not None:
+            arguments.extend(("--timing-profile", str(self._timing_profile)))
         if initial_panel_png is not None:
             arguments.extend(("--panel-initial-png", str(initial_panel_png)))
         else:
@@ -218,18 +230,31 @@ class Emulator:
 
     def press(self, control: PhysicalControl, *, hold_ms: int = 20) -> None:
         self.button_down(control)
-        self.advance(max(20, hold_ms))
+        self.advance(max(100, hold_ms))
         self.button_up(control)
         self.advance(20)
 
     def press_action(self, action: Action, *, hold_ms: int = 20) -> None:
         self.action_down(action)
-        self.advance(max(20, hold_ms))
+        self.advance(max(100, hold_ms))
         self.action_up(action)
         self.advance(20)
 
     def wait_for_activity(
-        self, activity_id: Literal["boot", "home", "file_browser", "reader.epub"], *, timeout_ms: int = 10_000,
+        self,
+        activity_id: Literal[
+            "boot",
+            "home",
+            "file_browser",
+            "settings",
+            "sleep",
+            "reader.epub",
+            "reader.epub.menu",
+            "reader.epub.chapters",
+            "reader.epub.percent",
+        ],
+        *,
+        timeout_ms: int = 10_000,
         wall_timeout_ms: int = 5_000,
     ) -> dict[str, object]:
         return self._request(
@@ -248,6 +273,10 @@ class Emulator:
         return self._request(
             "wait.panelIdle", {"timeoutUs": timeout_ms * 1000, "wallTimeoutMs": wall_timeout_ms}
         )
+
+    def clear_epub_cache(self, path: str) -> dict[str, object]:
+        """Clear one EPUB's production cache while File Browser is idle."""
+        return self._request("storage.clearEpubCache", {"path": path})
 
     def capture_panel(self, name: str = "panel.png") -> Path:
         return self._capture("capture.panel", name)

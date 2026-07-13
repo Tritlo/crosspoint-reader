@@ -57,7 +57,11 @@ bool HalGPIO::wasReleased(uint8_t buttonIndex) const { return native->input.wasR
 bool HalGPIO::wasAnyReleased() const { return native->input.wasAnyReleased(); }
 unsigned long HalGPIO::getHeldTime() const { return native->input.getHeldTime(); }
 unsigned long HalGPIO::getPowerButtonHeldTime() const { return native->input.getPowerButtonHeldTime(); }
-void HalGPIO::startDeepSleep() { std::cerr << "emulator: GPIO deep sleep is not implemented\n"; }
+void HalGPIO::startDeepSleep() {
+  emulator::runtimeFinishSleepTransition();
+  emulator::runtimeTraceApplication("deep-sleep", "gpio", 0);
+  emulator::runtimeBlock();
+}
 void HalGPIO::verifyPowerButtonWakeup(uint16_t, bool) {}
 bool HalGPIO::isUsbConnected() const { return lastUsbConnected; }
 bool HalGPIO::wasUsbStateChanged() const { return usbStateChanged; }
@@ -69,7 +73,9 @@ void HalPowerManager::begin() {
 }
 void HalPowerManager::setPowerSaving(bool enabled) { isLowPower = enabled; }
 void HalPowerManager::startDeepSleep(HalGPIO&) const {
-  std::cerr << "emulator: power-manager deep sleep is not implemented\n";
+  emulator::runtimeFinishSleepTransition();
+  emulator::runtimeTraceApplication("deep-sleep", "power-manager", 0);
+  emulator::runtimeBlock();
 }
 uint16_t HalPowerManager::getBatteryPercentage() const { return 100; }
 

@@ -15,9 +15,15 @@
 #include "fontIds.h"
 #include "images/Logo120.h"
 #include "images/MoonIcon.h"
+#if CROSSPOINT_EMULATED == 1
+#include "emulator/FreeRtosCompat.h"
+#endif
 
 void SleepActivity::onEnter() {
   Activity::onEnter();
+#if CROSSPOINT_EMULATED == 1
+  emulator::runtimeBeginSleepTransition();
+#endif
 
   const bool renderQuickResume =
       SETTINGS.sleepScreen == CrossPointSettings::SLEEP_SCREEN_MODE::QUICK_RESUME ||
